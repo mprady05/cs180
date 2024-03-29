@@ -96,7 +96,7 @@ public class UserUpdated {
                 this.lastName + "," +
                 this.email + "," + this.password;
     }
-
+    //Adds friend to this user
     public boolean addFriend(User friend) {
         if (friendList.contains(friend)) {
             return false;
@@ -105,7 +105,7 @@ public class UserUpdated {
             return true;
         }
     }
-
+    //Removes the user as a friend from this user
     public boolean removeFriend(User friend) {
         try {
             for (int i = 0; i < friendList.size(); i++) {
@@ -119,7 +119,7 @@ public class UserUpdated {
         }
         return false;
     }
-
+    //Blocks user from this user
     public boolean blockUser(User userBlocked) {
         if (blockList.contains(userBlocked)) {
             return false;
@@ -128,7 +128,7 @@ public class UserUpdated {
             return true;
         }
     }
-
+    //Unblocks user from this user
     public boolean unblockUser(User userBlocked) {
         try {
             for (int i = 0; i < blockList.size(); i++) {
@@ -142,7 +142,7 @@ public class UserUpdated {
         }
         return false;
     }
-
+    //Finds mutual friends between two users
     public ArrayList<User> MutualFriends(User one, User two) {
         if (one.friendList == null || two.friendList == null) {
             return null;
@@ -167,7 +167,7 @@ public class UserUpdated {
     public String getUserName() {
         return userName;
     }
-
+    //mutualFriendsToString similar to Insta's following feature. Will be outputted in GUI
     public String mutualFriendsToString(ArrayList<User> mutuals) {
         ArrayList<User> mutual;
         mutual = mutuals;
@@ -188,12 +188,13 @@ public class UserUpdated {
         return String.format("Friends with: %s, %s, %s and %d others", mutual.getFirst().getUserName(), mutual.get(2).getUserName(),
                 mutual.getLast().getUserName(), numberMutual - 3);
     }
-
+    //Recommends friends save blocked users.
     public ArrayList<User> recommendedFriends(User user) {
-        ArrayList<User> inputFriends = new ArrayList<>();
+        ArrayList<User> friends = new ArrayList<>();
         ArrayList<User> output = new ArrayList<>();
         for (int i = 0; i < users.getSize(); i++) {
             user.get(i).getFriends();
         }
+        return output;
     }
 }
