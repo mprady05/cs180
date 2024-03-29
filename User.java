@@ -11,6 +11,17 @@ public class User {
     private ArrayList<String> friendList;
     private ArrayList<String> blockList;
 
+    public User (String id, String firstName, String lastName, String email, String password, String photoId,
+                 ArrayList<String> friendList,ArrayList<String> blockList){
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.photoId = photoId;
+        this.friendList = friendList;
+        this.blockList = blockList;
+    }
 
     public String getId() {
         return id;
