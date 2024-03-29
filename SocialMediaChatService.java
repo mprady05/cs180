@@ -1,146 +1,149 @@
 import java.io.*;
 import java.util.*;
 
+
 public class SocialMediaChatService {
-    private static final String CHAT_HISTORY_DIRECTORY = "chat_histories/";
-    private static final String conversationsFile = "conversations.txt";
-    private Map<String, ChatHistory> chatHistories = new HashMap<>();
-    private List<Conversation> conversations = new ArrayList<>();
-
-    static class User {
-        String userId;
-        String username;
-
-        public User(String userId, String username) {
-            this.userId = userId;
-            this.username = username;
-        }
-    }
-
-    static class Message {
-        String messageId;
-        String senderId;
-        String receiverId;
-        String content;
-        Date timestamp;
-
-        public Message(String messageId, String senderId, String receiverId, String content, Date timestamp) {
-            this.messageId = messageId;
-            this.senderId = senderId;
-            this.receiverId = receiverId;
-            this.content = content;
-            this.timestamp = timestamp;
-        }
-    }
-
-    static class Conversation {
-        private ArrayList<Message> messages = new ArrayList<>();
-        private User userOne;
-        private User userTwo;
-
-        public Conversation(User userOne, User userTwo) {
-            this.userOne = userOne;
-            this.userTwo = userTwo;
-        }
-
-        public void addMessage(Message message) {
-            messages.add(message);
-        }
-    }
-
-    static class ChatHistory {
-        private String chatId;
-        private Set<String> participantIds;
-        private List<Message> messages = new ArrayList<>();
-        private Date lastUpdated;
-
-        public ChatHistory(String chatId, Set<String> participantIds) {
-            this.chatId = chatId;
-            this.participantIds = participantIds;
-        }
-
-        public void addMessage(Message message) {
-            messages.add(message);
-            this.lastUpdated = new Date();
-        }
-    }
+    private static String FILE_PATH = "ChatHistories.txt";
+    private static ArrayList<ChatHistory> chatHistories = new ArrayList<>();
 
     public SocialMediaChatService() {
-        loadConversations();
+        readChatHistories();
     }
 
-    public void addMessageToConversation(User sender, User receiver, Message message) {
-        Conversation conversation = findOrCreateConversation(sender, receiver);
-        conversation.addMessage(message);
-
-        ChatHistory chatHistory = findOrCreateChatHistory(sender.userId, receiver.userId);
-        chatHistory.addMessage(message);
-
-        saveConversations();
-    }
-
-    private Conversation findOrCreateConversation(User sender, User receiver) {
-        for (Conversation conv : conversations) {
-            if ((conv.userOne == sender && conv.userTwo == receiver) ||
-                    (conv.userOne == receiver && conv.userTwo == sender)) {
-                return conv;
+    public static boolean readChatHistories() {
+        chatHistories.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            ChatHistory currentChatHistory = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith("ChatID: ")) {
+                    String chatId = line.substring("ChatID: ".length());
+                    line = reader.readLine(); // For Participants
+                    if (line.startsWith("Participants: ")) {
+                        String[] participantIds = line.substring("Participants: ".length()).split(", ");
+                        User participantOne = UserDatabase.getUserById(participantIds[0].trim());
+                        User participantTwo = UserDatabase.getUserById(participantIds[1].trim());
+                        if (participantOne == null || participantTwo == null) {
+                            System.err.println("Error: Participant not found.");
+                            continue; // Skip this chat history if participants are invalid
+                        }
+                        currentChatHistory = new ChatHistory(participantOne, participantTwo);
+                    }
+                } else if (line.startsWith("Messages:") && currentChatHistory != null) {
+                    ArrayList<Message> currentMessages = new ArrayList<>();
+                    while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
+                        Message message = Message.parseMessage(line);
+                        if (message != null) {
+                            currentMessages.add(message);
+                        } else {
+                            System.err.println("Error parsing message: " + line);
+                        }
+                    }
+                    currentChatHistory.setMessages(currentMessages);
+                    chatHistories.add(currentChatHistory);
+                    currentChatHistory = null; // Reset for the next chat history
+                }
             }
+            saveChatHistories(chatHistories);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
-        Conversation newConv = new Conversation(sender, receiver);
-        conversations.add(newConv);
-        return newConv;
     }
 
-    private ChatHistory findOrCreateChatHistory(String senderId, String receiverId) {
-        String chatId = senderId + "-" + receiverId;
-        return chatHistories.computeIfAbsent(chatId, k -> new ChatHistory(chatId, new HashSet<>(Arrays.asList(senderId, receiverId))));
-    }
+    public static ArrayList<Message> loadMessages(ChatHistory chatHistory) {
+        ArrayList<Message> loadedMessages = new ArrayList<>();
+        String chatIdPattern = "ChatID: " + chatHistory.getChatId();
+        boolean isCurrentChat = false;
 
-    private void loadConversations() {
-        Map<String, User> userMap = new HashMap<>(); // Cache users by their IDs to avoid duplicates
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(CHAT_HISTORY_DIRECTORY + conversationsFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length < 5) continue; // Skip if the line does not have enough parts
-
-                String senderId = parts[0];
-                String receiverId = parts[1];
-                String messageId = parts[2];
-                String content = parts[3];
-                long timestampLong = Long.parseLong(parts[4]);
-                Date timestamp = new Date(timestampLong);
-
-                User sender = userMap.computeIfAbsent(senderId, id -> new User(id, "Username_" + id)); // Placeholder usernames
-                User receiver = userMap.computeIfAbsent(receiverId, id -> new User(id, "Username_" + id));
-
-                Message message = new Message(messageId, senderId, receiverId, content, timestamp);
-
-
-                Conversation conversation = findOrCreateConversation(sender, receiver);
-                conversation.addMessage(message);
-            }
-        } catch (IOException e) {
-            System.err.println("Error loading conversations: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.err.println("Error parsing timestamp in conversations file: " + e.getMessage());
-        }
-    }
-
-    private void saveConversations() {
-        try (PrintWriter writer = new PrintWriter(new File(CHAT_HISTORY_DIRECTORY + conversationsFile))) {
-            for (Conversation conv : conversations) {
-
-                for (Message msg : conv.messages) {
-                    writer.println(msg.senderId + "," + msg.receiverId + "," + msg.messageId + "," + msg.content);
+                if (line.equals(chatIdPattern)) {
+                    isCurrentChat = true; // Start reading messages for the current chat history
+                    continue;
+                }
+                if (isCurrentChat && line.startsWith("Messages:")) {
+                    while ((line = reader.readLine()) != null && !line.trim().isEmpty()) {
+                        // Parse the message and add to loadedMessages
+                        try {
+                            Message message = Message.parseMessage(line);
+                            loadedMessages.add(message);
+                        } catch (Exception e) {
+                            System.err.println("Error parsing message: " + e.getMessage());
+                        }
+                    }
+                    break; // Stop reading after collecting all messages for this chat history
+                }
+                if (line.startsWith("ChatID: ")) {
+                    isCurrentChat = false; // Encountered a new chat history
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error saving conversations: " + e.getMessage());
+            System.err.println("Error reading chat history file: " + e.getMessage());
+        }
+
+        return loadedMessages;
+    }
+
+
+    public static void saveChatHistories(ArrayList<ChatHistory> chatHistories) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
+            for (ChatHistory chatHistory : chatHistories) {
+                writer.write("ChatID: " + chatHistory.getChatId());
+                writer.newLine();
+                writer.write("Participants: " + chatHistory.getParticipantOne().getUsername() + ", " + chatHistory.getParticipantTwo().getUserId());
+                writer.newLine();
+                writer.write("Messages:");
+                writer.newLine();
+                for (Message message : chatHistory.getMessages()) {
+                    writer.write(message.toString());
+                    writer.newLine();
+                }
+                writer.newLine(); // Separator between chat histories
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving chat histories: " + e.getMessage());
         }
     }
 
-    public static void main(String[] args) {
+    public static boolean updateChatHistories(ChatHistory newChatHistory) {
+        boolean found = false;
+        for (int i = 0; i < chatHistories.size(); i++) {
+            ChatHistory existingChatHistory = chatHistories.get(i);
+            if (existingChatHistory.getChatId().equals(newChatHistory.getChatId())) {
+                chatHistories.set(i, newChatHistory);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            chatHistories.add(newChatHistory);
+        }
+        return updateChatHistoriesFile();
     }
+
+    private static boolean updateChatHistoriesFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, false))) {
+            for (ChatHistory chatHistory : chatHistories) {
+                writer.write("ChatID: " + chatHistory.getChatId());
+                writer.newLine();
+                writer.write("Participants: " + chatHistory.getParticipantOne().getUsername() + ", " + chatHistory.getParticipantTwo().getUserId());
+                writer.newLine();
+                writer.write("Messages:");
+                writer.newLine();
+                for (Message message : chatHistory.getMessages()) {
+                    writer.write(message.toString());
+                    writer.newLine();
+                }
+                writer.newLine(); // Separator between chat histories
+            }
+            return true;
+        } catch (IOException e) {
+            System.err.println("Error updating chat histories file: " + e.getMessage());
+            return false;
+        }
+    }
+
 }
