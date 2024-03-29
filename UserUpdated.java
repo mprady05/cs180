@@ -2,7 +2,7 @@ import java.util.*;
 
 import java.util.ArrayList;
 
-public class UserUpdated {
+public class User {
     private String id;
     private String userName;
     private String firstName;
@@ -88,6 +88,13 @@ public class UserUpdated {
     public void setBlockList(ArrayList<User> blockList) {
         this.blockList = blockList;
     }
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
 
     @Override
     public String toString() {
@@ -159,14 +166,7 @@ public class UserUpdated {
         }
         return mutualFriends;
     }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
+    
     //mutualFriendsToString similar to Insta's following feature. Will be outputted in GUI
     public String mutualFriendsToString(ArrayList<User> mutuals) {
         ArrayList<User> mutual;
