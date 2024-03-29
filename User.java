@@ -8,8 +8,8 @@ public class User {
     private String email;
     private String password;
     private String photoId;
-    private ArrayList<String> friendList;
-    private ArrayList<String> blockList;
+    private ArrayList<User> friendList;
+    private ArrayList<User> blockList;
 
     public User (String id, String firstName, String lastName, String email, String password, String photoId,
                  ArrayList<String> friendList,ArrayList<String> blockList){
