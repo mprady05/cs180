@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class User implements BlockedUsers {
+public class BlockedAndFriends implements BlockedUsers {
     private ArrayList<User> friends;
     private ArrayList<User> blocked;
     private String username;
