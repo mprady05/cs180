@@ -45,13 +45,60 @@ public class User {
         return email;
     }
     public void setEmail(String email) {
-        this.email = email;
+        email = email.toLowerCase();
+        if (isValidEmail(email)) {
+            this.email = email;
+        } else {
+            throw new IllegalArgumentException("Invalid email format.");
+        }
     }
+
+    private boolean isValidEmail(String email) {
+        // Check if email contains '@' and ends with '.com'
+        int atIndex = email.indexOf('@');
+        int dotComIndex = email.lastIndexOf(".com");
+
+        return atIndex > 0 && dotComIndex == email.length() - 4 && atIndex < dotComIndex;
+    }
+    
     public String getPassword() {
         return password;
     }
-    public void setPassword(String password) {
+    public void setPassword(String password) throws IllegalArgumentException{
+        if (!isValidPassword(password)) {
+            throw new IllegalArgumentException("Invalid password format.");
+        }
         this.password = password;
+    }
+
+    public void setUsername(String username) {
+        // Ensure username has no '@' symbol and no capitalization
+        if (username != null && !username.contains("@")) {
+            this.username = username.toLowerCase();
+        } else {
+            throw new IllegalArgumentException("Invalid username format.");
+        }
+    }
+    private boolean isValidPassword(String password) {
+        // Minimum length of 6 characters
+        if (password.length() < 6) {
+            return false;
+        }
+
+        // At least one uppercase letter
+        Pattern uppercasePattern = Pattern.compile("[A-Z]");
+        Matcher uppercaseMatcher = uppercasePattern.matcher(password);
+        if (!uppercaseMatcher.find()) {
+            return false;
+        }
+
+        // At least one special character
+        Pattern specialCharPattern = Pattern.compile("[^A-Za-z0-9]");
+        Matcher specialCharMatcher = specialCharPattern.matcher(password);
+        if (!specialCharMatcher.find()) {
+            return false;
+        }
+        return true;
     }
     public String getPhotoId() {
         return photoId;
@@ -78,6 +125,8 @@ public class User {
         return this.id + "," +
                 this.firstName + "," +
                 this.lastName + "," +
-                this.email + "," + this.password;
+                this.email + "," +
+                this.username + "," +
+                this.password;
     }
 }
