@@ -1,4 +1,4 @@
-User.java
+User.java\n
 Fields:
 private String id
   An identification string for this user
