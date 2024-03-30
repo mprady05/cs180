@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.HashMap;
 
-public class UserDatabase {
+public class UserDatabase implements UserDatabaseInterface {
     private static HashMap<String,User> userMap = new HashMap<String,User>();
     public UserDatabase(){
         readUsersFromFile();
