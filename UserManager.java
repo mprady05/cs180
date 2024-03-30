@@ -276,29 +276,4 @@ public class UserManager {
         return String.format("Friends with: %s, %s, %s and %d others", mutual.getFirst().getUsername(), mutual.get(2).getUsername(),
                 mutual.getLast().getUsername(), numberMutual - 3);
     }
-
-    //Recommends friends save blocked users.
-    public ArrayList<User> recommendedFriends(User user) {
-        ArrayList<User> output = new ArrayList<>();
-
-        // Get the list of friends for the input user
-        ArrayList<User> userFriends = user.getFriendList();
-
-        // Iterate over the friends of the input user
-        for (User friend : userFriends) {
-            // Get the friends of each friend
-            ArrayList<User> friendFriends = friend.getFriendList();
-
-            // Iterate over the friends of each friend
-            for (User recommendedFriend : friendFriends) {
-                // Add the recommended friend to the output list if not already present
-                if (!userFriends.contains(recommendedFriend) && !output.contains(recommendedFriend) &&
-                        !user.getBlockList().contains(recommendedFriend))  {
-                    output.add(recommendedFriend);
-                }
-            }
-        }
-
-        return output;
-    }
 }
