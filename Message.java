@@ -1,7 +1,7 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Message {
+public class Message implements MessageInterface {
     private int messageId = 0; // each user has a uniqueID
     private final User sender;
     private final User recipient;
