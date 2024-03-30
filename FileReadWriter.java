@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
-public class FileReadWriter {
+public class FileReadWriter implements FileWriterInterface {
     public static void writeFile(String filePath, Map map) {
 
         Thread thread = new Thread( new Runnable() {
