@@ -6,15 +6,17 @@ public class User {
     private String password;
     private String photoId;
     private String username;
+    private ArrayList<User> friendList;
+    private ArrayList<User> blockList;
 
-    public User (String firstName, String lastName, String email, String password, String photoId, String username){
-    
+    public User (String id, String firstName, String lastName, String email, String password, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.photoId = photoId;
-        this.username = username;
+        this.friendList = friendList;
+        this.blockList = blockList;
     }
     public User (){
     }
@@ -55,6 +57,22 @@ public class User {
     }
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public ArrayList<User> getFriendList() {
+        return friendList;
+    }
+
+    public ArrayList<User> getBlockList() {
+        return blockList;
+    }
+
+    public void setFriendList(ArrayList<User> friendList) {
+        this.friendList = friendList;
+    }
+
+    public void setBlockList(ArrayList<User> blockList) {
+        this.blockList = blockList;
     }
 
     @Override
