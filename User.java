@@ -9,10 +9,9 @@ public class User {
     private ArrayList<User> friendList;
     private ArrayList<User> blockList;
 
-    public User (String id, String firstName, String lastName, String email, String password, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
+    public User (String id, String firstName, String lastName, String password, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.password = password;
         this.photoId = photoId;
         this.friendList = friendList;
@@ -79,7 +78,6 @@ public class User {
     public String toString() {
         return this.firstName + "," +
                 this.lastName + "," +
-                this.email + "," +
                 this.username + "," +
                 this.password;
     }
