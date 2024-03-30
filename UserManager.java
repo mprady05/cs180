@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UserManager {
+public class UserManager implements UserManagerInterface {
     private UserDatabase userDB = null;
 
     public UserManager(UserDatabase userDB) {
@@ -14,20 +14,14 @@ public class UserManager {
     public User createUser(Map<String, String> userMap) throws SMPException {
         String firstName = userMap.get("firstName");
         String lastName = userMap.get("lastName");
-        String password = userMap.get("password");
-        String email = userMap.get("email");
         String userName = userMap.get("userName");
+        String password = userMap.get("password");
+  
 
         if (firstName == null || lastName == null || password == null || email == null || userName == null) {
             throw new SMPException("Missing required user information.");
         }
-
-        User user = getUserByEmail(email);
-
-        if (getUserByEmail(email) != null) {
-            throw new SMPException("User with this email already exists.");
-        }
-
+        
         if (!isValidPassword(password)) {
             throw new SMPException("Invalid password format.");
         }
@@ -43,10 +37,7 @@ public class UserManager {
         if (UserDatabase.getUserByUsername(userName) != null) {
             throw new SMPException("Username already exists.");
         }
-
-        if (getUserByEmail(email) != null) {
-            throw new SMPException("Email already exists.");
-        }
+        
 
         if (user == null) {
             user = new User();
@@ -55,34 +46,16 @@ public class UserManager {
             user.setLastName(lastName);
             user.setUsername(userName.toLowerCase());
             user.setPassword(password);
-            user.setEmail(email);
 
             this.userDB.saveUser(userName, user);
         }
         return user;
     }
-
-    private User getUserByEmail(String email) {
-        HashMap<String, User> userMap = this.userDB.getUserMap();
-
-        if (userMap.isEmpty()) {
-            return null;
-        }
-
-        for (User user : userMap.values()) {
-            if (user.getEmail().trim().equals(email)) {
-                return user;
-            }
-        }
-
-        return null;
-    }
-
+    
 
     public String updateUser(String username, Map<String, String> userMap) throws SMPException {
         String firstName = userMap.get("firstName");
         String lastName = userMap.get("lastName");
-        String newEmail = userMap.get("email");
 
         User user = UserDatabase.getUserByUsername(username);
 
@@ -93,20 +66,7 @@ public class UserManager {
         // Update first name and last name
         user.setFirstName(firstName);
         user.setLastName(lastName);
-
-        // Update email if it's different from the current email
-        if (newEmail != null && !newEmail.equals(user.getEmail())) {
-            // Validate the new email format
-            if (!isValidEmail(newEmail)) {
-                throw new SMPException("Invalid email format.");
-            }
-            // Check if the new email already exists
-            if (getUserByEmail(newEmail) != null) {
-                throw new SMPException("Email already exists.");
-            }
-            // Update the email
-            user.setEmail(newEmail);
-        }
+        
 
         // Save the updated user
         this.userDB.saveUser(user.getUsername(), user);
@@ -131,7 +91,7 @@ public class UserManager {
         }
     }
 
-    
+
 
     public boolean resetPassword(String username, String newPassword) throws SMPException {
         User user = UserDatabase.getUserByUsername(username);
