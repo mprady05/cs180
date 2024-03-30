@@ -188,13 +188,4 @@ public class User {
         return String.format("Friends with: %s, %s, %s and %d others", mutual.getFirst().getUserName(), mutual.get(2).getUserName(),
                 mutual.getLast().getUserName(), numberMutual - 3);
     }
-    //Recommends friends save blocked users.
-    public ArrayList<User> recommendedFriends(User user) {
-        ArrayList<User> friends = new ArrayList<>();
-        ArrayList<User> output = new ArrayList<>();
-        for (int i = 0; i < users.getSize(); i++) {
-            user.get(i).getFriends();
-        }
-        return output;
-    }
 }
