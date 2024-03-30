@@ -7,13 +7,14 @@ public class User {
     private String photoId;
     private String username;
 
-    public User (String firstName, String lastName, String email, String password, String photoId){
+    public User (String firstName, String lastName, String email, String password, String photoId, String username){
     
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.photoId = photoId;
+        this.username = username;
     }
     public User (){
     }
