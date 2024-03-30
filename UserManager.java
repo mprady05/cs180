@@ -77,14 +77,14 @@ public class UserManager {
 
         return null;
     }
-    
 
-    public String updateUser(String userId, Map<String, String> userMap) throws SMPException {
+
+    public String updateUser(String username, Map<String, String> userMap) throws SMPException {
         String firstName = userMap.get("firstName");
         String lastName = userMap.get("lastName");
         String newEmail = userMap.get("email");
 
-        User user = getUserById(userId);
+        User user = UserDatabase.getUserByUsername(username);
 
         if (user == null) {
             throw new SMPException("User not found.");
@@ -118,7 +118,7 @@ public class UserManager {
         String enteredUsername = userMap.get("username");
         String password = userMap.get("password");
 
-        User user = userDB.getUserByUsername(enteredUsername);
+        User user = UserDatabase.getUserByUsername(enteredUsername);
 
         if (user != null) {
             if (user.getUsername().equalsIgnoreCase(enteredUsername) && user.getPassword().equals(password)) {
@@ -131,14 +131,10 @@ public class UserManager {
         }
     }
 
+    
 
-    public User getUserById(String Id) {
-        User user = this.userDB.getUserById(Id);
-        return user;
-    }
-
-    public boolean resetPassword(String userId, String newPassword) throws SMPException {
-        User user = this.userDB.getUserById(userId);
+    public boolean resetPassword(String username, String newPassword) throws SMPException {
+        User user = UserDatabase.getUserByUsername(username);
 
         if (user == null) {
             return false; // User not found
