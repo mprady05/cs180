@@ -14,21 +14,17 @@ public class UserManager implements UserManagerInterface {
     public User createUser(Map<String, String> userMap) throws SMPException {
         String firstName = userMap.get("firstName");
         String lastName = userMap.get("lastName");
-        String userName = userMap.get("userName");
         String password = userMap.get("password");
-  
+        String userName = userMap.get("userName");
 
-        if (firstName == null || lastName == null || password == null || email == null || userName == null) {
+        if (firstName == null || lastName == null || password == null || userName == null) {
             throw new SMPException("Missing required user information.");
         }
-        
+
         if (!isValidPassword(password)) {
             throw new SMPException("Invalid password format.");
         }
 
-        if (!isValidEmail(email)) {
-            throw new SMPException("Invalid email format.");
-        }
 
         if (!isValidUsername(userName)) {
             throw new SMPException("Invalid Username format.");
@@ -37,8 +33,9 @@ public class UserManager implements UserManagerInterface {
         if (UserDatabase.getUserByUsername(userName) != null) {
             throw new SMPException("Username already exists.");
         }
-        
 
+
+        User user = UserDatabase.getUserByUsername(userName);
         if (user == null) {
             user = new User();
 
@@ -51,7 +48,7 @@ public class UserManager implements UserManagerInterface {
         }
         return user;
     }
-    
+
 
     public String updateUser(String username, Map<String, String> userMap) throws SMPException {
         String firstName = userMap.get("firstName");
@@ -66,7 +63,7 @@ public class UserManager implements UserManagerInterface {
         // Update first name and last name
         user.setFirstName(firstName);
         user.setLastName(lastName);
-        
+
 
         // Save the updated user
         this.userDB.saveUser(user.getUsername(), user);
