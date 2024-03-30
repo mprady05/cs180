@@ -1,6 +1,3 @@
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Message {
     private int messageId = 0; // each user has a uniqueID
     private final User sender;
@@ -8,7 +5,7 @@ public class Message {
     private final String content;
     private static int nextID = 1;
 
-    public Message(User sender, User recipient, String content) {
+    public Message(User sender, String content) {
         this.messageId += nextID;
         this.sender = sender;
         this.recipient = recipient;
@@ -42,6 +39,6 @@ public class Message {
         User sender = User.getUserById(parts[1].trim()); // todo: need to create a static getUserByID method in UserDatabase/Manager class
         User recipient = User.getUserById(parts[2].trim()); // todo: need to create a static getUserByID method in UserDatabase/Manager class
         String content = parts[3].substring(1, parts[3].length() - 1);
-        return new Message(sender, recipient, content);
+        return new Message(sender, content);
     }
 }

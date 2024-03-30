@@ -3,7 +3,7 @@ import java.util.*;
 
 
 public class SocialMediaChatService {
-    private static String FILE_PATH = "ChatHistories.txt";
+    public static String FILE_PATH = "ChatHistories.txt";
     private static ArrayList<ChatHistory> chatHistories = new ArrayList<>();
 
     public SocialMediaChatService() {

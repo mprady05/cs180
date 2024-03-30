@@ -1,22 +1,22 @@
+
 import java.util.ArrayList;
 public class User {
     private String firstName;
     private String lastName;
-    private String email;
     private String password;
     private String photoId;
     private String username;
+    private ArrayList<User> friendList;
+    private ArrayList<User> blockList;
 
-    public User (String firstName, String lastName, String email, String password, String photoId, String username){
-    
+    public User (String firstName, String lastName, String password, String username, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.password = password;
         this.photoId = photoId;
+        this.friendList = friendList;
+        this.blockList = blockList;
         this.username = username;
-    }
-    public User (){
     }
 
     public String getFirstName() {
@@ -31,13 +31,6 @@ public class User {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -57,11 +50,26 @@ public class User {
         this.username = username;
     }
 
+    public ArrayList<User> getFriendList() {
+        return friendList;
+    }
+
+    public ArrayList<User> getBlockList() {
+        return blockList;
+    }
+
+    public void setFriendList(ArrayList<User> friendList) {
+        this.friendList = friendList;
+    }
+
+    public void setBlockList(ArrayList<User> blockList) {
+        this.blockList = blockList;
+    }
+
     @Override
     public String toString() {
         return this.firstName + "," +
                 this.lastName + "," +
-                this.email + "," +
                 this.username + "," +
                 this.password;
     }
