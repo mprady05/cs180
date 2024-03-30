@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-public class User {
+public class User implements UserInterface {
     private String firstName;
     private String lastName;
     private String password;
