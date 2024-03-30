@@ -9,13 +9,14 @@ public class User {
     private ArrayList<User> friendList;
     private ArrayList<User> blockList;
 
-    public User (String id, String firstName, String lastName, String password, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
+    public User (String firstName, String lastName, String password, String username, String photoId, ArrayList<User> friendList, ArrayList<User> blockList ){
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.photoId = photoId;
         this.friendList = friendList;
         this.blockList = blockList;
+        this.username = username;
     }
     public User (){
     }
