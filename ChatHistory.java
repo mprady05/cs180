@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ChatHistory {
+public class ChatHistory implements ChatHistoryInterface {
     private final String chatId;
     private final User participantOne;
     private final User participantTwo;
