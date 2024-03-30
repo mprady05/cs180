@@ -68,16 +68,16 @@ public class User {
         this.photoId = photoId;
     }
 
-    public ArrayList<String> getFriendList() {
+    public ArrayList<User> getFriendList() {
         return friendList;
     }
-    public ArrayList<String> getBlockList() {
+    public ArrayList<User> getBlockList() {
         return blockList;
     }
-    public void setFriendList(ArrayList<String> friendList) {
+    public void setFriendList(ArrayList<User> friendList) {
         this.friendList = friendList;
     }
-    public void setBlockList(ArrayList<String> blockList) {
+    public void setBlockList(ArrayList<User> blockList) {
         this.blockList = blockList;
     }
 
