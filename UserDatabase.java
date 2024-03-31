@@ -24,9 +24,9 @@ public class UserDatabase implements UserDatabaseInterface {
         return null; // User not found
     }
 
-    public boolean deleteUser(String id) {
-        if (userMap.containsKey(id)) {
-            userMap.remove(id);
+    public boolean deleteUser(String username) {
+        if (userMap.containsKey(username)) {
+            userMap.remove(username);
             FileReadWriter.writeFile("User.db", userMap); // Call FileReadWriter to update the file
             return true;
         }
