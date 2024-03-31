@@ -46,11 +46,14 @@ Set this user’s blocked list to the parameter
 
 UserManager.java
 The UserManager.java class will be responsible with user side algorithms within the application. Some of the features that are included are creating a new user, updating the information of the user, authenticating the login through a password, resetting the user’s passwords, as well as managing who the user will be blocking or adding as friends. Within the entirety of the code, this class will interact mainly with the UserDatabase in order to store information about each user as well as retrieve the necessary information to perform permutations such as updating information or making sure that the new user does not already have an account.
+
 Fields:
 Private UserDatabase userDB: The user database, set to null
+
 Constructors:
 Public UserManager(UserDatabase userDB)
 Instantiate this userDB to the passed in argument
+
 Methods:
 public User createUser(Map<String, String> userMap) throws SMPException
 This method will be used to create the user object. 
