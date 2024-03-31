@@ -557,3 +557,81 @@ void deleteComment(String commentId, String requesterUsername) throws SMPExcepti
 String toString()
 
 # Comment.java
+
+This class will implement the CommentInterface. The main purpose of this class is to create a comment object with the fields of the commentId, the author of the comment, the contents of the comment, and the number of upvotes and downvotes. It will interact with the Posts and other comments classes to create a seamless side of the application where users will be able to comment on other user's posts as well as like or dislike the comments of other users. Some of the testing that was performed on this class was passing in fake parameters to create a comment object and making sure that the constructors worked by testing it with expected outputs using the getters as well as making sure the toString is formatted correctly.
+
+## Fields
+
+private String commentId: The identification number of this comment
+
+private User author: The user who posted this comment
+
+private String content: The content of this comment
+
+private int upvotes: The number of upvotes on this comment
+
+private int downvotes: The number of downvotes on this comment
+
+## Constructors
+
+### public Comment(User author, String content, int upvotes, int downvotes)
+
+-   Instantiate the commentId to a random UUID
+
+-   Instantiate the other fields to the parameters that are passed in
+
+## public Comment(String commentId, User author, String content, int upvotes, int downvotes)
+
+-   Instantiate the fields to the parameters that are passed in
+
+## Methods
+
+### public String getCommentID()
+
+-   Return this commentId
+
+### public User getAuthor()
+
+-   Return this author
+
+### public String getContent()
+
+-   Return this content
+
+### public int getUpvotes()
+
+-   Return this number of upvotes
+
+### public int getDownvotes()
+
+-   Return this number of downvotes
+
+### public String toString()
+
+-   Return the String in the format of commentId:~:the author's username:~:content:~:upvotes:~:downvotes
+
+# CommentInterface.java
+
+An interface for the Comment class/
+
+## Methods
+
+String getCommentId()
+
+User getAuthor()
+
+String getContent()
+
+int getUpvotes()
+
+int getDownvotes()
+
+String toString()
+
+# CommentsManager.java
+
+## Fields
+
+## Constructors
+
+## Methods
