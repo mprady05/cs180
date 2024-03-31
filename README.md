@@ -94,7 +94,7 @@ void setFirstName(String firstName)
 
 String getLastName()
 
-void setLastName(String lastName);
+void setLastName(String lastName)
 
 String getPassword()
 
@@ -114,7 +114,7 @@ ArrayList<User> getBlockList()
 
 void setFriendList(ArrayList<User> friendList)
 
-void setBlockList(ArrayList<User> blockList);
+void setBlockList(ArrayList<User> blockList)
 
 # UserManager.java
 
@@ -256,7 +256,7 @@ boolean unblockUser(User userBlocked)
 
 ArrayList<User> MutualFriends(User one, User two)
 
-String mutualFriendsToString(ArrayList<User> mutuals);
+String mutualFriendsToString(ArrayList<User> mutuals)
 
 # UserDatabase.java
 
@@ -320,7 +320,7 @@ boolean deleteUser(String id)
 
 HashMap<String, User> getUserMap()
 
-void setUserMap(HashMap<String, User> userMap);
+void setUserMap(HashMap<String, User> userMap)
 
 # SMPException.java
 
@@ -436,6 +436,124 @@ boolean updatePost(Post updatedPost) throws SMPException
 
 Post searchPost(String postId)
 
-String getPostIdFromComment(Comment comment);
+String getPostIdFromComment(Comment comment)
 
 # Post.java
+
+This class will implement that PostInterface. The main functionality is to create a post that the User wishes to create. Some other important functionality include being able to add and delete comments as well as alter the number of upvotes and downvotes on this post. In order to make sure all of the code works, fake parameters were passed into the methods to make sure that what was being returned was what was expected. Furthermore, after making the new posts, we made sure that the content, upvotes, downvotes, comments list, post id, and creator all matched with the fake post object that was created. Within the grand scheme of things, this class will be called upon whenever a user decides to create a new post, alter the post, control comment flow, and delete comments/
+
+## Fields
+
+private final String postId: A agenerated string for an id of the post
+
+private final User creator: The user who created the post
+
+private final String content: What is included inside of the post
+
+private int upvotes: The number of upvotes on the post
+
+private int downvotes: The number of downvotes on the post
+
+private ArrayList<String> commendIds: The id's of the comments on the post
+
+## Constructors
+
+### public Post(User creator, String content, int upvotes, int downvotes, ArrayList<String> comment Ids)
+
+-   Instantiate this postId to a random UUID
+
+-   Instantiate all other fields to the parameters that are passed in
+
+### public Post(String postId, User creator, String content, int upvotes, int downvotes, ArrayList<String> commentIds)
+
+-   A constructor that will create a post with an existing Id
+
+-   Instantiate the fields to the parameters
+
+## Methods
+
+### public String getPostId
+
+-   Return this postId
+
+### public User getCreator
+
+-   Return this creator
+
+### public String getContent
+
+-   Return this content
+
+### public int getDownvotes
+
+-   Return the number of this downvotes
+
+### public int getUpdates
+
+-   Return the number of this upvotes
+
+### public ArrayList<String> getComments
+
+-   Return this ArrayList of comments
+
+### public void addUpvotes() throws SMPException
+
+-   Increase the number of this upvotes by 1 and update the number of upvotes in the post
+
+### public void addDownvote() throws SMPException
+
+-   Increase the number of this downvotes by 1 and update the number of downvotes in the post
+
+### public void addComment(String author, String content) throws SMPException
+
+-   Create a comment in the CommentManager and generate a commentId
+
+-   Add the commentId to this commentIds and update the post
+
+-   If the commentId is null or empty, throw a new SMPException with the message "Could not add comment."
+
+### public void deleteComment(String commentId, String requesterUsername) throws SMPException
+
+-   Check that the User who created the comment is the same as the User who is deleting the comment or is the User who created the post
+
+-   Delete the comment from the post using the commentId
+
+-   If the comment is unable to be deleted, throw a new SMPException with the message "Failed to delete comment from post."
+
+-   If the comment does not exist, throw a new SMPException with the message "Comment not found."
+
+### public String toString()
+
+-   Return a string in the format of postId:~:content:~:upvotes:~:downvotes[commentIds]
+
+-   Each comment Id should be separated with a :~:
+
+# PostInterface.java
+
+An interface for the Post class.
+
+## Methods
+
+String getPostId()
+
+User getCreator()
+
+String getContent()
+
+int getUpvotes()
+
+int getDownvotes()
+
+ArrayList<String> getComments()
+
+void addUpvote() throws SMPException
+
+void addDownvote() throws SMPException
+
+void addComment(User author, String content) throws SMPException
+
+void deleteComment(String commentId, String requesterUsername) throws SMPException
+
+String toString()
+
+# Comment.java
