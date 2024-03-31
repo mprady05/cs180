@@ -307,3 +307,25 @@ public UserDatabase
 -   Read from the "User.db" file and populate the userMap with the users from the file
 
 -   Print the stack trace for any IOExceptions
+
+# UserDatabaseInterface.java
+An interface for the UserDatabase class
+
+## Methods
+
+boolean saveUser(String username, User user)
+
+boolean deleteUser(String id)
+
+HashMap<String, User> getUserMap()
+
+void setUserMap(HashMap<String, User> userMap);
+
+
+# SMPException.java
+Exception to be thrown when there is bad data/inputs
+
+## Constructors
+### SMPException(String message)
+-   Calls the constructor of the exception superclass with the message passed in as the parameter
+
