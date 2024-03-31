@@ -8,8 +8,8 @@ public interface PostInterface {
   int getUpvotes();
   int getDownvotes();
   ArrayList<String> getComments();
-  void addUpvotes() throws SMPException;
-  void addDownvotes() throws SMPException;
+  void addUpvote() throws SMPException;
+  void addDownvote() throws SMPException;
   void addComment(String author, String content) throws SMPException;
   void deleteCommment(String commendId, String requesterUsername) throws SMPException;
   String toString();
