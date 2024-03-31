@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Post {
+public class Post implements PostInterface{
     private final String postId;
     private final User creator;
     private final String content;
