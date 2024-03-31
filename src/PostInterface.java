@@ -9,7 +9,7 @@ public interface PostInterface {
     ArrayList<String> getComments();
     void addUpvote() throws SMPException;
     void addDownvote() throws SMPException;
-    void addComment(User author, String content) throws SMPException;
+    void addComment(String author, String content) throws SMPException;
     void deleteComment(String commentId, String requesterUsername) throws SMPException;
     String toString();
 }
