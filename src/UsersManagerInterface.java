@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Map;
 
-public interface UserManagerInterface {
+public interface UsersManagerInterface {
     User createUser(Map<String, String> userMap) throws SMPException;
     String updateUser(String username, Map<String, String> userMap) throws SMPException;
     String login(Map<String, String> userMap) throws SMPException;
