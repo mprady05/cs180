@@ -1,240 +1,222 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.*;
 
-public class UserManager implements UserManagerInterface {
-    private UserDatabase userDB = null;
+public class UsersManager {
+    // FIELDS
+    private static final String USER_FILE = "UsersDatabase.txt"; // replace with the file on your local device
+    public static ArrayList<User> users = new ArrayList<>();
 
-    public UserManager(UserDatabase userDB) {
-        this.userDB = userDB;
+    /**
+     * Constructor that initializes the UsersManager by reading the users from the database file.
+     * @throws SMPException if there's an error reading the users database file.
+     */
+    public UsersManager() throws SMPException {
+        readUsersDatabaseFile();
     }
 
-    public User createUser(Map<String, String> userMap) throws SMPException {
-        String firstName = userMap.get("firstName");
-        String lastName = userMap.get("lastName");
-        String password = userMap.get("password");
-        String userName = userMap.get("userName");
+    /**
+     * Returns the current list of users.
+     * @return A list of User objects representing all users.
+     */
+    public static ArrayList<User> getUsers() {
+        return users;
+    }
 
-        if (firstName == null || lastName == null || password == null || userName == null) {
-            throw new SMPException("Missing required user information.");
+    /**
+     * Reads users from the database file and adds them to the 'users' list.
+     * Each line in the file represents a single user's data, which is parsed and converted into a User object.
+     * @throws SMPException if there's an error reading the file or parsing user data.
+     */
+    public static void readUsersDatabaseFile() throws SMPException {
+        users.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    User user = stringToUser(line);
+                    if (user != null) {
+                        users.add(user);
+                    }
+                } catch (Exception e) {
+                    throw new SMPException("Error parsing user from line: " + e.getMessage());
+                }
+            }
+        } catch (IOException | SMPException e) {
+            throw new SMPException("Error parsing user from line: " + e.getMessage());
         }
+    }
 
-        if (!isValidPassword(password)) {
-            throw new SMPException("Invalid password format.");
+    /**
+     * Converts a line from the users database file into a User object.
+     * @param line A string representing a line from the users database file.
+     * @return A User object created from the parsed line.
+     * @throws SMPException if parsing fails due to incorrect format.
+     */
+    private static User stringToUser(String line) throws SMPException {
+        try {
+            String[] parts = line.split(";");
+            String firstName = parts[0];
+            String lastName = parts[1];
+            String username = parts[2];
+            String password = parts[3];
+            ArrayList<String> friendList = new ArrayList<>();
+            if (parts[4].length() > 2) { // Checks if there are friends listed
+                String friendListStr = parts[4].substring(1, parts[4].length() - 1);
+                for (String friend : friendListStr.split(",")) {
+                    friendList.add(friend.trim());
+                }
+            }
+            ArrayList<String> blockList = new ArrayList<>();
+            if (parts[5].length() > 2) { // Checks if there are blocked users listed
+                String blockListStr = parts[5].substring(1, parts[5].length() - 1);
+                for (String blocked : blockListStr.split(",")) {
+                    blockList.add(blocked.trim());
+                }
+            }
+            ArrayList<String> postIds = new ArrayList<>();
+            if (parts[6].length() > 2) {
+                String postIdsStr = parts[6].substring(1, parts[6].length() - 1);
+                for (String postId : postIdsStr.split(",")) {
+                    postIds.add(postId.trim());
+                }
+            }
+            return new User(firstName, lastName, username, password, friendList, blockList, postIds);
+        } catch (NumberFormatException e) {
+            throw new SMPException("Error parsing file.");
         }
+    }
 
-
-        if (!isValidUsername(userName)) {
-            throw new SMPException("Invalid Username format.");
+    /**
+     * Writes the current list of users into the users database file.
+     * Converts each User object into a string representation and writes it to the file.
+     */
+    public static void writeUsersDatabaseFile() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE))) {
+            for (User user : users) {
+                String userInfo = user.getFirstName() + ";" +
+                        user.getLastName() + ";" +
+                        user.getUsername() + ";" +
+                        user.getPassword() + ";";
+                userInfo += "(";
+                for (int i = 0; i < user.getFriendList().size(); i++) {
+                    userInfo += user.getFriendList().get(i);
+                    if (i < user.getFriendList().size() - 1) {
+                        userInfo += ",";
+                    }
+                }
+                userInfo += ");";
+                userInfo += "(";
+                for (int i = 0; i < user.getBlockList().size(); i++) {
+                    userInfo += user.getBlockList().get(i);
+                    if (i < user.getBlockList().size() - 1) {
+                        userInfo += ",";
+                    }
+                }
+                userInfo += ");";
+                userInfo += "(";
+                for (int i = 0; i < user.getPostIds().size(); i++) {
+                    userInfo += user.getPostIds().get(i);
+                    if (i < user.getPostIds().size() - 1) {
+                        userInfo += ",";
+                    }
+                }
+                userInfo += ")";
+                writer.write(userInfo);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing to Users Database File: " + e.getMessage());
         }
+    }
 
-        if (UserDatabase.getUserByUsername(userName) != null) {
+    /**
+     * Registers a new user by adding them to the 'users' list, if the username does not already exist.
+     * @param firstName The first name of the user.
+     * @param lastName The last name of the user.
+     * @param username The username of the user.
+     * @param password The password of the user.
+     * @param friendList A list of usernames representing the user's friends.
+     * @param blockList A list of usernames representing the users blocked by the user.
+     * @param postIds A list of post IDs created by the user.
+     * @return true if the user was successfully registered; false if the username already exists.
+     * @throws SMPException if the username already exists.
+     */
+    public static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException {
+        if (doesUsernameExist(username)) {
             throw new SMPException("Username already exists.");
         }
-
-
-        User user = UserDatabase.getUserByUsername(userName);
-        if (user == null) {
-            user = new User();
-
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setUsername(userName.toLowerCase());
-            user.setPassword(password);
-
-            this.userDB.saveUser(userName, user);
-        }
-        return user;
-    }
-
-
-    public String updateUser(String username, Map<String, String> userMap) throws SMPException {
-        String firstName = userMap.get("firstName");
-        String lastName = userMap.get("lastName");
-
-        User user = UserDatabase.getUserByUsername(username);
-
-        if (user == null) {
-            throw new SMPException("User not found.");
-        }
-
-        // Update first name and last name
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-
-
-        // Save the updated user
-        this.userDB.saveUser(user.getUsername(), user);
-
-        return user.getUsername();
-    }
-
-    public String login(Map<String, String> userMap) throws SMPException {
-        String enteredUsername = userMap.get("username");
-        String password = userMap.get("password");
-
-        User user = UserDatabase.getUserByUsername(enteredUsername);
-
-        if (user != null) {
-            if (user.getUsername().equalsIgnoreCase(enteredUsername) && user.getPassword().equals(password)) {
-                return user.getUsername();
-            } else {
-                throw new SMPException("Invalid username or password.");
-            }
-        } else {
-            throw new SMPException("Invalid username or password.");
-        }
-    }
-
-
-
-    public boolean resetPassword(String username, String newPassword) throws SMPException {
-        User user = UserDatabase.getUserByUsername(username);
-        
-        if (user == null) {
-            return false; // User not found
-        }
-
-        // Check if the new password is different from the old one
-        if (newPassword.equals(user.getPassword())) {
-            throw new SMPException("New password cannot be the same as the old one.");
-        }
-        
-        //Check if the new password is valid
-        if (!isValidPassword(newPassword)){
-            return false;
-        }
-        // Update the password
-        user.setPassword(newPassword);
-        this.userDB.saveUser(user.getUsername(), user);
-
+        User newUser = new User(firstName, lastName, username, password, friendList, blockList, postIds);
+        users.add(newUser);
         return true;
     }
-
-    private boolean isValidPassword(String password) {
-        // Minimum length of 6 characters
-        if (password.length() < 6) {
-            return false;
-        }
-
-        // At least one uppercase letter
-        Pattern uppercasePattern = Pattern.compile("[A-Z]");
-        Matcher uppercaseMatcher = uppercasePattern.matcher(password);
-        if (!uppercaseMatcher.find()) {
-            return false;
-        }
-
-        // At least one special character
-        Pattern specialCharPattern = Pattern.compile("[^A-Za-z0-9]");
-        Matcher specialCharMatcher = specialCharPattern.matcher(password);
-        if (!specialCharMatcher.find()) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isValidEmail(String email) {
-        // Check if email contains '@' and ends with '.com'
-        int atIndex = email.indexOf('@');
-        int dotComIndex = email.lastIndexOf(".com");
-
-        return atIndex > 0 && dotComIndex == email.length() - 4 && atIndex < dotComIndex;
-    }
-
-    private boolean isValidUsername(String username) {
-        return username != null && !username.contains("@");
-    }
-
-    //Removes the user as a friend from this user
-    public boolean addFriend(User user, User friend) {
-
-        if (user.getFriendList().contains(friend)) {
-            return false; // User is already a friend
-        } else {
-            user.getFriendList().add(friend); // Add the User object to the friendList
-            return true; // Successfully added friend
-        }
-    }
-
-    //Removes the user as a friend from this user
-    public boolean removeFriend(User friend) {
-        try {
-            for (int i = 0; i < friend.getFriendList().size(); i++) {
-                if (friend.getFriendList().get(i).equals(friend)) {
-                    friend.getFriendList().remove(i); // Remove the friend at index i
-                    return true;
-                }
+    private static boolean doesUsernameExist(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return true;
             }
-        } catch (Exception e) {
-            return false; // Handle exceptions, such as IndexOutOfBoundsException
-        }
-        return false; // Return false if the friend was not found
-    }
-
-    //Blocks user from this user
-    public boolean blockUser(User userBlocked) {
-        if (userBlocked.getBlockList().contains(userBlocked)) {
-            return false;
-        } else {
-            userBlocked.getBlockList().add(userBlocked);
-            return true;
-        }
-    }
-
-    //Unblocks user from this user
-    public boolean unblockUser(User userBlocked) {
-        try {
-            for (int i = 0; i < userBlocked.getBlockList().size(); i++) {
-                if (userBlocked.getBlockList().get(i).equals(userBlocked)) {
-                    userBlocked.getBlockList().remove(userBlocked);
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            return false;
         }
         return false;
     }
 
-    //Finds mutual friends between two users
-    public ArrayList<User> MutualFriends(User one, User two) {
-        if (one.getFriendList() == null || two.getFriendList() == null) {
-            return null;
-        }
-        ArrayList<User> friendOneFriends = new ArrayList<>();
-        friendOneFriends = one.getFriendList();
-        ArrayList<User> friendTwoFriends = new ArrayList<>();
-        friendTwoFriends = two.getFriendList();
-        ArrayList<User> mutualFriends = new ArrayList<>();
-        for (int i = 0; i < friendOneFriends.size(); i++) {
-            if (friendTwoFriends.contains(friendOneFriends.get(i))) {
-                mutualFriends.add(friendOneFriends.get(i));
+    /**
+     * Attempts to log in a user with the given username and password.
+     * @param username The username of the user attempting to log in.
+     * @param password The password provided by the user.
+     * @return A User object if the login is successful; null if the credentials do not match any user.
+     * @throws SMPException if there's an error during the login process.
+     */
+    public static User loginUser(String username, String password) throws SMPException {
+        for (User user : users) {
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user;
             }
         }
-        return mutualFriends;
+        return null;
     }
 
-    //mutualFriendsToString similar to Insta's following feature. Will be outputted in GUI
-    public String mutualFriendsToString(ArrayList<User> mutuals) {
-        ArrayList<User> mutual;
-        mutual = mutuals;
-        if (mutual.isEmpty()) {
-            return null;
-        }
-        int numberMutual = mutual.size();
-        if (numberMutual <= 3) {
-            if (numberMutual == 1) {
-                return String.format("Friends with: %s", mutual.getFirst().getUsername());
-            } else if (numberMutual == 2) {
-                return String.format("Friends with: %s, %s", mutual.getFirst().getUsername(), mutual.getLast().getUsername());
-            } else {
-                return String.format("Friends with %s, %s, %s", mutual.getFirst().getUsername(), mutual.get(2).getUsername(),
-                        mutual.getLast().getUsername());
+    /**
+     * Updates the information of an existing user in the 'users' list.
+     * @param updatedUser A User object containing the updated information.
+     * @return true if the user was successfully updated; false if the user could not be found.
+     * @throws SMPException if the user to be updated cannot be found.
+     */
+    public static boolean updateUser(User updatedUser) throws SMPException {
+        int userIndex = -1;
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).getUsername().equals(updatedUser.getUsername())) {
+                userIndex = i;
+                break;
             }
         }
-        return String.format("Friends with: %s, %s, %s and %d others", mutual.getFirst().getUsername(), mutual.get(2).getUsername(),
-                mutual.getLast().getUsername(), numberMutual - 3);
+        if (userIndex != -1) {
+            users.set(userIndex, updatedUser);
+            return true;
+        } else {
+            throw new SMPException("User not found.");
+        }
     }
+
+    /**
+     * Searches for a user by their username.
+     * @param username The username of the user to search for.
+     * @return A User object if a user with the specified username exists; null otherwise.
+     */
+    public static User searchUser(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Clears all users from the 'users' list. Used for testing.
+     */
+    public static void clearAllUsers() {
+        UsersManager.users.clear();
+    }
+
 }
