@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 public class PostsManager {
-    private static final String POST_FILE = "C:\\Users\\Hashim\\IdeaProjects\\Project05New.java\\src\\PostsDatabase.txt";
+    private static final String POST_FILE = "PostsDatabase.txt"; // use local file path
     private static ArrayList<Post> posts = new ArrayList<>();
 
     /**
