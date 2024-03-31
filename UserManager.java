@@ -92,7 +92,7 @@ public class UserManager implements UserManagerInterface {
 
     public boolean resetPassword(String username, String newPassword) throws SMPException {
         User user = UserDatabase.getUserByUsername(username);
-
+        
         if (user == null) {
             return false; // User not found
         }
@@ -101,7 +101,11 @@ public class UserManager implements UserManagerInterface {
         if (newPassword.equals(user.getPassword())) {
             throw new SMPException("New password cannot be the same as the old one.");
         }
-
+        
+        //Check if the new password is valid
+        if (!isValidPassword(newPassword)){
+            return false;
+        }
         // Update the password
         user.setPassword(newPassword);
         this.userDB.saveUser(user.getUsername(), user);
