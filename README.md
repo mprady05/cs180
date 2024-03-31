@@ -260,4 +260,50 @@ String mutualFriendsToString(ArrayList<User> mutuals);
 
 # UserDatabase.java
 
+Implements the UserDatabaseInterface.java. The UserDatabase class is used to store user objects within a hashmap. Some of its functionality include saving users, finding users by their usernames, and deleting users. This class is connected with other classes by allowing other classes, such as UserManager, to retrieve user objects from the database by searching for them through their usernames.
+
+## Fields
+
+private static HasMap<String,user> userMap = new HashMap<String,User>()
+
 ## Constructors:
+
+public UserDatabase
+
+-   call the readUsersfromFile method
+
+## Methods
+
+### public HashMap<String, User> getUserMap
+
+-   Return this userMap
+
+### public void setUserMap(<HashMap<String, user> userMap)
+
+-   Set this userMap to the parameter
+
+### public boolean saveUser(String username, User user)
+
+-   Save the username and user associated to the userMap
+
+-   return true
+
+### public static user getUserByUsername(String username)
+
+-   Returns the user from the userMap database based on the username parameter
+
+-   return null if the user cannot be found
+
+### public boolean deleteUser(String username)
+
+-   Find the username in the userMap and remove the the associated user 
+
+-   Update the output file with the user deleted
+
+-   return true if the username exists, and false if it doesn't
+
+### private void readUsersFromFile
+
+-   Read from the "User.db" file and populate the userMap with the users from the file
+
+-   Print the stack trace for any IOExceptions
