@@ -1,6 +1,6 @@
 import java.util.*;
 import java.io.*;
-public class CommentsManager {
+public class CommentsManager implements CommentsManagerInterface{
     private static final String COMMENTS_FILE = "CommentsDatabase.txt";
     private static ArrayList<Comment> comments = new ArrayList<>();
 
