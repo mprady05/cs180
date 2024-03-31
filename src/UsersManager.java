@@ -3,7 +3,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.io.*;
 
-public class UsersManager {
+public class UsersManager implements UsersManagerInterface{
     // FIELDS
     private static final String USER_FILE = "UsersDatabase.txt"; // replace with the file on your local device
     public static ArrayList<User> users = new ArrayList<>();
