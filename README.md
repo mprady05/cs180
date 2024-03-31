@@ -20,7 +20,7 @@ private String username: Unique Identifier for the user
 
 ## Constructors:
 
-public User (String username, String firstName, String lastName, String password, String photoId, ArrayList<String> friendList,ArrayList<String> blockList)
+### public User (String username, String firstName, String lastName, String password, String photoId, ArrayList<String> friendList,ArrayList<String> blockList)
 
 -   Instantiate and create this user using the given parameters
 
@@ -126,7 +126,7 @@ Private UserDatabase userDB: The user database, set to null
 
 ## Constructors:
 
-Public UserManager(UserDatabase userDB)
+### Public UserManager(UserDatabase userDB)
 
 -   Instantiate this userDB to the passed in argument
 
@@ -232,7 +232,7 @@ Public UserManager(UserDatabase userDB)
 
 -   For example, if only "testuser" was a mutual, the method should return "Friends with: testuser". If mutual friends include "user1", "user2", user3", and "user4", the method should return "Friends with: user1, user2, user3, and 1 others"
 
-# UserManagerInteface.java
+# UserManagerInterface.java
 
 An interface for the UserMangerInterface.java class
 
@@ -268,7 +268,7 @@ private static HasMap<String,user> userMap = new HashMap<String,User>()
 
 ## Constructors:
 
-public UserDatabase
+### public UserDatabase
 
 -   call the readUsersfromFile method
 
@@ -309,6 +309,7 @@ public UserDatabase
 -   Print the stack trace for any IOExceptions
 
 # UserDatabaseInterface.java
+
 An interface for the UserDatabase class
 
 ## Methods
@@ -321,11 +322,120 @@ HashMap<String, User> getUserMap()
 
 void setUserMap(HashMap<String, User> userMap);
 
-
 # SMPException.java
+
 Exception to be thrown when there is bad data/inputs
 
 ## Constructors
+
 ### SMPException(String message)
+
 -   Calls the constructor of the exception superclass with the message passed in as the parameter
 
+# PostsManager.java
+
+The PostsManager class implements the PostManageriInterface. The purpose of this class is to provide a central place where posts by users can be managed. Some of the primary functionalities include being able to store posts into a file and write to the file any time there is a new post or an old post is modified. Furthermore, old posts and comments can be found using their post and comment id's. Some of the relevant tests that were performed on this class included making up fake posts that operations can be performed upon. For example, fake parameters were passed into some of the methods to make sure that new posts were created, a file was being written to, or this posts ArrayList was being cleared. Essentially, fake posts were created to make sure that each method was outputting what was expected. This class will work with the Post class in order to make a side of the social media application where news posts can be made by users.
+
+## Fields
+
+private static final String POST_FILE = "PostsDatabase.txt": Use local file path to get the posts database
+
+private static ArrayList<Post> posts = new ArrayList<>(): An array list to store the posts
+
+## Constructors
+
+### public postsManager()
+
+-   Read the posts database file
+
+## Methods
+
+### public static ArrayList<Post> getPosts
+
+-   Return this array list of posts
+
+### public static void setPost(ArrayList<Post> posts)
+
+-   Set this post equal to the parameter
+
+### public void readPostsDatabseFile
+
+-   read the posts from the database file and populate this post array list
+
+-   Each time this method is called, the previous post array list should be cleared
+
+-   If there is an IOException, print "Error reading Posts Database File: " and the error message
+
+### private Post parseLineToPost(String line)
+
+-   Parse the parameter, a line that is taken from the database file, and create a new Post object
+
+-   Return the new post object
+
+-   One any exception, print out "Error parsing post from line: " along with the error message and return null
+
+### public static void writePostsDatabaseFile
+
+-   Write this post to the database file ("PostsDatabase.txt")
+
+-   Overwrite any existing content that is currently in the database file
+
+-   On IOException, print the message "Error writing to Posts Database File: " along with the error message
+
+### public static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+
+-   Find the user that is creating the post by searching for their username in the user database
+
+-   Create a new post object from the parameters and add the post to this post
+
+-   Return the newly created posts Id
+
+-   If the inputted username does not exist in the user database, throw a new SMPException with the message "Creator username does not exist."
+
+### public static void clearAllPosts
+
+-   Clear every single post from this post
+
+### public static boolean updatePost(Post updatedPost) throws SMPException
+
+-   Find a post within this post that has the same postId as the updatedPost
+
+-   update the old post with the updatePost and return true if successfully updated, otherwise, return false
+
+### public static Post searchPost(String postId)
+
+-   return the post in this post that matches the postId
+
+-   return null if the post cannot be found
+
+### public static String getPostIdFromComment(Comment comment)
+
+-   Search for comments within posts that match the CommentId as the CommentId in the given parameter
+
+-   If the post with the specific comment can be found, return the post's PostId, otherwise return null
+
+# PostsManagerInterface.java
+
+An interface for the PostsManager class
+
+## Methods
+
+ArrayList<Post> getPosts()
+
+void setPosts(ArrayList<Post> posts)
+
+void readPostsDatabaseFile()
+
+void writePostsDatabaseFile()
+
+String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+
+void clearAllPosts()
+
+boolean updatePost(Post updatedPost) throws SMPException
+
+Post searchPost(String postId)
+
+String getPostIdFromComment(Comment comment);
+
+# Post.java
