@@ -39,7 +39,7 @@ public class PostsManager implements PostsManagerInterface {
      * Reads the posts from the database file and populates the posts list.
      * This method clears any existing posts in the list before reading from the file.
      */
-    public void readPostsDatabaseFile() {
+    public static void readPostsDatabaseFile() {
         posts.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(POST_FILE))) {
             String line;
@@ -59,7 +59,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param line A string line from the database file representing a post.
      * @return A Post object if the line can be parsed successfully, null otherwise.
      */
-    private Post parseLineToPost(String line) {
+    private static Post parseLineToPost(String line) {
         try {
             String[] parts = line.split(":~:");
             String postId = parts[0];
@@ -121,7 +121,9 @@ public class PostsManager implements PostsManagerInterface {
      * @return The ID of the newly added post.
      * @throws SMPException If the creator username does not exist.
      */
-    public static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException {
+    public static String addPost(String creatorUsername, String content, int upvotes,
+                                 int downvotes, ArrayList<String> commentIds)
+            throws SMPException {
         User creator = UsersManager.searchUser(creatorUsername);
         if (creator == null) {
             throw new SMPException("Creator username does not exist.");

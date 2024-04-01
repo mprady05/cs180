@@ -6,10 +6,10 @@
  * @version March 31, 2024
  */
 public interface CommentInterface {
-  String getCommentId();
-  User getAuthor();
-  String getContent();
-  int getUpvotes();
-  int getDownvotes();
-  String toString();
+    String getCommentId();
+    User getAuthor();
+    String getContent();
+    int getUpvotes();
+    int getDownvotes();
+    String toString();
 }

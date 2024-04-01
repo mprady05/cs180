@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public interface UsersManagerInterface {
     static void readUsersDatabaseFile() throws SMPException {
-
     }
 
     static ArrayList<User> getUsers() {
