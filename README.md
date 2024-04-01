@@ -20,7 +20,7 @@ private String username: Unique Identifier for the user
 
 ## Constructors:
 
-public User (String username, String firstName, String lastName, String password, String photoId, ArrayList<String> friendList,ArrayList<String> blockList)
+### public User (String username, String firstName, String lastName, String password, String photoId, ArrayList<String> friendList,ArrayList<String> blockList)
 
 -   Instantiate and create this user using the given parameters
 
@@ -94,7 +94,7 @@ void setFirstName(String firstName)
 
 String getLastName()
 
-void setLastName(String lastName);
+void setLastName(String lastName)
 
 String getPassword()
 
@@ -114,7 +114,7 @@ ArrayList<User> getBlockList()
 
 void setFriendList(ArrayList<User> friendList)
 
-void setBlockList(ArrayList<User> blockList);
+void setBlockList(ArrayList<User> blockList)
 
 # UserManager.java
 
@@ -126,7 +126,7 @@ Private UserDatabase userDB: The user database, set to null
 
 ## Constructors:
 
-Public UserManager(UserDatabase userDB)
+### Public UserManager(UserDatabase userDB)
 
 -   Instantiate this userDB to the passed in argument
 
@@ -232,7 +232,7 @@ Public UserManager(UserDatabase userDB)
 
 -   For example, if only "testuser" was a mutual, the method should return "Friends with: testuser". If mutual friends include "user1", "user2", user3", and "user4", the method should return "Friends with: user1, user2, user3, and 1 others"
 
-# UserManagerInteface.java
+# UserManagerInterface.java
 
 An interface for the UserMangerInterface.java class
 
@@ -256,7 +256,7 @@ boolean unblockUser(User userBlocked)
 
 ArrayList<User> MutualFriends(User one, User two)
 
-String mutualFriendsToString(ArrayList<User> mutuals);
+String mutualFriendsToString(ArrayList<User> mutuals)
 
 # UserDatabase.java
 
@@ -268,7 +268,7 @@ private static HasMap<String,user> userMap = new HashMap<String,User>()
 
 ## Constructors:
 
-public UserDatabase
+### public UserDatabase
 
 -   call the readUsersfromFile method
 
@@ -309,6 +309,7 @@ public UserDatabase
 -   Print the stack trace for any IOExceptions
 
 # UserDatabaseInterface.java
+
 An interface for the UserDatabase class
 
 ## Methods
@@ -319,13 +320,318 @@ boolean deleteUser(String id)
 
 HashMap<String, User> getUserMap()
 
-void setUserMap(HashMap<String, User> userMap);
-
+void setUserMap(HashMap<String, User> userMap)
 
 # SMPException.java
+
 Exception to be thrown when there is bad data/inputs
 
 ## Constructors
+
 ### SMPException(String message)
+
 -   Calls the constructor of the exception superclass with the message passed in as the parameter
 
+# PostsManager.java
+
+The PostsManager class implements the PostManageriInterface. The purpose of this class is to provide a central place where posts by users can be managed. Some of the primary functionalities include being able to store posts into a file and write to the file any time there is a new post or an old post is modified. Furthermore, old posts and comments can be found using their post and comment id's. Some of the relevant tests that were performed on this class included making up fake posts that operations can be performed upon. For example, fake parameters were passed into some of the methods to make sure that new posts were created, a file was being written to, or this posts ArrayList was being cleared. Essentially, fake posts were created to make sure that each method was outputting what was expected. This class will work with the Post class in order to make a side of the social media application where news posts can be made by users.
+
+## Fields
+
+private static final String POST_FILE = "PostsDatabase.txt": Use local file path to get the posts database
+
+private static ArrayList<Post> posts = new ArrayList<>(): An array list to store the posts
+
+## Constructors
+
+### public postsManager()
+
+-   Read the posts database file
+
+## Methods
+
+### public static ArrayList<Post> getPosts
+
+-   Return this array list of posts
+
+### public static void setPost(ArrayList<Post> posts)
+
+-   Set this post equal to the parameter
+
+### public void readPostsDatabseFile
+
+-   read the posts from the database file and populate this post array list
+
+-   Each time this method is called, the previous post array list should be cleared
+
+-   If there is an IOException, print "Error reading Posts Database File: " and the error message
+
+### private Post parseLineToPost(String line)
+
+-   Parse the parameter, a line that is taken from the database file, and create a new Post object
+
+-   Return the new post object
+
+-   One any exception, print out "Error parsing post from line: " along with the error message and return null
+
+### public static void writePostsDatabaseFile
+
+-   Write this post to the database file ("PostsDatabase.txt")
+
+-   Overwrite any existing content that is currently in the database file
+
+-   On IOException, print the message "Error writing to Posts Database File: " along with the error message
+
+### public static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+
+-   Find the user that is creating the post by searching for their username in the user database
+
+-   Create a new post object from the parameters and add the post to this post
+
+-   Return the newly created posts Id
+
+-   If the inputted username does not exist in the user database, throw a new SMPException with the message "Creator username does not exist."
+
+### public static void clearAllPosts
+
+-   Clear every single post from this post
+
+### public static boolean updatePost(Post updatedPost) throws SMPException
+
+-   Find a post within this post that has the same postId as the updatedPost
+
+-   update the old post with the updatePost and return true if successfully updated, otherwise, return false
+
+### public static Post searchPost(String postId)
+
+-   return the post in this post that matches the postId
+
+-   return null if the post cannot be found
+
+### public static String getPostIdFromComment(Comment comment)
+
+-   Search for comments within posts that match the CommentId as the CommentId in the given parameter
+
+-   If the post with the specific comment can be found, return the post's PostId, otherwise return null
+
+# PostsManagerInterface.java
+
+An interface for the PostsManager class
+
+## Methods
+
+ArrayList<Post> getPosts()
+
+void setPosts(ArrayList<Post> posts)
+
+void readPostsDatabaseFile()
+
+void writePostsDatabaseFile()
+
+String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+
+void clearAllPosts()
+
+boolean updatePost(Post updatedPost) throws SMPException
+
+Post searchPost(String postId)
+
+String getPostIdFromComment(Comment comment)
+
+# Post.java
+
+This class will implement that PostInterface. The main functionality is to create a post that the User wishes to create. Some other important functionality include being able to add and delete comments as well as alter the number of upvotes and downvotes on this post. In order to make sure all of the code works, fake parameters were passed into the methods to make sure that what was being returned was what was expected. Furthermore, after making the new posts, we made sure that the content, upvotes, downvotes, comments list, post id, and creator all matched with the fake post object that was created. Within the grand scheme of things, this class will be called upon whenever a user decides to create a new post, alter the post, control comment flow, and delete comments/
+
+## Fields
+
+private final String postId: A agenerated string for an id of the post
+
+private final User creator: The user who created the post
+
+private final String content: What is included inside of the post
+
+private int upvotes: The number of upvotes on the post
+
+private int downvotes: The number of downvotes on the post
+
+private ArrayList<String> commendIds: The id's of the comments on the post
+
+## Constructors
+
+### public Post(User creator, String content, int upvotes, int downvotes, ArrayList<String> comment Ids)
+
+-   Instantiate this postId to a random UUID
+
+-   Instantiate all other fields to the parameters that are passed in
+
+### public Post(String postId, User creator, String content, int upvotes, int downvotes, ArrayList<String> commentIds)
+
+-   A constructor that will create a post with an existing Id
+
+-   Instantiate the fields to the parameters
+
+## Methods
+
+### public String getPostId
+
+-   Return this postId
+
+### public User getCreator
+
+-   Return this creator
+
+### public String getContent
+
+-   Return this content
+
+### public int getDownvotes
+
+-   Return the number of this downvotes
+
+### public int getUpdates
+
+-   Return the number of this upvotes
+
+### public ArrayList<String> getComments
+
+-   Return this ArrayList of comments
+
+### public void addUpvotes() throws SMPException
+
+-   Increase the number of this upvotes by 1 and update the number of upvotes in the post
+
+### public void addDownvote() throws SMPException
+
+-   Increase the number of this downvotes by 1 and update the number of downvotes in the post
+
+### public void addComment(String author, String content) throws SMPException
+
+-   Create a comment in the CommentManager and generate a commentId
+
+-   Add the commentId to this commentIds and update the post
+
+-   If the commentId is null or empty, throw a new SMPException with the message "Could not add comment."
+
+### public void deleteComment(String commentId, String requesterUsername) throws SMPException
+
+-   Check that the User who created the comment is the same as the User who is deleting the comment or is the User who created the post
+
+-   Delete the comment from the post using the commentId
+
+-   If the comment is unable to be deleted, throw a new SMPException with the message "Failed to delete comment from post."
+
+-   If the comment does not exist, throw a new SMPException with the message "Comment not found."
+
+### public String toString()
+
+-   Return a string in the format of postId:~:content:~:upvotes:~:downvotes[commentIds]
+
+-   Each comment Id should be separated with a :~:
+
+# PostInterface.java
+
+An interface for the Post class.
+
+## Methods
+
+String getPostId()
+
+User getCreator()
+
+String getContent()
+
+int getUpvotes()
+
+int getDownvotes()
+
+ArrayList<String> getComments()
+
+void addUpvote() throws SMPException
+
+void addDownvote() throws SMPException
+
+void addComment(User author, String content) throws SMPException
+
+void deleteComment(String commentId, String requesterUsername) throws SMPException
+
+String toString()
+
+# Comment.java
+
+This class will implement the CommentInterface. The main purpose of this class is to create a comment object with the fields of the commentId, the author of the comment, the contents of the comment, and the number of upvotes and downvotes. It will interact with the Posts and other comments classes to create a seamless side of the application where users will be able to comment on other user's posts as well as like or dislike the comments of other users. Some of the testing that was performed on this class was passing in fake parameters to create a comment object and making sure that the constructors worked by testing it with expected outputs using the getters as well as making sure the toString is formatted correctly.
+
+## Fields
+
+private String commentId: The identification number of this comment
+
+private User author: The user who posted this comment
+
+private String content: The content of this comment
+
+private int upvotes: The number of upvotes on this comment
+
+private int downvotes: The number of downvotes on this comment
+
+## Constructors
+
+### public Comment(User author, String content, int upvotes, int downvotes)
+
+-   Instantiate the commentId to a random UUID
+
+-   Instantiate the other fields to the parameters that are passed in
+
+## public Comment(String commentId, User author, String content, int upvotes, int downvotes)
+
+-   Instantiate the fields to the parameters that are passed in
+
+## Methods
+
+### public String getCommentID()
+
+-   Return this commentId
+
+### public User getAuthor()
+
+-   Return this author
+
+### public String getContent()
+
+-   Return this content
+
+### public int getUpvotes()
+
+-   Return this number of upvotes
+
+### public int getDownvotes()
+
+-   Return this number of downvotes
+
+### public String toString()
+
+-   Return the String in the format of commentId:~:the author's username:~:content:~:upvotes:~:downvotes
+
+# CommentInterface.java
+
+An interface for the Comment class/
+
+## Methods
+
+String getCommentId()
+
+User getAuthor()
+
+String getContent()
+
+int getUpvotes()
+
+int getDownvotes()
+
+String toString()
+
+# CommentsManager.java
+
+## Fields
+
+## Constructors
+
+## Methods
