@@ -1,12 +1,8 @@
-# Project 5 -- Phase 1 -- ReadMe
-To run and compile this project on an IDE, put the contents into an src file. Then, add Maven and Junit4 to your file path (used for testing purposes). After, you should be able to run the project. You should have JDK 14 or higher.
-
-
 # User.java  
 
-The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who is using the platform. Implements the UserInterface.
+The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who are using the platform. Implements the UserInterface.java
 
-## Fields
+## Fields: 
 
 private String firstName: User's first name
 
@@ -22,13 +18,13 @@ private ArrayList<User> blockList: Array List of blocked users
 
 private String username: Unique Identifier for the user
 
-## Constructors
+## Constructors:
 
 ### public User (String username, String firstName, String lastName, String password, String photoId, ArrayList<String> friendList,ArrayList<String> blockList)
 
 -   Instantiate and create this user using the given parameters
 
-## Methods
+## Methods:
 
 ### public String getFirstName
 
@@ -120,105 +116,211 @@ void setFriendList(ArrayList<User> friendList)
 
 void setBlockList(ArrayList<User> blockList)
 
-# UsersManager.java
+# UserManager.java
 
-The UserManager class will be responsible with user side algorithms within the application. Some of the features that are included are creating a new user and updating the information of the user. Within the entirety of the code, this class will interact mainly with the UserDatabase in order to store information about each user as well as retrieve the necessary information to perform permutations such as updating information or making sure that the new user does not already have an account. Implements the UserManagerInterface. In order to make sure that the class and each method was working by making sure that it was able to successfully read and write to a file. Furthermore, it was made sure that users can be updated, created, and searched for, returning values that were expected.
+The UserManager.java class will be responsible with user side algorithms within the application. Some of the features that are included are creating a new user, updating the information of the user, authenticating the login through a password, resetting the user's passwords, as well as managing who the user will be blocking or adding as friends. Within the entirety of the code, this class will interact mainly with the UserDatabase in order to store information about each user as well as retrieve the necessary information to perform permutations such as updating information or making sure that the new user does not already have an account. Implements the UserManagerInterface.java
 
-## Fields
+## Fields:
 
-private static final String USER_FILE = "UsersDatabase.txt": text file where the user database will be stored
+Private UserDatabase userDB: The user database, set to null
 
-public static ArrayList<User> users = new ArrayList<>(): ArrayList where this users will be stored
+## Constructors:
 
-## Constructors
+### Public UserManager(UserDatabase userDB)
 
-### UsersManager() throws SMPException
-
--   Call the method to read the user database file
-
-## Methods
-
-### public static ArrayList<User> getUsers()
-
--   Return this users
-
-### public static void readUersDatabaseFile() throws SMPException
-
--   Read this users database file and store into this users
-
--   Throw a new SMPException with the message "Error parsing user from line: " along with the error message on any exception
-
-### private static User stringToUser(String line) throws SMPException
-
--   Parse the line from the user database file and return a new user object
-
--   The lines will have the format "firstname;lastname;username;password;friend list"
-
--   Throw a new SMPException with the message ("Error parsing file.") if there is invalid data
-
-### public static void writeUsersDatabseFile()
-
--   Write this user arraylist to the userdatabase file
-
--   Each line should have the same format as before
-
--   On an IOException, print the error message "Error writing to users Database File: " along with the error message
-
-### public static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException
-
--   Create a new user object with passed in parameters if the user does not already exist in the database and return true
-
--   If the username already exists, throw a new SMPException with the message "Username already exists."
-
-### public static User loginUser(String username, String password) throws SMPException
-
--   Make sure that the username matches the user's password and return the user object
-
--   Return null if the username and password do not match
-
-### public static boolean updateUser(User updatedUser) throws SMPException
-
--   Look for the user in the user database and change update the old user object to the new user object if the username's match and return true
-
--   If the user does not exist in the database, throw a new SMPException with the message "User not found."
-
-### public static User searchUser(String username)
-
--   If the username exists in the database, return the user, otherwise return null
-
-### public static void clearAllUsers
-
--   Clear all users from this users ArrayList
-
-# UsersManagerInterface.java
-
-An interface for the UsersMangerInterface class
+-   Instantiate this userDB to the passed in argument
 
 ## Methods:
 
-### static void readUsersDatabseFile() throws SMPException
+### public User createUser(Map<String, String> userMap) throws SMPException
 
-### static ArrayList<User> getUsers
+-   This method will be used to create the user object. 
 
--   returns null
+-   Assign the user with a firstName, lastName, password, and a userName
 
-### static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException 
+-   Get the user object from the userdatabase using the user's unique username
 
--   Returns false
+-   If the specified username does not exist within the database, create a new user object and set the first name, last name, username, and password and save the user within the database
 
-### static User loginUser(String username, String password) throws SMPException 
+-   Return the user
 
--   Returns null
+-   Throw a new SMP Exception if:
 
-### static boolean updateUser(User updatedUser) throws SMPException
+-   The passed in firstName, lastName, password, or userName are null and provide the message "Missing required user information."
 
--   Returns false
+-   The password is invalid, throw a new message that "Invalid Username format."
 
-### static User searchUser(String username) 
+-   The username is already present in the database, throw a new message that "Usernmane already exists."
 
--   Returns null
+### public String updateuser(String username, Map<String, String> userMap) throws SMPException
 
-### static void clearAllUsers()
+-   Use the passed in Map to get the new first name and last name
+
+-   Use the passed in username parameter to find the user within the database
+
+-   Update and replace the user in the user database with the new first name and last
+
+-   Throw a new SMPException if the user is not in the userDatabase along with the message ("User not found.")
+
+### public String login(Map<String, String> userMap) throws SMPException
+
+-   Use the passed in Map parameter to get the inputted username and password
+
+-   Find the user in the database by using the inputted username
+
+-   If the inputted username and password match, return the user's user name
+
+-   If the user does not exist within the database or the username and password do not match, throw a new SMPException error with message "Invalid username or password."
+
+### public boolean resetPassword(String username, String newPassword) throws SMPException
+
+-   Get the user from the database and update the user's password with the pass in parameter
+
+-   Recheck the validity of the password
+
+-   Return true if successful
+
+-   Throw a new SMPException with message "New Password cannot be the same as the old one" if new password is the same as the old password
+
+### private boolean isValidPassword(String password)
+
+-   Check the validity of the user's created password
+
+-   A valid password has at least 6 characters, at least one upper case letter, and at least one special character
+
+-   Return true if and only if the password is valid
+
+### private boolean isValidEmail(String email)
+
+-   Check that the user's email has both an @ symbol and a ".com"
+
+-   Check that the @ and .com are in the correct places
+
+-   Return true if the email is valid, otherwise return false
+
+### private boolean isValidUsername(String username)
+
+-   A valid username is not null and does not contain an @ symbol
+
+-   Return if the username is valid or not
+
+### public boolean removeFriend(User friend)
+
+-   Remove the friend from the inputted user's friends list
+
+-   Return true if the friend was removed and return false on any exception
+
+### public boolean blockUser(User userBlocked)
+
+-   Add the user in the parameter to this user's blocked list
+
+-   Return true if the operation was successful, otherwise return false
+
+### public boolean unblockUser(User userBlocker)
+
+-   Remove the user in the parameter from this user's blocked list
+
+-   Return true if the operation was successful, otherwise return false
+
+### public ArrayList<User> MutualFriends(User one, User two)
+
+-   Return an array list of mutual friends between the two users that are inputted as parameters
+
+### public String mutualFriendsToString(ArrayList<User> mutuals)
+
+-   Return a string in the format that has at most 3 usernames printed out, and then the number of other mutuals
+
+-   For example, if only "testuser" was a mutual, the method should return "Friends with: testuser". If mutual friends include "user1", "user2", user3", and "user4", the method should return "Friends with: user1, user2, user3, and 1 others"
+
+# UserManagerInterface.java
+
+An interface for the UserMangerInterface.java class
+
+## Methods:
+
+User createUser(Map<String, String> userMap) throws SMPException
+
+String updateUser(String username, Map<String, String> userMap) throws SMPException
+
+String login(Map<String, String> userMap) throws SMPException
+
+boolean resetPassword(String username, String newPassword) throws SMPException
+
+boolean addFriend(User user, User friend)
+
+boolean removeFriend(User friend)
+
+boolean blockUser(User userBlocked)
+
+boolean unblockUser(User userBlocked)
+
+ArrayList<User> MutualFriends(User one, User two)
+
+String mutualFriendsToString(ArrayList<User> mutuals)
+
+# UserDatabase.java
+
+Implements the UserDatabaseInterface.java. The UserDatabase class is used to store user objects within a hashmap. Some of its functionality include saving users, finding users by their usernames, and deleting users. This class is connected with other classes by allowing other classes, such as UserManager, to retrieve user objects from the database by searching for them through their usernames.
+
+## Fields
+
+private static HasMap<String,user> userMap = new HashMap<String,User>()
+
+## Constructors:
+
+### public UserDatabase
+
+-   call the readUsersfromFile method
+
+## Methods
+
+### public HashMap<String, User> getUserMap
+
+-   Return this userMap
+
+### public void setUserMap(<HashMap<String, user> userMap)
+
+-   Set this userMap to the parameter
+
+### public boolean saveUser(String username, User user)
+
+-   Save the username and user associated to the userMap
+
+-   return true
+
+### public static user getUserByUsername(String username)
+
+-   Returns the user from the userMap database based on the username parameter
+
+-   return null if the user cannot be found
+
+### public boolean deleteUser(String username)
+
+-   Find the username in the userMap and remove the the associated user 
+
+-   Update the output file with the user deleted
+
+-   return true if the username exists, and false if it doesn't
+
+### private void readUsersFromFile
+
+-   Read from the "User.db" file and populate the userMap with the users from the file
+
+-   Print the stack trace for any IOExceptions
+
+# UserDatabaseInterface.java
+
+An interface for the UserDatabase class
+
+## Methods
+
+boolean saveUser(String username, User user)
+
+boolean deleteUser(String id)
+
+HashMap<String, User> getUserMap()
+
+void setUserMap(HashMap<String, User> userMap)
 
 # SMPException.java
 
@@ -530,188 +632,6 @@ String toString()
 
 ## Fields
 
-private static final String COMMENTS_FILE = "CommentsDatabase.txt": File where comments will be stored
-
-private static ArrayList<Comment> comments = new ArrarList<>(): An array list of comments
-
 ## Constructors
 
-### public CommentsManager() throws SMPException
-
--   Read the comments database file
-
 ## Methods
-
-### public static ArrayList<Comment> getComments
-
--   Return this comments
-
-### public void readCommentsDatabaseFile() throws SMPException
-
--   Read the contents from the comments database
-
--   If there is an IOException, throw a new SMPException with the message "Error reading Comments Database File " and the error message
-
-### private Comment parseLineToComment(String line) throws SMPException
-
--   Parse the parameter, a line that is taken from the database file, and create a new Comment object
-
--   Return the new comment object
-
--   If the author of the comment does not exist, print the error message "Author not found for comment: " and the commentId and return null
-
--   If the format of the comment in the database is invalid or on any exception, return null
-
-### public void writeCommentsDatabaseFile() throws SMPException
-
--   Write this comment to this database file
-
--   Overwrite any existing content that is currently in the database file
-
--   On IOException, print the message "Error writing to Comments Database File: " along with the error message
-
-### public static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException
-
--   If the username of the author does not exist in the user database, print out the error message "Cannot add comment. Author username not found: " along with the error message and return null
-
--   Using the parameters, create a new comment object and add it to this comments
-
--   Return the new comment's commentId
-
-### public boolean updateComment(Comment updatedComment) throws SMPException
-
--   Search for the comment in the comment database using the commentId and update the old comment with the new comment
-
--   Return true if the operation was successful, otherwise return false
-
-### public static boolean deleteComment(String commentId, String requesterUsername) throws SMPException
-
--   Look for the comment in the comment database
-
--   If the User who wrote the comment matches the User in the parameter, remove the comment from this comments and return true
-
--   If the operations as unsuccessful, return false
-
-### public static Comment searchComment(String commentId)
-
--   Return the comment from this comments with the matching commentId
-
--   If unable to find the comment, return null
-
-### public static void clearAllComments
-
--   Clear this comments ArrayList
-
-# CommentsManagerInterface.java
-
-An interface for the CommentsManager class.
-
-## Methods
-
-### static ArrayList<Comment> getComments()
-
--   Returns null
-
-### static void readCommentsDatabaseFile() throws SMPException
-
-###  static void writeCommentsDatabaseFile() throws SMPException
-
-### static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
-
--   Returns null
-
-### static boolean updateComment(Comment updatedComment) throws SMPException
-
--   Returns False
-
-### static boolean deleteComment(String commentId, String requesterUsername) throws SMPException
-
--   Returns false
-
-### static Comment searchComment(String commentId)
-
--   Returns Null
-
-### static void clearAllComments()
-
-# CommunicationInterface.java
-
-An interface for the communication between clients and server
-
-## Methods
-
-void sendRequest(Object request)
-
-Object receiveResponse()
-
-# NewsFeedClientInterface.java
-
-An interface for user interactions with the news feed
-
-## Methods
-
-voidNewsFeed()
-
-void createPost(String content)
-
-void commentOnPost(String postId, String content)
-
-void upvotePost(String postId)
-
-void downvotePost(String postId)
-
-void hidePost(String postId)
-
-# NewsFeedServiceInterface.java
-
-An interface for defining the operations in managing posts and comments in the news feed
-
-## Methods
-
-Post createPost(String username, String content)
-
-boolean deletePost(String postId)
-
-void upvotePost(String postId)
-
-void downvotePost(String postId)
-
-Comment createComment(String postId, String username, String content)
-
-boolean deleteComment(String commentId)
-
-ArrayList<Post> getFriendPosts(String username)
-
-# UserClientInterface.java
-
-An interface that defines user operations
-
-## Methods
-
-void loginUser(String username, String password)
-
-void logoutUser()
-
-void addFriend(String friendUsername)
-
-void removeFriend(String friendUsername)
-
-void updateProfile(User user)
-
-# UserServiceInterface.java
-
-An interface that defines server-side user account management
-
-## Methods
-
-User createUser(String username, String password)
-
-boolean deleteUser(String username)
-
-User getUserDetails(String username)
-
-void updateUserProfile(User user)
-
-boolean addFriend(String username, String friendUsername)
-
-boolean removeFriend(String username, String friendUsername)
