@@ -1,3 +1,10 @@
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Defines communication between clients and a server.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public interface CommunicationInterface {
     /**
      * Sends a request to the server.

@@ -2,12 +2,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Testing for {@link CommentsManager}
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public class CommentsManagerTest {
     private CommentsManager commentsManager;
     private static final String TEST_COMMENTS_FILE = "CommentsDatabase.txt";

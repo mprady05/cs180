@@ -1,3 +1,10 @@
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Interface for server-side user account management.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public interface UserServiceInterface {
     /**
      * Creates a new user.

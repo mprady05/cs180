@@ -1,3 +1,10 @@
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Interface for user operations.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public interface UserClientInterface {
     /**
      * Logs in a user.
