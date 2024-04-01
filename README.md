@@ -1,3 +1,7 @@
+# Project 5 -- Phase 1 -- ReadMe
+To run and compile this project on an IDE, put the contents into an src file. Then, add Maven and Junit4 to your file path (used for testing purposes). After, you should be able to run the project. You should have JDK 14 or higher. 
+
+
 # User.java  
 
 The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who is using the platform. Implements the UserInterface.
