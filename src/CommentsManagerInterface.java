@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 /**
  * CS18000 -- Project 5 -- Phase 1
  * Interface for operations on comment data, including reading, writing, and updating comments.
@@ -6,7 +7,26 @@
  * @version March 31, 2024
  */
 public interface CommentsManagerInterface {
-    void readCommentsDatabaseFile() throws SMPException;
-    void writeCommentsDatabaseFile() throws SMPException;
-    boolean updateComment(Comment updatedComment) throws SMPException;
+    static ArrayList<Comment> getComments() {
+        return null;
+    }
+    static void readCommentsDatabaseFile() throws SMPException {
+    }
+    static void writeCommentsDatabaseFile() throws SMPException {
+    }
+    static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+            throws SMPException {
+        return null;
+    }
+    static boolean updateComment(Comment updatedComment) throws SMPException {
+        return false;
+    }
+    static boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
+        return false;
+    }
+    static Comment searchComment(String commentId) {
+        return null;
+    }
+    static void clearAllComments() {
+    }
 }

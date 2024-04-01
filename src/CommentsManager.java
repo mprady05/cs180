@@ -28,10 +28,9 @@ public class CommentsManager implements CommentsManagerInterface {
 
     /**
      * Reads comments from the database file and loads them into the comments list.
-     * Each line in the file is expected to represent a single comment.
      * @throws SMPException If there's an error reading the file.
      */
-    public void readCommentsDatabaseFile() throws SMPException {
+    public static void readCommentsDatabaseFile() throws SMPException {
         comments.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(COMMENTS_FILE))) {
             String line;
@@ -52,7 +51,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * @return A Comment object if parsing is successful, null otherwise.
      * @throws SMPException If parsing fails.
      */
-    private Comment parseLineToComment(String line) throws SMPException {
+    private static Comment parseLineToComment(String line) throws SMPException {
         try {
             String[] parts = line.split(":~:");
             if (parts.length != 5) {
@@ -78,7 +77,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * Writes the current list of comments to the comments database file.
      * @throws SMPException If there's an error writing to the file.
      */
-    public void writeCommentsDatabaseFile() throws SMPException {
+    public static void writeCommentsDatabaseFile() throws SMPException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(COMMENTS_FILE))) {
             for (Comment comment : comments) {
                 String commentLine = comment.toString();
@@ -99,7 +98,8 @@ public class CommentsManager implements CommentsManagerInterface {
      * @return The ID of the newly added comment, or null if the author doesn't exist.
      * @throws SMPException If the author doesn't exist.
      */
-    public static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
+    public static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+            throws SMPException {
         User author = UsersManager.searchUser(authorUsername);
         if (author == null) {
             System.err.println("Cannot add comment. Author username not found: " + authorUsername);
@@ -116,7 +116,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * @return true if the comment is updated successfully, false otherwise.
      * @throws SMPException If updating fails.
      */
-    public boolean updateComment(Comment updatedComment) throws SMPException {
+    public static boolean updateComment(Comment updatedComment) throws SMPException {
         for (int i = 0; i < comments.size(); i++) {
             Comment comment = comments.get(i);
             if (comment.getCommentId().equals(updatedComment.getCommentId())) {
@@ -139,7 +139,8 @@ public class CommentsManager implements CommentsManagerInterface {
             Comment comment = comments.get(i);
             String postCreatorUsername = PostsManager.getPostIdFromComment(comment);
             if (comment.getCommentId().equals(commentId) &&
-                    (requesterUsername.equals(comment.getAuthor().getUsername()) || requesterUsername.equals(postCreatorUsername))) {
+                    (requesterUsername.equals(comment.getAuthor().getUsername()) ||
+                            requesterUsername.equals(postCreatorUsername))) {
                 comments.remove(i);
                 return true;
             }

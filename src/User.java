@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 /**
  * CS18000 -- Project 5 -- Phase 1
  * Class representing a user.
@@ -5,7 +6,6 @@
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
  * @version March 31, 2024
  */
-import java.util.ArrayList;
 public class User implements UserInterface {
     private final String firstName;
     private final String lastName;
@@ -25,7 +25,8 @@ public class User implements UserInterface {
      * @param blockList List of usernames blocked by the user.
      * @param postIds List of post IDs created by the user.
      */
-    public User (String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) {
+    public User(String firstName, String lastName, String username, String password,
+                ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -59,10 +60,10 @@ public class User implements UserInterface {
 
     /**
      * Adds a friend to the user's friend list and updates the user in the UsersManager.
-     * @param username Username of the new friend.
+     * @param checkUsername Username of the new friend.
      */
-    public void addFriend(String username) throws SMPException {
-        friendList.add(username);
+    public void addFriend(String checkUsername) throws SMPException {
+        friendList.add(checkUsername);
         UsersManager.updateUser(this);
     }
 
@@ -88,10 +89,10 @@ public class User implements UserInterface {
 
     /**
      * Removes a friend from the user's friend list and updates the user in the UsersManager.
-     * @param username Username of the friend to remove.
+     * @param checkUsername Username of the friend to remove.
      */
-    public void removeFriend(String username) throws SMPException {
-        friendList.remove(username);
+    public void removeFriend(String checkUsername) throws SMPException {
+        friendList.remove(checkUsername);
         UsersManager.updateUser(this);
     }
 

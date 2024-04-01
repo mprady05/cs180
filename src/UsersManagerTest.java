@@ -38,7 +38,8 @@ public class UsersManagerTest {
 
     @Test
     public void testWriteUsersDatabaseFile() throws IOException, SMPException {
-        UsersManager.registerUser("New", "User", "newuser", "password123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("New", "User", "newuser", "password123",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         UsersManager.writeUsersDatabaseFile();
         try (BufferedReader reader = new BufferedReader(new FileReader(TEST_USER_FILE))) {
             String lastLine = "";
@@ -53,9 +54,11 @@ public class UsersManagerTest {
     @Test
     public void testRegisterUser() throws SMPException {
         assertTrue("User should be successfully registered",
-                UsersManager.registerUser("Chris", "Smith", "chriss", "chris123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+                UsersManager.registerUser("Chris", "Smith", "chriss", "chris123",
+                        new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
         try {
-            UsersManager.registerUser("Chris", "Smith", "chriss", "chris123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            UsersManager.registerUser("Chris", "Smith", "chriss", "chris123",
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             fail("Expected an SMPException to be thrown");
         } catch (SMPException e) {
             assertEquals("Username already exists.", e.getMessage());
@@ -65,31 +68,37 @@ public class UsersManagerTest {
     @Test
     public void testLoginUser() throws SMPException {
         assertNotNull("User should be able to login", UsersManager.loginUser("alice", "12345"));
-        assertNull("User login should fail with wrong password", UsersManager.loginUser("alice", "wrongpassword"));
+        assertNull("User login should fail with wrong password",
+                UsersManager.loginUser("alice", "wrongpassword"));
     }
 
     @Test
     public void testUpdateUser() throws SMPException {
-        UsersManager.registerUser("Bob", "Brown", "bobby", "password", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Bob", "Brown", "bobby", "password",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         ArrayList<String> updatedFriendsList = new ArrayList<>();
         updatedFriendsList.add("alice");
-        User updatedUser = new User("Bob", "Brown", "bobby", "password", updatedFriendsList, new ArrayList<>(), new ArrayList<>());
+        User updatedUser = new User("Bob", "Brown", "bobby", "password",
+                updatedFriendsList, new ArrayList<>(), new ArrayList<>());
         assertTrue("User should be updated successfully", UsersManager.updateUser(updatedUser));
         User fetchedUser = UsersManager.searchUser("bobby");
         assertNotNull("Updated user should exist", fetchedUser);
-        assertTrue("Updated user should now have alice in friend list", fetchedUser.getFriendList().contains("alice"));
+        assertTrue("Updated user should now have alice in friend list",
+                fetchedUser.getFriendList().contains("alice"));
     }
 
     @Test
     public void testSearchUser() throws SMPException {
-        UsersManager.registerUser("Charlie", "Green", "charlie", "pass", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Charlie", "Green", "charlie", "pass",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         assertNotNull("User should be found", UsersManager.searchUser("charlie"));
         assertNull("Non-existent user should not be found", UsersManager.searchUser("nonexistent"));
     }
 
     @Test
     public void testClearAllUsers() throws SMPException {
-        UsersManager.registerUser("Diana", "White", "diana", "1234", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Diana", "White", "diana", "1234",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         UsersManager.clearAllUsers();
         assertEquals("Users list should be empty", 0, UsersManager.getUsers().size());
     }

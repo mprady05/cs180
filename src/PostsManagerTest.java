@@ -26,9 +26,13 @@ public class PostsManagerTest {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_POSTS_FILE))) {
             writer.write(originalPostsContent);
         }
-        testUser = new User("Test", "User", "testuser", "password", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        UsersManager.registerUser(testUser.getFirstName(), testUser.getLastName(), testUser.getUsername(), testUser.getPassword(), testUser.getFriendList(), testUser.getBlockList(), testUser.getPostIds());
-        UsersManager.registerUser("John", "Doe", "johndoe", "password123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        testUser = new User("Test", "User", "testuser", "password",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser(testUser.getFirstName(), testUser.getLastName(),
+                testUser.getUsername(), testUser.getPassword(),
+                testUser.getFriendList(), testUser.getBlockList(), testUser.getPostIds());
+        UsersManager.registerUser("John", "Doe", "johndoe", "password123",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         postsManager = new PostsManager();
     }
 
@@ -58,7 +62,9 @@ public class PostsManagerTest {
         assertNotNull("Post ID should not be null", postId);
         Post existingPost = PostsManager.searchPost(postId);
         assertNotNull("Post should exist", existingPost);
-        Post updatedPost = new Post(existingPost.getPostId(), existingPost.getCreator(), "Updated Content", 2, 2, existingPost.getComments());
+        Post updatedPost = new Post(existingPost.getPostId(),
+                existingPost.getCreator(), "Updated Content", 2, 2,
+                existingPost.getComments());
         boolean updateResult = PostsManager.updatePost(updatedPost);
         assertTrue("Post should be successfully updated", updateResult);
         Post postAfterUpdate = PostsManager.searchPost(postId);
@@ -81,7 +87,9 @@ public class PostsManagerTest {
         PostsManager.writePostsDatabaseFile(); // This writes the test data to the file
         PostsManager.clearAllPosts(); // Clear the in-memory list of posts
         postsManager.readPostsDatabaseFile(); // Re-read the file into memory
-        assertEquals("There should be exactly one post after reading from database", 1 + originalPostsContent.lines().count(), PostsManager.getPosts().size()); // Adjust for original content size
+        assertEquals("There should be exactly one post after reading from database",
+                1 + originalPostsContent.lines().count(),
+                PostsManager.getPosts().size()); // Adjust for original content size
     }
 
     @Test
@@ -93,7 +101,8 @@ public class PostsManagerTest {
         Post post = PostsManager.searchPost(postId);
         assertNotNull("Post should exist", post);
         post.getComments().add(commentId);
-        Comment comment = new Comment(commentId, UsersManager.searchUser("johndoe"), "Example comment", 0, 0); // Creating a comment object to pass to getPostIdFromComment
+        Comment comment = new Comment(commentId, UsersManager.searchUser("johndoe"),
+                "Example comment", 0, 0);
         String foundPostId = PostsManager.getPostIdFromComment(comment);
         assertEquals("The post ID retrieved should match the one associated with the comment", postId, foundPostId);
     }
