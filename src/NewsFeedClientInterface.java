@@ -1,3 +1,10 @@
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Interface for user interactions with the news feed.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public interface NewsFeedClientInterface {
     /**
      * Displays the news feed to the user.

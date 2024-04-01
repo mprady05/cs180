@@ -1,11 +1,14 @@
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.*;
-
-public class UsersManager implements UsersManagerInterface{
-    // FIELDS
-    private static final String USER_FILE = "UsersDatabase.txt"; // replace with the file on your local device
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Manages user accounts.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
+public class UsersManager implements UsersManagerInterface {
+    private static final String USER_FILE = "UsersDatabase.txt";
     public static ArrayList<User> users = new ArrayList<>();
 
     /**

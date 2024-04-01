@@ -1,6 +1,13 @@
 import java.util.*;
 import java.io.*;
-public class CommentsManager implements CommentsManagerInterface{
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Class managing the storage and manipulation of user comments.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
+public class CommentsManager implements CommentsManagerInterface {
     private static final String COMMENTS_FILE = "CommentsDatabase.txt";
     private static ArrayList<Comment> comments = new ArrayList<>();
 

@@ -4,7 +4,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Testing for {@link Post}.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public class PostTest {
     private Post post;
     private User creator;

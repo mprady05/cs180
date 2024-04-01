@@ -1,9 +1,14 @@
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.*;
-
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Testing for {@link User}.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public class UserTest {
     private User userJohn;
     private User userAlice;

@@ -1,14 +1,19 @@
 import org.junit.Before;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.*;
 import java.util.*;
-
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Testing for {@link UsersManager}.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public class UsersManagerTest {
 
-    private static final String TEST_USER_FILE = "UsersDatabase.txt"; // change to local file path
+    private static final String TEST_USER_FILE = "UsersDatabase.txt";
     private UsersManager usersManager;
 
     @BeforeClass

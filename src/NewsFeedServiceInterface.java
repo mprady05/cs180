@@ -1,4 +1,11 @@
 import java.util.*;
+/**
+ * CS18000 -- Project 5 -- Phase 1
+ * Defines operations for managing posts and comments within the news feed.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version March 31, 2024
+ */
 public interface NewsFeedServiceInterface {
     /**
      * Creates a new post.
