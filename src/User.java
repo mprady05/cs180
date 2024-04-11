@@ -64,7 +64,10 @@ public class User implements UserInterface {
      * @return true if friend is added, false otherwise.
      */
     public boolean addFriend(String checkUsername) throws SMPException {
-        if (UsersManager.searchUser(checkUsername) != null && !friendList.contains(checkUsername)) {
+        if (UsersManager.searchUser(checkUsername) != null &&
+                !friendList.contains(checkUsername) &&
+                !checkUsername.equals(this.username) &&
+                !blockList.contains(checkUsername)) {
             friendList.add(checkUsername);
             UsersManager.updateUser(this);
             return true;
@@ -80,7 +83,9 @@ public class User implements UserInterface {
      * @return true if user is blocked, false otherwise.
      */
     public boolean blockUser(String usernameToBlock) throws SMPException {
-        if (friendList.contains(usernameToBlock) && !blockList.contains(usernameToBlock)) {
+        if (friendList.contains(usernameToBlock) &&
+                !blockList.contains(usernameToBlock) &&
+                !usernameToBlock.equals(this.username)) {
             friendList.remove(usernameToBlock);
             blockList.add(usernameToBlock);
             User userToBlock = UsersManager.searchUser(usernameToBlock);
@@ -103,7 +108,8 @@ public class User implements UserInterface {
      * @return true if friend is removed, false otherwise.
      */
     public boolean removeFriend(String checkUsername) throws SMPException {
-        if (UsersManager.searchUser(checkUsername) != null && friendList.contains(checkUsername)) {
+        if (UsersManager.searchUser(checkUsername) != null &&
+                friendList.contains(checkUsername)) {
             friendList.remove(checkUsername);
             UsersManager.updateUser(this);
             return true;

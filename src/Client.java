@@ -102,7 +102,6 @@ public class Client {
                         if (user != null) {
                             loggedIn = true;
                         }
-                        System.out.println();
                         break;
                     case "3": // exit
                         System.out.println(EXIT_MESSAGE);
@@ -186,6 +185,7 @@ public class Client {
         if (REGISTER_SUCCESS.equalsIgnoreCase(response)) {
             User user = UsersManager.stringToUser((String) ois.readObject());
             System.out.println(REGISTER_SUCCESS);
+            System.out.println(WELCOME_NEW + user.getFirstName() + " " + user.getLastName() + "!");
             return user;
         } else {
             System.out.println(REGISTER_FAIL);
@@ -449,9 +449,6 @@ public class Client {
             System.out.println(DELETE_COMMENT_FAIL);
         }
     }
-
-
-
 
     public static void main(String[] args) {
         String hostname = "localhost";
