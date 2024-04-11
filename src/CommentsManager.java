@@ -53,9 +53,10 @@ public class CommentsManager implements CommentsManagerInterface {
      */
     private static Comment parseLineToComment(String line) throws SMPException {
         try {
-            String[] parts = line.split(":~:");
+            String[] parts = line.split(":!:");
             if (parts.length != 5) {
-                throw new IllegalArgumentException("Invalid comment format in database");
+                System.out.println("Invalid comment format in database.");
+                return null;
             }
             String commentId = parts[0];
             String authorUsername = parts[1];
@@ -137,10 +138,10 @@ public class CommentsManager implements CommentsManagerInterface {
     public static boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
         for (int i = 0; i < comments.size(); i++) {
             Comment comment = comments.get(i);
-            String postCreatorUsername = PostsManager.getPostIdFromComment(comment);
+            Post post = PostsManager.getPostIdFromComment(comment);
             if (comment.getCommentId().equals(commentId) &&
                     (requesterUsername.equals(comment.getAuthor().getUsername()) ||
-                            requesterUsername.equals(postCreatorUsername))) {
+                            requesterUsername.equals(Objects.requireNonNull(post).getCreator().getUsername()))) {
                 comments.remove(i);
                 return true;
             }

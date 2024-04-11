@@ -85,15 +85,33 @@ public class Comment implements CommentInterface {
     }
 
     /**
+     * Increments the upvote count for the comment and updates the corresponding post in the CommentsManager.
+     * @throws SMPException If there is an error updating the comment.
+     */
+    public void addUpvote() throws SMPException {
+        upvotes += 1;
+        CommentsManager.updateComment(this);
+    }
+
+    /**
+     * Increments the downvote count for the comment and updates the corresponding post in the CommentsManager.
+     * @throws SMPException If there is an error updating the comment.
+     */
+    public void addDownvote() throws SMPException {
+        downvotes += 1;
+        CommentsManager.updateComment(this);
+    }
+
+    /**
      * Returns a string representation of the comment.
      * @return A string containing the comment's ID, author's username, content, upvotes, and downvotes.
      */
     @Override
     public String toString() {
-        return commentId + ":~:" +
-                author.getUsername() + ":~:" +
-                content + ":~:" +
-                upvotes + ":~:" +
+        return commentId + ":!:" +
+                author.getUsername() + ":!:" +
+                content + ":!:" +
+                upvotes + ":!:" +
                 downvotes;
     }
 }

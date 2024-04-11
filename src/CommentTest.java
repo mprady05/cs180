@@ -47,10 +47,10 @@ public class CommentTest {
 
     @Test
     public void testToStringFormat() {
-        String expected = comment.getCommentId() + ":~:" +
-                author.getUsername() + ":~:" +
-                "This is a test comment" + ":~:" +
-                10 + ":~:" +
+        String expected = comment.getCommentId() + ":!:" +
+                author.getUsername() + ":!:" +
+                "This is a test comment" + ":!:" +
+                10 + ":!:" +
                 2;
         assertEquals("toString method should return the formatted string correctly", expected, comment.toString());
     }

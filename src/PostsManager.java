@@ -71,10 +71,9 @@ public class PostsManager implements PostsManagerInterface {
             if (parts.length > 5 && parts[5].startsWith("[") && parts[5].endsWith("]")) {
                 String commentsString = parts[5].substring(1, parts[5].length() - 1);
                 if (!commentsString.isEmpty()) {
-                    commentIds = Arrays.asList(commentsString.split(":~:"));
+                    commentIds = Arrays.asList(commentsString.split(":!:"));
                 }
             }
-            System.out.println(commentIds);
             return new Post(postId, creator, content, upvotes, downvotes, new ArrayList<>(commentIds));
         } catch (Exception e) {
             System.err.println("Error parsing post from line: " + e.getMessage());
@@ -99,7 +98,7 @@ public class PostsManager implements PostsManagerInterface {
                 for (int i = 0; i < commentIds.size(); i++) {
                     commentsStr += commentIds.get(i);
                     if (i < commentIds.size() - 1) {
-                        commentsStr += ":~:";
+                        commentsStr += ":!:";
                     }
                 }
                 commentsStr += "]";
@@ -181,12 +180,12 @@ public class PostsManager implements PostsManagerInterface {
     /**
      * Finds the post ID for a given comment.
      * @param comment The comment object for which to find the associated post ID.
-     * @return The ID of the post that contains the given comment, or null if not found.
+     * @return The Post that contains the given comment, or null if not found.
      */
-    public static String getPostIdFromComment(Comment comment) {
+    public static Post getPostIdFromComment(Comment comment) {
         for (Post post : posts) {
             if (post.getComments().contains(comment.getCommentId())) {
-                return post.getPostId();
+                return post;
             }
         }
         return null;

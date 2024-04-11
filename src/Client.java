@@ -1,15 +1,11 @@
-import org.w3c.dom.ls.LSOutput;
-
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Client {
     private String hostname;
     private int port;
     private boolean loggedIn = false;
-    private boolean managingPosts = false;
     private static final String WELCOME_MESSAGE = "Welcome to MySpace!";
     private static final String WELCOME_MENU = """
             Enter the number of the command you would like to execute:
@@ -75,6 +71,8 @@ public class Client {
     private static final String VIEW_COMMENT = "Enter the number of the comment you want to see:";
     private static final String VIEW_COMMENTS_SUCCESS = "Successfully viewed comments!";
     private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again.";
+    private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
+    private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
 
     public Client(String hostname, int port) {
         this.hostname = hostname;
@@ -104,10 +102,11 @@ public class Client {
                         if (user != null) {
                             loggedIn = true;
                         }
+                        System.out.println();
                         break;
                     case "3": // exit
                         System.out.println(EXIT_MESSAGE);
-                        break;
+                        return;
                     default:
                         System.out.println(INVALID_COMMAND);
                         break;
@@ -188,10 +187,8 @@ public class Client {
             User user = UsersManager.stringToUser((String) ois.readObject());
             System.out.println(REGISTER_SUCCESS);
             return user;
-        } else if (REGISTER_FAIL.equalsIgnoreCase(response)) {
-            System.out.println(REGISTER_FAIL);
-            return null;
         } else {
+            System.out.println(REGISTER_FAIL);
             return null;
         }
     }
@@ -204,8 +201,6 @@ public class Client {
         String respond = (String) ois.readObject();
         if (ADD_FRIEND_SUCCESS.equalsIgnoreCase(respond)) {
             System.out.println(ADD_FRIEND_SUCCESS);
-        } else if (ADD_FRIEND_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(ADD_FRIEND_FAIL);
         } else {
             System.out.println(ADD_FRIEND_FAIL);
         }
@@ -219,8 +214,6 @@ public class Client {
         String respond = (String) ois.readObject();
         if (REMOVE_FRIEND_SUCCESS.equalsIgnoreCase(respond)) {
             System.out.println(REMOVE_FRIEND_SUCCESS);
-        } else if (REMOVE_FRIEND_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(REMOVE_FRIEND_FAIL);
         } else {
             System.out.println(REMOVE_FRIEND_FAIL);
         }
@@ -233,8 +226,6 @@ public class Client {
         String respond = (String) ois.readObject();
         if (BLOCK_FRIEND_SUCCESS.equalsIgnoreCase(respond)) {
             System.out.println(BLOCK_FRIEND_SUCCESS);
-        } else if (BLOCK_FRIEND_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(BLOCK_FRIEND_FAIL);
         } else {
             System.out.println(BLOCK_FRIEND_FAIL);
         }
@@ -247,17 +238,18 @@ public class Client {
         String respond = (String) ois.readObject();
         if (ADD_POST_SUCCESS.equalsIgnoreCase(respond)) {
             System.out.println(ADD_POST_SUCCESS);
-        } else if (ADD_POST_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(ADD_POST_FAIL);
         } else {
             System.out.println(ADD_POST_FAIL);
         }
     }
 
-    private void handleHidePost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException, SMPException {
+    private boolean displayPosts(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
         oos.writeObject("getPosts");
         try {
             String response = (String) ois.readObject();
+            if (response.equals("end")) {
+                return false;
+            }
             int index = 1;
             while (!response.equals("end")) {
                 System.out.println("(" + index++ + ") - " + response);
@@ -265,23 +257,31 @@ public class Client {
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error retrieving posts: " + e.getMessage());
+            return false;
         }
-        try {
-            System.out.println(HIDE_POST);
-            String postNumber = scanner.nextLine();
-            oos.writeObject("hidePost");
-            oos.flush();
-            oos.writeObject(postNumber);
-            String respond = (String) ois.readObject();
-            if (HIDE_POST_SUCCESS.equalsIgnoreCase(respond)) {
-                System.out.println(HIDE_POST_SUCCESS);
-            } else if (HIDE_POST_FAIL.equalsIgnoreCase(respond)) {
-                System.out.println(HIDE_POST_FAIL);
-            } else {
-                System.out.println(HIDE_POST_FAIL);
+        return true;
+    }
+
+    private void handleHidePost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException, SMPException {
+        boolean checkPosts = displayPosts(oos, ois, scanner);
+        if (checkPosts) {
+            try {
+                System.out.println(HIDE_POST);
+                String postNumber = scanner.nextLine();
+                oos.writeObject("hidePost");
+                oos.flush();
+                oos.writeObject(postNumber);
+                String respond = (String) ois.readObject();
+                if (HIDE_POST_SUCCESS.equalsIgnoreCase(respond)) {
+                    System.out.println(HIDE_POST_SUCCESS);
+                } else {
+                    System.out.println(HIDE_POST_FAIL);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } else {
+            System.out.println(HIDE_POST_FAIL);
         }
     }
 
@@ -296,8 +296,6 @@ public class Client {
             String username = (String) ois.readObject();
             System.out.println(firstLastName);
             System.out.println(username);
-        } else if (VIEW_PROFILE_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(VIEW_PROFILE_FAIL);
         } else {
             System.out.println(VIEW_PROFILE_FAIL);
         }
@@ -333,9 +331,6 @@ public class Client {
             String respond = (String) ois.readObject();
             if (VIEW_FEED_SUCCESS.equalsIgnoreCase(respond)) {
                 handlePostOptions(oos, ois, scanner);
-                // todo
-            } else if (VIEW_FEED_FAIL.equalsIgnoreCase(respond)) {
-                System.out.println(VIEW_FEED_FAIL);
             } else {
                 System.out.println(VIEW_FEED_FAIL);
             }
@@ -378,14 +373,13 @@ public class Client {
         String respond = (String) ois.readObject();
         if (ADD_COMMENT_SUCCESS.equalsIgnoreCase(respond)) {
             System.out.println(ADD_COMMENT_SUCCESS);
-        } else if (ADD_COMMENT_FAIL.equalsIgnoreCase(respond)) {
-            System.out.println(ADD_COMMENT_FAIL);
         } else {
             System.out.println(ADD_COMMENT_FAIL);
         }
     }
 
     private boolean displayComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
+        System.out.println("Viewing this post's comments:");
         oos.writeObject("getPostsComments");
         try {
             String response = (String) ois.readObject();
@@ -415,9 +409,6 @@ public class Client {
             String respond = (String) ois.readObject();
             if (VIEW_COMMENTS_SUCCESS.equalsIgnoreCase(respond)) {
                 handleCommentOptions(oos, ois, scanner);
-                // todo
-            } else if (VIEW_COMMENTS_FAIL.equalsIgnoreCase(respond)) {
-                System.out.println(VIEW_COMMENTS_FAIL);
             } else {
                 System.out.println(VIEW_COMMENTS_FAIL);
             }
@@ -426,8 +417,37 @@ public class Client {
         }
     }
 
-    private void handleCommentOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) {
-        System.out.println(COMMENT_OPTIONS_MENU);
+    private void handleCommentOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+        while (true) {
+            System.out.println(COMMENT_OPTIONS_MENU);
+            String option = scanner.nextLine();
+            switch (option) {
+                case "1": // upvote post
+                    oos.writeObject("upvoteComment");
+                    System.out.println("Comment successfully upvoted.");
+                    break;
+                case "2": // downvote post
+                    oos.writeObject("downvoteComment");
+                    System.out.println("Comment successfully downvoted.");
+                    break;
+                case "3": // add comment
+                    handleDeleteComment(oos, ois, scanner);
+                    return;
+                case "4": // exit
+                    System.out.println("Leaving comment options menu.");
+                    return;
+            }
+        }
+    }
+
+    private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+        oos.writeObject("deleteComment");
+        String respond = (String) ois.readObject();
+        if (DELETE_COMMENT_SUCCESS.equalsIgnoreCase(respond)) {
+            System.out.println(DELETE_COMMENT_SUCCESS);
+        } else {
+            System.out.println(DELETE_COMMENT_FAIL);
+        }
     }
 
 

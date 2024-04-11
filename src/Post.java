@@ -125,13 +125,11 @@ public class Post implements PostInterface {
      */
     public boolean addComment(String author, String contents) throws SMPException {
         Comment commentId = CommentsManager.addComment(author, contents, 0, 0);
-
         if (commentId == null) {
             return false;
         }
         commentIds.add(commentId.getCommentId());
         PostsManager.updatePost(this);
-        CommentsManager.updateComment(commentId);
         return true;
     }
 

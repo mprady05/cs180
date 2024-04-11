@@ -9,6 +9,7 @@ public class ClientHandler implements Runnable {
     ArrayList<Post> usersPosts = new ArrayList<>();
     ArrayList<Post> allFriendsPosts = new ArrayList<>();
     Post chosenPost;
+    Comment chosenComment;
     ArrayList<Comment> postsComments = new ArrayList<>();
     private static final String LOGIN_SUCCESS = "Login success!";
     private static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
@@ -34,6 +35,8 @@ public class ClientHandler implements Runnable {
     private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again.";
     private static final String ADD_COMMENT_SUCCESS = "Successfully added comment!";
     private static final String ADD_COMMENT_FAIL = "Failed to add comment. Please try again.";
+    private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
+    private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
     public ClientHandler(Socket socket) {
         this.clientSocket = socket;
     }
@@ -90,17 +93,15 @@ public class ClientHandler implements Runnable {
                 }
             }
             while (loggedIn) {
-                UsersManager.readUsersDatabaseFile();
-                PostsManager.readPostsDatabaseFile();
-                CommentsManager.readCommentsDatabaseFile();
+                readAllDatabases();
                 String command = (String) ois.readObject();
-                System.out.println(command);
                 String friendUsername;
                 String blockUsername;
                 boolean checkFriend;
                 boolean checkBlocked;
                 switch (command) {
                     case "1": // add friend
+                        readAllDatabases();
                         friendUsername = (String) ois.readObject();
                         checkFriend = currentUser.addFriend(friendUsername);
                         if (checkFriend) {
@@ -108,9 +109,10 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(ADD_FRIEND_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "2": // remove friend
+                        readAllDatabases();
                         friendUsername = (String) ois.readObject();
                         checkFriend = currentUser.removeFriend(friendUsername);
                         if (checkFriend) {
@@ -118,9 +120,10 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(REMOVE_FRIEND_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "3": // block friend
+                        readAllDatabases();
                         blockUsername = (String) ois.readObject();
                         checkBlocked = currentUser.blockUser(blockUsername);
                         if (checkBlocked) {
@@ -128,9 +131,10 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(BLOCK_FRIEND_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "4": // add post
+                        readAllDatabases();
                         String content = (String) ois.readObject();
                         boolean checkAddPost = currentUser.addPost(content);
                         if (checkAddPost) {
@@ -138,22 +142,21 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(ADD_POST_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "getPosts":
+                        readAllDatabases();
                         for (int i = 0; i < currentUser.getPostIds().size(); i++) {
                             usersPosts.add(PostsManager.searchPost(currentUser.getPostIds().get(i)));
                         }
-                        System.out.println(usersPosts);
                         for (Post post : usersPosts) {
                             oos.writeObject(post.getContent());
                         }
                         oos.writeObject("end");
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "hidePost": // hide post
+                        readAllDatabases();
                         String postNumberStr = (String) ois.readObject();
                         try {
                             int postNumber = Integer.parseInt(postNumberStr);
@@ -166,16 +169,17 @@ public class ClientHandler implements Runnable {
                                     } else {
                                         oos.writeObject(HIDE_POST_FAIL);
                                     }
+                                    writeAllDatabases();
                                     break;
                                 }
                             }
                         } catch (NumberFormatException e) {
                             oos.writeObject(HIDE_POST_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "6": // view/search
+                        readAllDatabases();
                         String profileUsername = (String) ois.readObject();
                         User isUserThere = UsersManager.searchUser(profileUsername);
                         if (isUserThere != null && !currentUser.getBlockList().contains(profileUsername)) {
@@ -185,8 +189,10 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(VIEW_PROFILE_FAIL);
                         }
+                        writeAllDatabases();
                         break;
                     case "viewFeed": // view feed
+                        readAllDatabases();
                         String friendsPostNumberStr = (String) ois.readObject();
                         try {
                             boolean checkFeed = false;
@@ -201,15 +207,17 @@ public class ClientHandler implements Runnable {
                             if (!checkFeed) {
                                 oos.writeObject(VIEW_PROFILE_FAIL);
                             }
+                            writeAllDatabases();
                             break;
                         } catch (NumberFormatException e) {
                             oos.writeObject(VIEW_FEED_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "getFriendsPosts":
+                        readAllDatabases();
                         ArrayList<String> allFriendsPostIds = currentUser.getFriendsPosts();
+                        allFriendsPosts = new ArrayList<>();
                         for (String friendsPostId : allFriendsPostIds) {
                             allFriendsPosts.add(PostsManager.searchPost(friendsPostId));
                         }
@@ -217,23 +225,25 @@ public class ClientHandler implements Runnable {
                             oos.writeObject(friendsPost.getContent());
                         }
                         oos.writeObject("end");
+                        writeAllDatabases();
                         break;
                     case "upvotePost":
+                        readAllDatabases();
                         chosenPost.addUpvote();
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "downvotePost":
+                        readAllDatabases();
                         chosenPost.addDownvote();
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "viewComments":
+                        readAllDatabases();
                         String commentNumberStr = (String) ois.readObject();
                         try {
                             boolean checkComment = false;
                             int commentNumber = Integer.parseInt(commentNumberStr);
-                            Comment chosenComment = getCommentFromChoice(postsComments, commentNumber);
+                            chosenComment = getCommentFromChoice(postsComments, commentNumber);
                             for (Comment comment : postsComments) {
                                 if (chosenComment.equals(comment)) {
                                     checkComment = true;
@@ -243,20 +253,43 @@ public class ClientHandler implements Runnable {
                             if (!checkComment) {
                                 oos.writeObject(VIEW_COMMENTS_FAIL);
                             }
+                            writeAllDatabases();
                             break;
                         } catch (NumberFormatException e) {
                             oos.writeObject(VIEW_COMMENTS_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
+                        writeAllDatabases();
                         break;
                     case "upvoteComment":
+                        readAllDatabases();
+                        chosenComment.addUpvote();
+                        writeAllDatabases();
                         break;
                     case "downvoteComment":
+                        readAllDatabases();
+                        chosenComment.addDownvote();
+                        writeAllDatabases();
+                        break;
+                    case "deleteComment":
+                        readAllDatabases();
+                        boolean checkDelete = chosenPost.deleteComment(chosenComment.getCommentId(),
+                                currentUser.getUsername());
+                        if (checkDelete) {
+                            oos.writeObject(DELETE_COMMENT_SUCCESS);
+                        } else {
+                            oos.writeObject(DELETE_COMMENT_FAIL);
+                        }
+                        System.out.println("current post" + chosenPost);
+                        writeAllDatabases();
+                        chosenComment = null;
+                        chosenPost = PostsManager.searchPost(chosenPost.getPostId());
                         break;
                     case "8": // logout
+                        readAllDatabases();
+                        writeAllDatabases();
                         return;
                     case "getPostsComments":
+                        readAllDatabases();
                         postsComments = new ArrayList<>();
                         ArrayList<String> postsCommentIds = chosenPost.getComments();
                         for (String commentId : postsCommentIds) {
@@ -266,8 +299,10 @@ public class ClientHandler implements Runnable {
                             oos.writeObject(comment.getContent());
                         }
                         oos.writeObject("end");
+                        writeAllDatabases();
                         break;
                     case "addComment":
+                        readAllDatabases();
                         String content1 = (String) ois.readObject();
                         boolean checkAddComment = chosenPost.addComment(currentUser.getUsername(), content1);
                         if (checkAddComment) {
@@ -275,14 +310,11 @@ public class ClientHandler implements Runnable {
                         } else {
                             oos.writeObject(ADD_COMMENT_FAIL);
                         }
-                        UsersManager.writeUsersDatabaseFile();
-                        PostsManager.writePostsDatabaseFile();
-                        CommentsManager.writeCommentsDatabaseFile();
+                        writeAllDatabases();
+                        chosenPost = PostsManager.searchPost(chosenPost.getPostId());
                         break;
                 }
-                UsersManager.writeUsersDatabaseFile();
-                PostsManager.writePostsDatabaseFile();
-                CommentsManager.writeCommentsDatabaseFile();
+                writeAllDatabases();
             }
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("Error in ClientHandler: " + e.getMessage());
@@ -320,6 +352,18 @@ public class ClientHandler implements Runnable {
             }
         }
         return commentIdChoice;
+    }
+
+    private void readAllDatabases() throws SMPException {
+        CommentsManager.readCommentsDatabaseFile();
+        PostsManager.readPostsDatabaseFile();
+        UsersManager.readUsersDatabaseFile();
+    }
+
+    private void writeAllDatabases() throws SMPException {
+        CommentsManager.writeCommentsDatabaseFile();
+        PostsManager.writePostsDatabaseFile();
+        UsersManager.writeUsersDatabaseFile();
     }
 
 }
