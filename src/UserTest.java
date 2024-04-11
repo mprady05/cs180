@@ -17,9 +17,6 @@ public class UserTest {
     public void setUp() throws SMPException {
         UsersManager.clearAllUsers();
         PostsManager.clearAllPosts();
-        ArrayList<String> johnFriends = new ArrayList<>(Arrays.asList("kim", "bob"));
-        ArrayList<String> johnBlocked = new ArrayList<>(Arrays.asList("mike"));
-        ArrayList<String> johnPosts = new ArrayList<>();
         UsersManager.registerUser("John", "Doe", "johndoe", "password123");
         UsersManager.registerUser("Alice", "Smith", "alice", "password1");
         userJohn = UsersManager.searchUser("johndoe");

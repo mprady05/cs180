@@ -1,10 +1,12 @@
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
 import static org.junit.Assert.*;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 /**
  * CS18000 -- Project 5 -- Phase 1
@@ -16,7 +18,29 @@ import java.util.*;
 public class CommentsManagerTest {
     private CommentsManager commentsManager;
     private static final String TEST_COMMENTS_FILE = "CommentsDatabase.txt";
+    private static final String BACKUP_COMMENTS_FILE = "CommentsDatabaseBackup.txt";
     private static String originalPostsContent = "";
+
+    @BeforeClass
+    public static void backupOriginalFile() throws IOException {
+        File originalFile = new File(TEST_COMMENTS_FILE);
+        File backupFile = new File(BACKUP_COMMENTS_FILE);
+        if (originalFile.exists()) {
+            Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @AfterClass
+    public static void restoreOriginalFile() throws IOException {
+        File originalFile = new File(TEST_COMMENTS_FILE);
+        File backupFile = new File(BACKUP_COMMENTS_FILE);
+        if (backupFile.exists()) {
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+            Files.move(backupFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
 
     @Before
     public void setUp() throws SMPException, IOException {
@@ -28,12 +52,6 @@ public class CommentsManagerTest {
         commentsManager = new CommentsManager();
     }
 
-    @After
-    public void tearDown() throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_COMMENTS_FILE))) {
-            writer.write(originalPostsContent);
-        }
-    }
 
     @Test
     public void testWriteAndReadCommentsDatabase() throws SMPException {

@@ -1,7 +1,9 @@
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.*;
+
 import static org.junit.Assert.*;
+
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.io.*;
 /**
@@ -15,7 +17,29 @@ public class PostsManagerTest {
     private PostsManager postsManager;
     private User testUser;
     private static final String TEST_POSTS_FILE = "PostsDatabase.txt";
+    private static final String BACKUP_POSTS_FILE = "PostsDatabaseBackup.txt";
     private static String originalPostsContent = "";
+
+    @BeforeClass
+    public static void backupOriginalFile() throws IOException {
+        File originalFile = new File(TEST_POSTS_FILE);
+        File backupFile = new File(BACKUP_POSTS_FILE);
+        if (originalFile.exists()) {
+            Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @AfterClass
+    public static void restoreOriginalFile() throws IOException {
+        File originalFile = new File(TEST_POSTS_FILE);
+        File backupFile = new File(BACKUP_POSTS_FILE);
+        if (backupFile.exists()) {
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+            Files.move(backupFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
 
     @Before
     public void setUp() throws SMPException, IOException {
@@ -32,13 +56,6 @@ public class PostsManagerTest {
                 testUser.getUsername(), testUser.getPassword());
         UsersManager.registerUser("John", "Doe", "johndoe", "password123");
         postsManager = new PostsManager();
-    }
-
-    @After
-    public void tearDown() throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_POSTS_FILE))) {
-            writer.write(originalPostsContent);
-        }
     }
 
     @Test

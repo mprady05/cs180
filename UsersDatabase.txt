@@ -1,3 +1,0 @@
-John;Doe;johndoe;password123;(alice,bob);(mike);()
-Alice;Smith;alice;12345;(johndoe);();()
-New;User;newuser;password123;();();()
