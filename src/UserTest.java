@@ -17,14 +17,15 @@ public class UserTest {
     public void setUp() throws SMPException {
         UsersManager.clearAllUsers();
         PostsManager.clearAllPosts();
-        ArrayList<String> johnFriends = new ArrayList<>(Arrays.asList("alice", "bob"));
+        ArrayList<String> johnFriends = new ArrayList<>(Arrays.asList("kim", "bob"));
         ArrayList<String> johnBlocked = new ArrayList<>(Arrays.asList("mike"));
         ArrayList<String> johnPosts = new ArrayList<>();
-        UsersManager.registerUser("John", "Doe", "johndoe", "password123", johnFriends, johnBlocked, johnPosts);
-        UsersManager.registerUser("Alice", "Smith", "alice", "password1",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("John", "Doe", "johndoe", "password123");
+        UsersManager.registerUser("Alice", "Smith", "alice", "password1");
         userJohn = UsersManager.searchUser("johndoe");
         userAlice = UsersManager.searchUser("alice");
+        userJohn.addFriend("alice");
+        userAlice.addFriend("johndoe");
     }
 
     @Test
@@ -33,8 +34,8 @@ public class UserTest {
         String expectedLastName = "Doe";
         String expectedUsername = "johndoe";
         String expectedPassword = "password123";
-        List<String> expectedFriends = Arrays.asList("alice", "bob");
-        List<String> expectedBlocked = Arrays.asList("mike");
+        List<String> expectedFriends = Arrays.asList("alice");
+        List<String> expectedBlocked = new ArrayList<>();
         userJohn.addPost("This is a test post");
         assertEquals("Unexpected first name", expectedFirstName, userJohn.getFirstName());
         assertEquals("Unexpected last name", expectedLastName, userJohn.getLastName());
@@ -47,6 +48,7 @@ public class UserTest {
 
     @Test
     public void testAddFriend() throws SMPException {
+        User newuser = UsersManager.registerUser("new", "user", "newuser", "temp123");
         userJohn.addFriend("newuser");
         userAlice.addFriend("johndoe");
         assertTrue("John's friend list should include newuser", userJohn.getFriendList().contains("newuser"));

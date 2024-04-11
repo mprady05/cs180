@@ -15,7 +15,7 @@ public interface PostInterface {
     ArrayList<String> getComments();
     void addUpvote() throws SMPException;
     void addDownvote() throws SMPException;
-    void addComment(String author, String content) throws SMPException;
-    void deleteComment(String commentId, String requesterUsername) throws SMPException;
+    boolean addComment(String author, String content) throws SMPException;
+    boolean deleteComment(String commentId, String requesterUsername) throws SMPException;
     String toString();
 }

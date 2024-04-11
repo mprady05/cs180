@@ -48,7 +48,7 @@ public class CommentsManager implements CommentsManagerInterface {
     /**
      * Parses a line from the comments database file into a Comment object.
      * @param line A line from the comments database file.
-     * @return A Comment object if parsing is successful, null otherwise.
+     * @return A comment object if parsing is successful, null otherwise.
      * @throws SMPException If parsing fails.
      */
     private static Comment parseLineToComment(String line) throws SMPException {
@@ -95,10 +95,10 @@ public class CommentsManager implements CommentsManagerInterface {
      * @param content Content of the comment.
      * @param upvotes Initial upvotes count.
      * @param downvotes Initial downvotes count.
-     * @return The ID of the newly added comment, or null if the author doesn't exist.
+     * @return The newly added comment, or null if the author doesn't exist.
      * @throws SMPException If the author doesn't exist.
      */
-    public static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+    public static Comment addComment(String authorUsername, String content, int upvotes, int downvotes)
             throws SMPException {
         User author = UsersManager.searchUser(authorUsername);
         if (author == null) {
@@ -107,7 +107,7 @@ public class CommentsManager implements CommentsManagerInterface {
         }
         Comment newComment = new Comment(author, content, upvotes, downvotes);
         comments.add(newComment);
-        return newComment.getCommentId();
+        return newComment;
     }
 
     /**

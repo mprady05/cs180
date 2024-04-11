@@ -61,64 +61,86 @@ public class User implements UserInterface {
     /**
      * Adds a friend to the user's friend list and updates the user in the UsersManager.
      * @param checkUsername Username of the new friend.
+     * @return true if friend is added, false otherwise.
      */
-    public void addFriend(String checkUsername) throws SMPException {
-        friendList.add(checkUsername);
-        UsersManager.updateUser(this);
+    public boolean addFriend(String checkUsername) throws SMPException {
+        if (UsersManager.searchUser(checkUsername) != null && !friendList.contains(checkUsername)) {
+            friendList.add(checkUsername);
+            UsersManager.updateUser(this);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Blocks a user, removing them from the friend list if present and adding to the block list.
      * Updates both users' data in the UsersManager accordingly.
      * @param usernameToBlock Username of the user to be blocked.
+     * @return true if user is blocked, false otherwise.
      */
-    public void blockUser(String usernameToBlock) throws SMPException {
-        if (friendList.contains(usernameToBlock)) {
+    public boolean blockUser(String usernameToBlock) throws SMPException {
+        if (friendList.contains(usernameToBlock) && !blockList.contains(usernameToBlock)) {
             friendList.remove(usernameToBlock);
-        }
-        if (!blockList.contains(usernameToBlock)) {
             blockList.add(usernameToBlock);
+            User userToBlock = UsersManager.searchUser(usernameToBlock);
+            if (userToBlock != null) {
+                if (userToBlock.getFriendList().contains(this.username)) {
+                    userToBlock.getFriendList().remove(this.username);
+                    UsersManager.updateUser(userToBlock);
+                }
+            }
+            UsersManager.updateUser(this);
+            return true;
+        } else {
+            return false;
         }
-        User userToBlock = UsersManager.searchUser(usernameToBlock);
-        if (userToBlock != null && userToBlock.getFriendList().contains(this.username)) {
-            userToBlock.getFriendList().remove(this.username);
-            UsersManager.updateUser(userToBlock);
-        }
-        UsersManager.updateUser(this);
     }
 
     /**
      * Removes a friend from the user's friend list and updates the user in the UsersManager.
      * @param checkUsername Username of the friend to remove.
+     * @return true if friend is removed, false otherwise.
      */
-    public void removeFriend(String checkUsername) throws SMPException {
-        friendList.remove(checkUsername);
-        UsersManager.updateUser(this);
+    public boolean removeFriend(String checkUsername) throws SMPException {
+        if (UsersManager.searchUser(checkUsername) != null && friendList.contains(checkUsername)) {
+            friendList.remove(checkUsername);
+            UsersManager.updateUser(this);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Adds a new post with the given content created by the user.
      * @param content Content of the new post.
+     * @return true if post is added, false otherwise.
      */
-    public void addPost(String content) throws SMPException {
+    public boolean addPost(String content) throws SMPException {
         String postId = PostsManager.addPost(this.username, content, 0, 0, new ArrayList<>());
         Post post = PostsManager.searchPost(postId);
         if (post == null) {
-            throw new SMPException("Not able to add post.");
+            return false;
         }
         postIds.add(postId);
         UsersManager.updateUser(this);
         PostsManager.updatePost(post);
+        return true;
     }
 
     /**
      * Hides a post from the user's view by removing it from their postIds list.
      * @param postId ID of the post to hide.
+     * @return true if post is added, false otherwise.
      */
-    public void hidePost(String postId) throws SMPException {
+    public boolean hidePost(String postId) throws SMPException {
         if (postIds.contains(postId)) {
             postIds.remove(postId);
             UsersManager.updateUser(this);
+            return true;
+        } else {
+            return false;
         }
     }
 

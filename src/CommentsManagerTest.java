@@ -24,8 +24,7 @@ public class CommentsManagerTest {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_COMMENTS_FILE))) {
             writer.write(originalPostsContent);
         }
-        UsersManager.registerUser("John", "Doe", "johndoe", "password",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("John", "Doe", "johndoe", "password");
         commentsManager = new CommentsManager();
     }
 
@@ -40,13 +39,12 @@ public class CommentsManagerTest {
     public void testWriteAndReadCommentsDatabase() throws SMPException {
         User testUser = new User("Jane", "Doe", "janedoe", "pass",
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        UsersManager.registerUser("Jane", "Doe", "janedoe", "pass",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Jane", "Doe", "janedoe", "pass");
         String testContent = "This is a test comment.";
         int testUpvotes = 5;
         int testDownvotes = 2;
-        String commentId = CommentsManager.addComment(testUser.getUsername(), testContent, testUpvotes, testDownvotes);
-        assertNotNull("Comment ID should not be null", commentId);
+        Comment commentId = CommentsManager.addComment(testUser.getUsername(), testContent, testUpvotes, testDownvotes);
+        assertNotNull("Comment ID should not be null", commentId.getCommentId());
         commentsManager.writeCommentsDatabaseFile();
         commentsManager.clearAllComments();
         assertTrue("Comments list should be empty before reading from file",
@@ -54,7 +52,7 @@ public class CommentsManagerTest {
         commentsManager.readCommentsDatabaseFile();
         assertFalse("Comments list should not be empty after reading from file",
                 commentsManager.getComments().isEmpty());
-        Comment readComment = commentsManager.searchComment(commentId);
+        Comment readComment = commentsManager.searchComment(commentId.getCommentId());
         assertNotNull("Read comment should not be null", readComment);
         assertEquals("Content of the read comment should match", testContent, readComment.getContent());
         assertEquals("Upvotes of the read comment should match", testUpvotes, readComment.getUpvotes());
@@ -63,11 +61,11 @@ public class CommentsManagerTest {
 
     @Test
     public void testAddComment() throws SMPException {
-        String commentId = CommentsManager.addComment("johndoe", "This is a test comment", 0, 0);
+        Comment commentId = CommentsManager.addComment("johndoe", "This is a test comment", 0, 0);
         assertNotNull("Comment ID should not be null after adding a comment", commentId);
         assertEquals("There should be one comment after adding", 1, CommentsManager.getComments().size());
         Comment addedComment = CommentsManager.getComments().stream()
-                .filter(comment -> comment.getCommentId().equals(commentId))
+                .filter(comment -> comment.getCommentId().equals(commentId.getCommentId()))
                 .findFirst()
                 .orElse(null);
         assertNotNull("Added comment should be retrievable", addedComment);
@@ -89,9 +87,9 @@ public class CommentsManagerTest {
 
     @Test
     public void testDeleteCommentSuccess() throws SMPException {
-        String commentId = CommentsManager.addComment("johndoe", "Comment to delete", 2, 3);
-        assertTrue("The comment should be deleted successfully.", CommentsManager.deleteComment(commentId, "johndoe"));
-        assertNull("Deleted comment should not be found.", CommentsManager.searchComment(commentId));
+        Comment commentId = CommentsManager.addComment("johndoe", "Comment to delete", 2, 3);
+        assertTrue("The comment should be deleted successfully.", CommentsManager.deleteComment(commentId.getCommentId(), "johndoe"));
+        assertNull("Deleted comment should not be found.", CommentsManager.searchComment(commentId.getCommentId()));
     }
 
     @Test
@@ -102,8 +100,9 @@ public class CommentsManagerTest {
 
     @Test
     public void testSearchCommentExisting() throws SMPException {
-        String commentId = CommentsManager.addComment("johndoe", "Searching this comment", 3, 0);
-        Comment foundComment = CommentsManager.searchComment(commentId);
+        Comment commentId = CommentsManager.addComment("johndoe", "Searching this comment", 3, 0);
+        assert commentId != null;
+        Comment foundComment = CommentsManager.searchComment(commentId.getCommentId());
         assertNotNull("The comment should exist.", foundComment);
         assertEquals("Searching this comment", foundComment.getContent());
     }

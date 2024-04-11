@@ -29,10 +29,8 @@ public class PostsManagerTest {
         testUser = new User("Test", "User", "testuser", "password",
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         UsersManager.registerUser(testUser.getFirstName(), testUser.getLastName(),
-                testUser.getUsername(), testUser.getPassword(),
-                testUser.getFriendList(), testUser.getBlockList(), testUser.getPostIds());
-        UsersManager.registerUser("John", "Doe", "johndoe", "password123",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                testUser.getUsername(), testUser.getPassword());
+        UsersManager.registerUser("John", "Doe", "johndoe", "password123");
         postsManager = new PostsManager();
     }
 
@@ -96,12 +94,12 @@ public class PostsManagerTest {
     public void testGetPostIdFromComment() throws SMPException {
         String postId = PostsManager.addPost("johndoe", "Example post content", 5, 2, new ArrayList<>());
         assertNotNull("Post should have been added successfully", postId);
-        String commentId = CommentsManager.addComment("johndoe", "Example comment", 0, 0);
+        Comment commentId = CommentsManager.addComment("johndoe", "Example comment", 0, 0);
         assertNotNull("Comment should have been added successfully", commentId);
         Post post = PostsManager.searchPost(postId);
         assertNotNull("Post should exist", post);
-        post.getComments().add(commentId);
-        Comment comment = new Comment(commentId, UsersManager.searchUser("johndoe"),
+        post.getComments().add(commentId.getCommentId());
+        Comment comment = new Comment(commentId.getCommentId(), UsersManager.searchUser("johndoe"),
                 "Example comment", 0, 0);
         String foundPostId = PostsManager.getPostIdFromComment(comment);
         assertEquals("The post ID retrieved should match the one associated with the comment", postId, foundPostId);

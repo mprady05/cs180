@@ -11,7 +11,7 @@ public interface UserClientInterface {
      * @param username The username of the user trying to log in.
      * @param password The password of the user trying to log in.
      */
-    void loginUser(String username, String password);
+    User loginUser(String username, String password);
 
     /**
      * Logs out the current user.

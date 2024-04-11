@@ -14,7 +14,7 @@ public interface CommentsManagerInterface {
     }
     static void writeCommentsDatabaseFile() throws SMPException {
     }
-    static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+    static Comment addComment(String authorUsername, String content, int upvotes, int downvotes)
             throws SMPException {
         return null;
     }

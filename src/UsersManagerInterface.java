@@ -12,13 +12,13 @@ public interface UsersManagerInterface {
     static ArrayList<User> getUsers() {
         return null;
     }
-    static boolean registerUser(String firstName, String lastName,
+    static User registerUser(String firstName, String lastName,
                                 String username, String password,
                                 ArrayList<String> friendList,
                                 ArrayList<String> blockList,
                                 ArrayList<String> postIds)
             throws SMPException {
-        return false;
+        return null;
     }
     static User loginUser(String username, String password) throws SMPException {
         return null;

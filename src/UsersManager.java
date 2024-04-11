@@ -57,7 +57,7 @@ public class UsersManager implements UsersManagerInterface {
      * @return A User object created from the parsed line.
      * @throws SMPException if parsing fails due to incorrect format.
      */
-    private static User stringToUser(String line) throws SMPException {
+    public static User stringToUser(String line) throws SMPException {
         try {
             String[] parts = line.split(";");
             String firstName = parts[0];
@@ -140,22 +140,19 @@ public class UsersManager implements UsersManagerInterface {
      * @param lastName The last name of the user.
      * @param username The username of the user.
      * @param password The password of the user.
-     * @param friendList A list of usernames representing the user's friends.
-     * @param blockList A list of usernames representing the users blocked by the user.
-     * @param postIds A list of post IDs created by the user.
-     * @return true if the user was successfully registered; false if the username already exists.
+     * @return User if the user was successfully registered; null if the username already exists.
      * @throws SMPException if the username already exists.
      */
-    public static boolean registerUser(String firstName, String lastName, String username,
-                                       String password, ArrayList<String> friendList,
-                                       ArrayList<String> blockList, ArrayList<String> postIds)
+    public static User registerUser(String firstName, String lastName, String username,
+                                       String password)
             throws SMPException {
         if (doesUsernameExist(username)) {
-            throw new SMPException("Username already exists.");
+            return null;
         }
-        User newUser = new User(firstName, lastName, username, password, friendList, blockList, postIds);
+        User newUser = new User(firstName, lastName, username, password,
+                new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
         users.add(newUser);
-        return true;
+        return newUser;
     }
     private static boolean doesUsernameExist(String username) {
         for (User user : users) {
@@ -211,7 +208,7 @@ public class UsersManager implements UsersManagerInterface {
      */
     public static User searchUser(String username) {
         for (User user : users) {
-            if (user.getUsername().equals(username)) {
+            if (user.getUsername().equals(username) && !user.getBlockList().contains(username)) {
                 return user;
             }
         }
@@ -224,5 +221,4 @@ public class UsersManager implements UsersManagerInterface {
     public static void clearAllUsers() {
         UsersManager.users.clear();
     }
-
 }

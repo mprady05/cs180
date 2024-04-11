@@ -67,13 +67,14 @@ public class PostsManager implements PostsManagerInterface {
             String content = parts[2];
             int upvotes = Integer.parseInt(parts[3]);
             int downvotes = Integer.parseInt(parts[4]);
-            ArrayList<String> commentIds = new ArrayList<>();
+            List<String> commentIds = new ArrayList<>();
             if (parts.length > 5 && parts[5].startsWith("[") && parts[5].endsWith("]")) {
                 String commentsString = parts[5].substring(1, parts[5].length() - 1);
                 if (!commentsString.isEmpty()) {
-                    commentIds = (ArrayList<String>) Arrays.asList(commentsString.split(":~:"));
+                    commentIds = Arrays.asList(commentsString.split(":~:"));
                 }
             }
+            System.out.println(commentIds);
             return new Post(postId, creator, content, upvotes, downvotes, new ArrayList<>(commentIds));
         } catch (Exception e) {
             System.err.println("Error parsing post from line: " + e.getMessage());
@@ -86,7 +87,7 @@ public class PostsManager implements PostsManagerInterface {
      * This method overwrites the existing file content with the current state of the posts list.
      */
     public static void writePostsDatabaseFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(POST_FILE))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(POST_FILE, false))) {
             for (Post post : posts) {
                 String postInfo = post.getPostId() + ":~:" +
                         post.getCreator().getUsername() + ":~:" +
@@ -126,7 +127,7 @@ public class PostsManager implements PostsManagerInterface {
             throws SMPException {
         User creator = UsersManager.searchUser(creatorUsername);
         if (creator == null) {
-            throw new SMPException("Creator username does not exist.");
+            return null;
         }
         Post newPost = new Post(creator, content, upvotes, downvotes, commentIds);
         posts.add(newPost);
@@ -190,4 +191,5 @@ public class PostsManager implements PostsManagerInterface {
         }
         return null;
     }
+
 }

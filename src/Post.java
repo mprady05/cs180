@@ -104,8 +104,7 @@ public class Post implements PostInterface {
      */
     public void addUpvote() throws SMPException {
         upvotes += 1;
-        Post post = PostsManager.searchPost(this.postId);
-        PostsManager.updatePost(post);
+        PostsManager.updatePost(this);
     }
 
     /**
@@ -114,23 +113,26 @@ public class Post implements PostInterface {
      */
     public void addDownvote() throws SMPException {
         downvotes += 1;
-        Post post = PostsManager.searchPost(this.postId);
-        PostsManager.updatePost(post);
+        PostsManager.updatePost(this);
     }
 
     /**
      * This method creates the comment in the CommentsManager, then adds the comment's ID to this post.
      * @param author The username of the author of the comment.
      * @param contents The textual content of the comment.
+     * @return true if added comment, false otherwise.
      * @throws SMPException If there is an error creating the comment or updating the post.
      */
-    public void addComment(String author, String contents) throws SMPException {
-        String commentId = CommentsManager.addComment(author, contents, 0, 0);
-        if (commentId == null || commentId.isEmpty()) {
-            throw new SMPException("Could not add comment.");
+    public boolean addComment(String author, String contents) throws SMPException {
+        Comment commentId = CommentsManager.addComment(author, contents, 0, 0);
+
+        if (commentId == null) {
+            return false;
         }
-        commentIds.add(commentId);
+        commentIds.add(commentId.getCommentId());
         PostsManager.updatePost(this);
+        CommentsManager.updateComment(commentId);
+        return true;
     }
 
     /**
@@ -138,11 +140,12 @@ public class Post implements PostInterface {
      * @param commentId The ID of the comment to be removed.
      * @param requesterUsername The username of the requester.
      * @throws SMPException If the comment cannot be deleted.
+     * @return true if comment is deleted, false otherwise.
      */
-    public void deleteComment(String commentId, String requesterUsername) throws SMPException {
+    public boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
         Comment commentToDelete = CommentsManager.searchComment(commentId);
         if (commentToDelete == null) {
-            throw new SMPException("Comment not found.");
+            return false;
         }
         User commentAuthor = commentToDelete.getAuthor();
         boolean isPostCreator = this.creator.getUsername().equals(requesterUsername);
@@ -150,18 +153,20 @@ public class Post implements PostInterface {
             if (commentIds.remove(commentId)) {
                 CommentsManager.deleteComment(commentId, commentAuthor.getUsername());
                 PostsManager.updatePost(this);
+                return true;
             } else {
-                throw new SMPException("Failed to delete comment from post.");
+                return false;
             }
         } else if (isPostCreator) {
             if (commentIds.remove(commentId)) {
                 CommentsManager.deleteComment(commentId, this.creator.getUsername());
                 PostsManager.updatePost(this);
+                return true;
             } else {
-                throw new SMPException("Failed to delete comment from post.");
+                return false;
             }
         } else {
-            throw new SMPException("Failed to delete comment from post.");
+            return false;
         }
     }
 
