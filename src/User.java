@@ -35,25 +35,25 @@ public class User implements UserInterface {
         this.postIds = postIds;
     }
 
-    public String getFirstName() {
+    public synchronized String getFirstName() {
         return firstName;
     }
-    public String getLastName() {
+    public synchronized String getLastName() {
         return lastName;
     }
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
-    public String getPassword() {
+    public synchronized String getPassword() {
         return password;
     }
-    public ArrayList<String> getFriendList() {
+    public synchronized ArrayList<String> getFriendList() {
         return friendList;
     }
-    public ArrayList<String> getBlockList() {
+    public synchronized ArrayList<String> getBlockList() {
         return blockList;
     }
-    public ArrayList<String> getPostIds() {
+    public synchronized ArrayList<String> getPostIds() {
         return postIds;
     }
 
@@ -61,7 +61,7 @@ public class User implements UserInterface {
      * Adds a friend to the user's friend list and updates the user in the UsersManager.
      * @param username Username of the new friend.
      */
-    public void addFriend(String username) throws SMPException {
+    public synchronized void addFriend(String username) throws SMPException {
         friendList.add(username);
         UsersManager.updateUser(this);
     }
@@ -71,7 +71,7 @@ public class User implements UserInterface {
      * Updates both users' data in the UsersManager accordingly.
      * @param usernameToBlock Username of the user to be blocked.
      */
-    public void blockUser(String usernameToBlock) throws SMPException {
+    public synchronized void blockUser(String usernameToBlock) throws SMPException {
         if (friendList.contains(usernameToBlock)) {
             friendList.remove(usernameToBlock);
         }
@@ -79,18 +79,23 @@ public class User implements UserInterface {
             blockList.add(usernameToBlock);
         }
         User userToBlock = UsersManager.searchUser(usernameToBlock);
-        if (userToBlock != null && userToBlock.getFriendList().contains(this.username)) {
-            userToBlock.getFriendList().remove(this.username);
-            UsersManager.updateUser(userToBlock);
+        if (userToBlock != null) {
+            synchronized(userToBlock) {
+                if (userToBlock.getFriendList().contains(this.username)) {
+                    userToBlock.getFriendList().remove(this.username);
+                    UsersManager.updateUser(userToBlock);
+                }
+            }
         }
         UsersManager.updateUser(this);
     }
+
 
     /**
      * Removes a friend from the user's friend list and updates the user in the UsersManager.
      * @param username Username of the friend to remove.
      */
-    public void removeFriend(String username) throws SMPException {
+    public synchronized void removeFriend(String username) throws SMPException {
         friendList.remove(username);
         UsersManager.updateUser(this);
     }
@@ -99,7 +104,7 @@ public class User implements UserInterface {
      * Adds a new post with the given content created by the user.
      * @param content Content of the new post.
      */
-    public void addPost(String content) throws SMPException {
+    public synchronized void addPost(String content) throws SMPException {
         String postId = PostsManager.addPost(this.username, content, 0, 0, new ArrayList<>());
         Post post = PostsManager.searchPost(postId);
         if (post == null) {
@@ -114,7 +119,7 @@ public class User implements UserInterface {
      * Hides a post from the user's view by removing it from their postIds list.
      * @param postId ID of the post to hide.
      */
-    public void hidePost(String postId) throws SMPException {
+    public synchronized void hidePost(String postId) throws SMPException {
         if (postIds.contains(postId)) {
             postIds.remove(postId);
             UsersManager.updateUser(this);
@@ -127,49 +132,54 @@ public class User implements UserInterface {
      */
     public ArrayList<String> getFriendsPosts() {
         ArrayList<String> friendsPosts = new ArrayList<>();
-        for (String friendUsername : friendList) {
+        ArrayList<String> copyFriendList;
+        synchronized(this) {
+            copyFriendList = new ArrayList<>(friendList);
+        }
+        for (String friendUsername : copyFriendList) {
             User friend = UsersManager.searchUser(friendUsername);
             if (friend != null) {
-                friendsPosts.addAll(friend.getPostIds());
+                synchronized(friend) {
+                    friendsPosts.addAll(new ArrayList<>(friend.getPostIds()));
+                }
             }
         }
         return friendsPosts;
     }
 
+
     /**
      * Provides a string representation of the User object.
      * @return A string containing the user's data.
      */
-    public String toString() {
-        String result = "";
-        result += firstName + ';';
-        result += lastName + ';';
-        result += username + ';';
-        result += password + ';';
-        result += "(";
+    public synchronized String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append(firstName).append(';')
+                .append(lastName).append(';')
+                .append(username).append(';')
+                .append(password).append(';')
+                .append("(");
         for (int i = 0; i < friendList.size(); i++) {
-            result += friendList.get(i);
+            result.append(friendList.get(i));
             if (i < friendList.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ");";
-        result += "(";
+        result.append(");").append("(");
         for (int i = 0; i < blockList.size(); i++) {
-            result += blockList.get(i);
+            result.append(blockList.get(i));
             if (i < blockList.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ");";
-        result += "(";
+        result.append(");").append("(");
         for (int i = 0; i < postIds.size(); i++) {
-            result += postIds.get(i);
+            result.append(postIds.get(i));
             if (i < postIds.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ")";
-        return result;
+        result.append(")");
+        return result.toString();
     }
 }
