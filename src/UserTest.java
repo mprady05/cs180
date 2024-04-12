@@ -21,7 +21,8 @@ public class UserTest {
         ArrayList<String> johnBlocked = new ArrayList<>(Arrays.asList("mike"));
         ArrayList<String> johnPosts = new ArrayList<>();
         UsersManager.registerUser("John", "Doe", "johndoe", "password123", johnFriends, johnBlocked, johnPosts);
-        UsersManager.registerUser("Alice", "Smith", "alice", "password1", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Alice", "Smith", "alice", "password1",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         userJohn = UsersManager.searchUser("johndoe");
         userAlice = UsersManager.searchUser("alice");
     }

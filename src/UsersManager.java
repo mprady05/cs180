@@ -65,14 +65,14 @@ public class UsersManager implements UsersManagerInterface {
             String username = parts[2];
             String password = parts[3];
             ArrayList<String> friendList = new ArrayList<>();
-            if (parts[4].length() > 2) { // Checks if there are friends listed
+            if (parts[4].length() > 2) {
                 String friendListStr = parts[4].substring(1, parts[4].length() - 1);
                 for (String friend : friendListStr.split(",")) {
                     friendList.add(friend.trim());
                 }
             }
             ArrayList<String> blockList = new ArrayList<>();
-            if (parts[5].length() > 2) { // Checks if there are blocked users listed
+            if (parts[5].length() > 2) {
                 String blockListStr = parts[5].substring(1, parts[5].length() - 1);
                 for (String blocked : blockListStr.split(",")) {
                     blockList.add(blocked.trim());
@@ -146,7 +146,10 @@ public class UsersManager implements UsersManagerInterface {
      * @return true if the user was successfully registered; false if the username already exists.
      * @throws SMPException if the username already exists.
      */
-    public static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException {
+    public static boolean registerUser(String firstName, String lastName, String username,
+                                       String password, ArrayList<String> friendList,
+                                       ArrayList<String> blockList, ArrayList<String> postIds)
+            throws SMPException {
         if (doesUsernameExist(username)) {
             throw new SMPException("Username already exists.");
         }

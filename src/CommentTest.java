@@ -15,12 +15,13 @@ public class CommentTest {
 
     @Before
     public void setUp() {
-        author = new User("JohnDoe", "John", "Doe", "password123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        author = new User("JohnDoe", "John", "Doe", "password123",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         comment = new Comment(author, "This is a test comment", 10, 2);
     }
 
     @Test
-    public void testGetCommentId_NotNull() {
+    public void testGetCommentIdNotNull() {
         assertNotNull("Comment ID should not be null", comment.getCommentId());
     }
 
@@ -45,7 +46,7 @@ public class CommentTest {
     }
 
     @Test
-    public void testToString_Format() {
+    public void testToStringFormat() {
         String expected = comment.getCommentId() + ":~:" +
                 author.getUsername() + ":~:" +
                 "This is a test comment" + ":~:" +

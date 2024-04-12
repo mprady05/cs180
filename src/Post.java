@@ -24,7 +24,7 @@ public class Post implements PostInterface {
      * @param commentIds List of IDs of comments attached to the post.
      */
     public Post(User creator, String content, int upvotes, int downvotes, ArrayList<String> commentIds) {
-        this.postId = UUID.randomUUID().toString();;
+        this.postId = UUID.randomUUID().toString();
         this.creator = creator;
         this.content = content;
         this.upvotes = upvotes;
@@ -121,11 +121,11 @@ public class Post implements PostInterface {
     /**
      * This method creates the comment in the CommentsManager, then adds the comment's ID to this post.
      * @param author The username of the author of the comment.
-     * @param content The textual content of the comment.
+     * @param contents The textual content of the comment.
      * @throws SMPException If there is an error creating the comment or updating the post.
      */
-    public void addComment(String author, String content) throws SMPException {
-        String commentId = CommentsManager.addComment(author, content, 0, 0);
+    public void addComment(String author, String contents) throws SMPException {
+        String commentId = CommentsManager.addComment(author, contents, 0, 0);
         if (commentId == null || commentId.isEmpty()) {
             throw new SMPException("Could not add comment.");
         }
@@ -153,7 +153,7 @@ public class Post implements PostInterface {
             } else {
                 throw new SMPException("Failed to delete comment from post.");
             }
-        } else if (isPostCreator){
+        } else if (isPostCreator) {
             if (commentIds.remove(commentId)) {
                 CommentsManager.deleteComment(commentId, this.creator.getUsername());
                 PostsManager.updatePost(this);

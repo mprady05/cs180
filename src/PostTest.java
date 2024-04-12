@@ -22,7 +22,8 @@ public class PostTest {
     @BeforeClass
     public static void setUpBeforeClass() throws SMPException {
         UsersManager.clearAllUsers();
-        UsersManager.registerUser("Jane", "Doe", "janedoe", "password", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Jane", "Doe", "janedoe", "password",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     @Before
