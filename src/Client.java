@@ -5,6 +5,10 @@ import java.util.Scanner;
 public class Client {
     private String hostname;
     private int port;
+    ObjectInputStream ois;
+    ObjectOutputStream oos;
+    Scanner scanner;
+    Socket socket;
     private boolean loggedIn = false;
     private static final String WELCOME_MESSAGE = "Welcome to MySpace!";
     private static final String WELCOME_MENU = """
@@ -12,15 +16,15 @@ public class Client {
             (1) - Login to your account
             (2) - Create a new account
             (3) - Exit""";
-    private static final String LOGIN_SUCCESS = "Login success!";
-    private static final String WELCOME_BACK = "Welcome back ";
-    private static final String WELCOME_NEW = "Welcome new user ";
-    private static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
-    private static final String REGISTER_SUCCESS = "Account created successfully!";
-    private static final String REGISTER_FAIL = "Invalid credentials. Please try again.";
-    private static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
-    private static final String INVALID_COMMAND = "Invalid command. Please try again.";
-    private static final String USER_MENU = """
+    public static final String LOGIN_SUCCESS = "Login success!";
+    public static final String WELCOME_BACK = "Welcome back ";
+    public static final String WELCOME_NEW = "Welcome new user ";
+    public static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
+    public static final String REGISTER_SUCCESS = "Account created successfully!";
+    public static final String REGISTER_FAIL = "Invalid credentials. Please try again.";
+    public static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
+    public static final String INVALID_COMMAND = "Invalid command. Please try again.";
+    public static final String USER_MENU = """
             Enter the number of the command you would like to execute:
             (1) - Add a friend
             (2) - Remove a friend
@@ -30,22 +34,22 @@ public class Client {
             (6) - View/Search profile
             (7) - View feed
             (8) - Logout""";
-    private static final String ADD_FRIEND = "Enter friend's username you want to add: ";
-    private static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
-    private static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
-    private static final String REMOVE_FRIEND = "Enter the friend's username you want to remove: ";
-    private static final String REMOVE_FRIEND_SUCCESS = "Successfully removed friend!";
-    private static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
-    private static final String BLOCK_FRIEND = "Enter the username of the friend you want to block: ";
-    private static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
-    private static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again.";
-    private static final String ADD_POST = "Enter post contents:";
-    private static final String ADD_POST_SUCCESS = "Successfully added post!";
-    private static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
-    private static final String HIDE_POST = "Enter the number of the post you want to hide: ";
-    private static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
-    private static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
-    private static final String VIEW_PROFILE = "Enter the user of the profile you want to view:";
+    public static final String ADD_FRIEND = "Enter friend's username you want to add: ";
+    public static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
+    public static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
+    public static final String REMOVE_FRIEND = "Enter the friend's username you want to remove: ";
+    public static final String REMOVE_FRIEND_SUCCESS = "Successfully removed friend!";
+    public static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
+    public static final String BLOCK_FRIEND = "Enter the username of the friend you want to block: ";
+    public static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
+    public static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again.";
+    public static final String ADD_POST = "Enter post contents:";
+    public static final String ADD_POST_SUCCESS = "Successfully added post!";
+    public static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
+    public static final String HIDE_POST = "Enter the number of the post you want to hide: ";
+    public static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
+    public static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
+    public static final String VIEW_PROFILE = "Enter the user of the profile you want to view:";
     private static final String VIEW_PROFILE_SUCCESS = "Profile found.";
     private static final String VIEW_PROFILE_FAIL = "Profile not found. Please try again.";
     private static final String VIEW_FEED = "Enter the number of your friend's post you want to see:";
@@ -73,81 +77,107 @@ public class Client {
     private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again.";
     private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
     private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
+    private InputStream input;
+    private OutputStream output;
 
-    public Client(String hostname, int port) {
+
+    // Constructor for real use
+    public Client(String hostname, int port) throws IOException {
         this.hostname = hostname;
         this.port = port;
+        Socket socket = new Socket(hostname, port);
+        setupStreams(socket.getInputStream(), socket.getOutputStream());
+        this.scanner = new Scanner(System.in);
+    }
+
+    // Constructor for testing with dependency injection
+    public Client(InputStream input, OutputStream output, Scanner scanner) throws IOException {
+        setupStreams(input, output);
+        this.scanner = scanner;
+    }
+
+    private void setupStreams(InputStream input, OutputStream output) throws IOException {
+        this.input = input;
+        this.output = output;
+        this.oos = new ObjectOutputStream(output);
+        this.ois = new ObjectInputStream(input);
     }
 
     public void start() {
-        try (Socket socket = new Socket(hostname, port);
-             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-             Scanner scanner = new Scanner(System.in)) {
+        try {
             System.out.println(WELCOME_MESSAGE);
             while (!loggedIn) {
                 System.out.println(WELCOME_MENU);
                 String command = scanner.nextLine();
                 oos.writeObject(command);
-                User user;
-                switch (command) {
-                    case "1": // login
-                        user = handleLogin(oos, ois, scanner);
-                        if (user != null) {
-                            loggedIn = true;
-                        }
-                        break;
-                    case "2": // register
-                        user = handleRegistration(oos, ois, scanner);
-                        if (user != null) {
-                            loggedIn = true;
-                        }
-                        break;
-                    case "3": // exit
-                        System.out.println(EXIT_MESSAGE);
-                        return;
-                    default:
-                        System.out.println(INVALID_COMMAND);
-                        break;
-                }
+                handleWelcomeMenu(command);
             }
             while (loggedIn) {
                 System.out.println(USER_MENU);
                 String command = scanner.nextLine();
                 oos.writeObject(command);
-                switch (command) {
-                    case "1": // add a friend
-                        handleAddFriend(oos, ois, scanner);
-                        break;
-                    case "2": // remove a friend
-                        handleRemoveFriend(oos, ois, scanner);
-                        break;
-                    case "3": // block a friend
-                        handleBlockFriend(oos, ois, scanner);
-                        break;
-                    case "4": // add post
-                        handleAddPost(oos, ois, scanner);
-                        break;
-                    case "5": // hide post
-                        handleHidePost(oos, ois, scanner);
-                        break;
-                    case "6": // view/search profile
-                        handleViewSearchProfile(oos, ois, scanner);
-                        break;
-                    case "7": // view feed
-                        handleViewFeed(oos, ois, scanner);
-                        break;
-                    case "8": // logout
-                        System.out.println(EXIT_MESSAGE);
-                        return;
-                }
+                handleUserMenu(command);
             }
         } catch (IOException | ClassNotFoundException | SMPException e) {
             e.printStackTrace();
         }
     }
 
-    private User handleLogin(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner)
+    private void handleWelcomeMenu(String command) throws IOException, ClassNotFoundException, SMPException {
+        User user;
+        switch (command) {
+            case "1":
+                user = handleLogin();
+                if (user != null) {
+                    loggedIn = true;
+                }
+                break;
+            case "2":
+                user = handleRegistration();
+                if (user != null) {
+                    loggedIn = true;
+                }
+                break;
+            case "3":
+                System.out.println((String) ois.readObject());
+                return;
+            default:
+                System.out.println((String) ois.readObject());
+                break;
+        }
+    }
+
+    private void handleUserMenu(String command) throws IOException, ClassNotFoundException, SMPException {
+        switch (command) {
+            case "1": // add a friend
+                handleAddFriend();
+                break;
+            case "2": // remove a friend
+                handleRemoveFriend();
+                break;
+            case "3": // block a friend
+                handleBlockFriend(oos, ois, scanner);
+                break;
+            case "4": // add post
+                handleAddPost(oos, ois, scanner);
+                break;
+            case "5": // hide post
+                handleHidePost(oos, ois, scanner);
+                break;
+            case "6": // view/search profile
+                handleViewSearchProfile(oos, ois, scanner);
+                break;
+            case "7": // view feed
+                handleViewFeed(oos, ois, scanner);
+                break;
+            case "8": // logout
+                System.out.println(EXIT_MESSAGE);
+                loggedIn = false;
+                return;
+        }
+    }
+
+    public User handleLogin()
             throws IOException, ClassNotFoundException, SMPException {
         System.out.println("Enter username: ");
         String username = scanner.nextLine();
@@ -167,7 +197,7 @@ public class Client {
         }
     }
 
-    private User handleRegistration(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner)
+    public User handleRegistration()
             throws IOException, ClassNotFoundException, SMPException {
         System.out.println("Enter first name: ");
         String firstname = scanner.nextLine();
@@ -193,7 +223,7 @@ public class Client {
         }
     }
 
-    private void handleAddFriend(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner)
+    public void handleAddFriend()
             throws SMPException, IOException, ClassNotFoundException {
         System.out.println(ADD_FRIEND);
         String friendUsername = scanner.nextLine();
@@ -206,7 +236,7 @@ public class Client {
         }
     }
 
-    private void handleRemoveFriend(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner)
+    public void handleRemoveFriend()
             throws SMPException, IOException, ClassNotFoundException {
         System.out.println(REMOVE_FRIEND);
         String friendUsername = scanner.nextLine();
@@ -378,7 +408,7 @@ public class Client {
         }
     }
 
-    private boolean displayComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
+    private boolean displayComments(ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
         System.out.println("Viewing this post's comments:");
         oos.writeObject("getPostsComments");
         try {
@@ -399,7 +429,7 @@ public class Client {
     }
 
     private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
-        boolean checkComments = displayComments(oos, ois, scanner);
+        boolean checkComments = displayComments(oos, ois);
         if (checkComments) {
             System.out.println(VIEW_COMMENT);
             String postNumber = scanner.nextLine();
@@ -431,7 +461,7 @@ public class Client {
                     System.out.println("Comment successfully downvoted.");
                     break;
                 case "3": // add comment
-                    handleDeleteComment(oos, ois, scanner);
+                    handleDeleteComment(oos, ois);
                     return;
                 case "4": // exit
                     System.out.println("Leaving comment options menu.");
@@ -440,7 +470,7 @@ public class Client {
         }
     }
 
-    private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois) throws IOException, ClassNotFoundException {
         oos.writeObject("deleteComment");
         String respond = (String) ois.readObject();
         if (DELETE_COMMENT_SUCCESS.equalsIgnoreCase(respond)) {
@@ -450,7 +480,7 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String hostname = "localhost";
         int port = 8080;
         Client client = new Client(hostname, port);
