@@ -47,23 +47,10 @@ public class ClientHandler implements Runnable {
     private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
 
     // CONSTRUCTOR
-    public ClientHandler(Socket socket, ObjectInputStream ois, ObjectOutputStream oos) throws IOException {
-        this.clientSocket = socket;
-        this.ois = ois;
-        this.oos = oos;
-    }
     public ClientHandler(Socket socket) throws IOException {
         this.clientSocket = socket;
         this.ois = new ObjectInputStream(clientSocket.getInputStream());
         this.oos = new ObjectOutputStream(clientSocket.getOutputStream());
-    }
-
-    public void setInputStream(ObjectInputStream ois) {
-        this.ois = ois;
-    }
-
-    public void setOutputStream(ObjectOutputStream oos) {
-        this.oos = oos;
     }
 
     /*
@@ -73,21 +60,22 @@ public class ClientHandler implements Runnable {
         try {
             while (!loggedIn) {
                 String command = (String) ois.readObject();
+                System.out.println(command);
                 processCommand(command);
             }
             while (loggedIn) {
                 String command = (String) ois.readObject();
                 processLoginCommand(command);
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | SMPException e) {
             System.err.println("Error in ClientHandler: " + e.getMessage());
-        } catch (SMPException e) {
-            throw new RuntimeException(e);
+            System.out.println(EXIT_MESSAGE);
         } finally {
             try {
                 clientSocket.close();
             } catch (IOException e) {
                 System.err.println("Error closing socket: " + e.getMessage());
+                System.out.println(EXIT_MESSAGE);
             }
         }
     }
@@ -107,7 +95,9 @@ public class ClientHandler implements Runnable {
             case "3":
                 sendExitMessage();
                 return;
-
+            default:
+                sendInvalidMessage();
+                break;
         }
     }
 
@@ -149,6 +139,11 @@ public class ClientHandler implements Runnable {
 
     public void sendExitMessage() throws IOException, SMPException {
         oos.writeObject(EXIT_MESSAGE);
+        writeAllDatabases();
+    }
+
+    public void sendInvalidMessage() throws IOException, SMPException {
+        oos.writeObject(INVALID_COMMAND);
         writeAllDatabases();
     }
 

@@ -9,13 +9,14 @@ import java.util.*;
  */
 public class PostsManager implements PostsManagerInterface {
     private static final String POST_FILE = "PostsDatabase.txt";
-    private static ArrayList<Post> posts = new ArrayList<>();
+    private static List<Post> posts = new ArrayList<>();
 
     /**
      * Constructs a PostsManager instance and initializes the posts list by reading from the database file.
      * This constructor automatically calls readPostsDatabaseFile() to load existing posts into memory.
      */
     public PostsManager() {
+        posts = Collections.synchronizedList(posts);
         readPostsDatabaseFile();
     }
 
@@ -23,7 +24,7 @@ public class PostsManager implements PostsManagerInterface {
      * Retrieves the current list of posts.
      * @return A list of Post objects representing all current posts.
      */
-    public static ArrayList<Post> getPosts() {
+    public synchronized static List<Post> getPosts() {
         return posts;
     }
 
@@ -31,7 +32,7 @@ public class PostsManager implements PostsManagerInterface {
      * Sets the current list of posts.
      * @param posts A list of Post objects to set as the current list of posts.
      */
-    public static void setPosts(ArrayList<Post> posts) {
+    public synchronized static void setPosts(ArrayList<Post> posts) {
         PostsManager.posts = posts;
     }
 
@@ -39,7 +40,7 @@ public class PostsManager implements PostsManagerInterface {
      * Reads the posts from the database file and populates the posts list.
      * This method clears any existing posts in the list before reading from the file.
      */
-    public static void readPostsDatabaseFile() {
+    public synchronized static void readPostsDatabaseFile() {
         posts.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(POST_FILE))) {
             String line;
@@ -59,7 +60,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param line A string line from the database file representing a post.
      * @return A Post object if the line can be parsed successfully, null otherwise.
      */
-    private static Post parseLineToPost(String line) {
+    private synchronized static Post parseLineToPost(String line) {
         try {
             String[] parts = line.split(":~:");
             String postId = parts[0];
@@ -85,7 +86,7 @@ public class PostsManager implements PostsManagerInterface {
      * Writes all current posts in the list to the database file.
      * This method overwrites the existing file content with the current state of the posts list.
      */
-    public static void writePostsDatabaseFile() {
+    public synchronized static void writePostsDatabaseFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(POST_FILE, false))) {
             for (Post post : posts) {
                 String postInfo = post.getPostId() + ":~:" +
@@ -121,7 +122,7 @@ public class PostsManager implements PostsManagerInterface {
      * @return The ID of the newly added post.
      * @throws SMPException If the creator username does not exist.
      */
-    public static String addPost(String creatorUsername, String content, int upvotes,
+    public synchronized static String addPost(String creatorUsername, String content, int upvotes,
                                  int downvotes, ArrayList<String> commentIds)
             throws SMPException {
         User creator = UsersManager.searchUser(creatorUsername);
@@ -137,7 +138,7 @@ public class PostsManager implements PostsManagerInterface {
      * Clears all posts from the list.
      * This method is used to reset the state of the posts list, typically for testing or initialization purposes.
      */
-    public static void clearAllPosts() {
+    public synchronized static void clearAllPosts() {
         posts.clear();
     }
 
@@ -147,7 +148,7 @@ public class PostsManager implements PostsManagerInterface {
      * @return true if the post was found and updated, false otherwise.
      * @throws SMPException If an error occurs during the update process.
      */
-    public static boolean updatePost(Post updatedPost) throws SMPException {
+    public synchronized static boolean updatePost(Post updatedPost) throws SMPException {
         int postIndex = -1;
         for (int i = 0; i < posts.size(); i++) {
             if (posts.get(i).getPostId().equals(updatedPost.getPostId())) {
@@ -168,7 +169,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param postId The ID of the post to search for.
      * @return The Post object if found, null otherwise.
      */
-    public static Post searchPost(String postId) {
+    public synchronized static Post searchPost(String postId) {
         for (Post post : posts) {
             if (post.getPostId().equals(postId)) {
                 return post;
@@ -182,7 +183,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param comment The comment object for which to find the associated post ID.
      * @return The Post that contains the given comment, or null if not found.
      */
-    public static Post getPostIdFromComment(Comment comment) {
+    public synchronized static Post getPostIdFromComment(Comment comment) {
         for (Post post : posts) {
             if (post.getComments().contains(comment.getCommentId())) {
                 return post;

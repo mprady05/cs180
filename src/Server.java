@@ -19,7 +19,7 @@ public class Server {
                 new Thread(clientHandler).start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error in the server. Please try again.");
         }
     }
 

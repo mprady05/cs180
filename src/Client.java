@@ -16,15 +16,15 @@ public class Client {
             (1) - Login to your account
             (2) - Create a new account
             (3) - Exit""";
-    public static final String LOGIN_SUCCESS = "Login success!";
-    public static final String WELCOME_BACK = "Welcome back ";
-    public static final String WELCOME_NEW = "Welcome new user ";
-    public static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
-    public static final String REGISTER_SUCCESS = "Account created successfully!";
-    public static final String REGISTER_FAIL = "Invalid credentials. Please try again.";
-    public static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
-    public static final String INVALID_COMMAND = "Invalid command. Please try again.";
-    public static final String USER_MENU = """
+    private static final String LOGIN_SUCCESS = "Login success!";
+    private static final String WELCOME_BACK = "Welcome back ";
+    private static final String WELCOME_NEW = "Welcome new user ";
+    private static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
+    private static final String REGISTER_SUCCESS = "Account created successfully!";
+    private static final String REGISTER_FAIL = "Invalid credentials. Please try again.";
+    private static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
+    private static final String INVALID_COMMAND = "Invalid command. Please try again.";
+    private static final String USER_MENU = """
             Enter the number of the command you would like to execute:
             (1) - Add a friend
             (2) - Remove a friend
@@ -34,22 +34,22 @@ public class Client {
             (6) - View/Search profile
             (7) - View feed
             (8) - Logout""";
-    public static final String ADD_FRIEND = "Enter friend's username you want to add: ";
-    public static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
-    public static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
-    public static final String REMOVE_FRIEND = "Enter the friend's username you want to remove: ";
-    public static final String REMOVE_FRIEND_SUCCESS = "Successfully removed friend!";
-    public static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
-    public static final String BLOCK_FRIEND = "Enter the username of the friend you want to block: ";
-    public static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
+    private static final String ADD_FRIEND = "Enter friend's username you want to add: ";
+    private static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
+    private static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
+    private static final String REMOVE_FRIEND = "Enter the friend's username you want to remove: ";
+    private static final String REMOVE_FRIEND_SUCCESS = "Successfully removed friend!";
+    private static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
+    private static final String BLOCK_FRIEND = "Enter the username of the friend you want to block: ";
+    private static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
     public static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again.";
-    public static final String ADD_POST = "Enter post contents:";
-    public static final String ADD_POST_SUCCESS = "Successfully added post!";
-    public static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
-    public static final String HIDE_POST = "Enter the number of the post you want to hide: ";
-    public static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
-    public static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
-    public static final String VIEW_PROFILE = "Enter the user of the profile you want to view:";
+    private static final String ADD_POST = "Enter post contents:";
+    private static final String ADD_POST_SUCCESS = "Successfully added post!";
+    private static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
+    private static final String HIDE_POST = "Enter the number of the post you want to hide: ";
+    private static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
+    private static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
+    private static final String VIEW_PROFILE = "Enter the user of the profile you want to view:";
     private static final String VIEW_PROFILE_SUCCESS = "Profile found.";
     private static final String VIEW_PROFILE_FAIL = "Profile not found. Please try again.";
     private static final String VIEW_FEED = "Enter the number of your friend's post you want to see:";
@@ -77,11 +77,8 @@ public class Client {
     private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again.";
     private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
     private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
-    private InputStream input;
-    private OutputStream output;
+    private boolean exit = false;
 
-
-    // Constructor for real use
     public Client(String hostname, int port) throws IOException {
         this.hostname = hostname;
         this.port = port;
@@ -90,20 +87,12 @@ public class Client {
         this.scanner = new Scanner(System.in);
     }
 
-    // Constructor for testing with dependency injection
-    public Client(InputStream input, OutputStream output, Scanner scanner) throws IOException {
-        setupStreams(input, output);
-        this.scanner = scanner;
-    }
-
     private void setupStreams(InputStream input, OutputStream output) throws IOException {
-        this.input = input;
-        this.output = output;
         this.oos = new ObjectOutputStream(output);
         this.ois = new ObjectInputStream(input);
     }
 
-    public void start() {
+    public void start() throws IOException {
         try {
             System.out.println(WELCOME_MESSAGE);
             while (!loggedIn) {
@@ -111,6 +100,9 @@ public class Client {
                 String command = scanner.nextLine();
                 oos.writeObject(command);
                 handleWelcomeMenu(command);
+                if (exit) {
+                    return;
+                }
             }
             while (loggedIn) {
                 System.out.println(USER_MENU);
@@ -119,7 +111,8 @@ public class Client {
                 handleUserMenu(command);
             }
         } catch (IOException | ClassNotFoundException | SMPException e) {
-            e.printStackTrace();
+            System.out.println(EXIT_MESSAGE);
+            socket.close();
         }
     }
 
@@ -138,12 +131,12 @@ public class Client {
                     loggedIn = true;
                 }
                 break;
-            case "3":
-                System.out.println((String) ois.readObject());
-                return;
             default:
                 System.out.println((String) ois.readObject());
                 break;
+            case "3":
+                System.out.println((String) ois.readObject());
+                exit = true;
         }
     }
 
@@ -280,6 +273,7 @@ public class Client {
             if (response.equals("end")) {
                 return false;
             }
+            System.out.println("Viewing your posts:");
             int index = 1;
             while (!response.equals("end")) {
                 System.out.println("(" + index++ + ") - " + response);
@@ -338,6 +332,7 @@ public class Client {
             if (response.equals("end")) {
                 return false;
             }
+            System.out.println("Viewing your friends posts:");
             int index = 1;
             while (!response.equals("end")) {
                 System.out.println("(" + index++ + ") - " + response);
@@ -409,13 +404,13 @@ public class Client {
     }
 
     private boolean displayComments(ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
-        System.out.println("Viewing this post's comments:");
         oos.writeObject("getPostsComments");
         try {
             String response = (String) ois.readObject();
             if (response.equals("end")) {
                 return false;
             }
+            System.out.println("Viewing this post's comments:");
             int index = 1;
             while (!response.equals("end")) {
                 System.out.println("(" + index++ + ") - " + response);

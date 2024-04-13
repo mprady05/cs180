@@ -48,7 +48,7 @@ public class Comment implements CommentInterface {
      * Gets the unique ID of the comment.
      * @return The unique ID of the comment.
      */
-    public String getCommentId() {
+    public synchronized String getCommentId() {
         return commentId;
     }
 
@@ -56,7 +56,7 @@ public class Comment implements CommentInterface {
      * Gets the author of the comment.
      * @return The User object representing the author of the comment.
      */
-    public User getAuthor() {
+    public synchronized User getAuthor() {
         return author;
     }
 
@@ -64,7 +64,7 @@ public class Comment implements CommentInterface {
      * Gets the content of the comment.
      * @return The textual content of the comment.
      */
-    public String getContent() {
+    public synchronized String getContent() {
         return content;
     }
 
@@ -72,7 +72,7 @@ public class Comment implements CommentInterface {
      * Gets the number of upvotes the comment has received.
      * @return The number of upvotes.
      */
-    public int getUpvotes() {
+    public synchronized int getUpvotes() {
         return upvotes;
     }
 
@@ -80,7 +80,7 @@ public class Comment implements CommentInterface {
      * Gets the number of downvotes the comment has received.
      * @return The number of downvotes.
      */
-    public int getDownvotes() {
+    public synchronized int getDownvotes() {
         return downvotes;
     }
 
@@ -88,7 +88,7 @@ public class Comment implements CommentInterface {
      * Increments the upvote count for the comment and updates the corresponding post in the CommentsManager.
      * @throws SMPException If there is an error updating the comment.
      */
-    public void addUpvote() throws SMPException {
+    public synchronized void addUpvote() throws SMPException {
         upvotes += 1;
         CommentsManager.updateComment(this);
     }
@@ -97,7 +97,7 @@ public class Comment implements CommentInterface {
      * Increments the downvote count for the comment and updates the corresponding post in the CommentsManager.
      * @throws SMPException If there is an error updating the comment.
      */
-    public void addDownvote() throws SMPException {
+    public synchronized void addDownvote() throws SMPException {
         downvotes += 1;
         CommentsManager.updateComment(this);
     }
@@ -107,7 +107,7 @@ public class Comment implements CommentInterface {
      * @return A string containing the comment's ID, author's username, content, upvotes, and downvotes.
      */
     @Override
-    public String toString() {
+    public synchronized String toString() {
         return commentId + ":!:" +
                 author.getUsername() + ":!:" +
                 content + ":!:" +

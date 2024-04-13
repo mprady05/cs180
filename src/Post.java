@@ -54,7 +54,7 @@ public class Post implements PostInterface {
      * Retrieves the unique identifier of the post.
      * @return A string representing the unique ID of the post.
      */
-    public String getPostId() {
+    public synchronized String getPostId() {
         return postId;
     }
 
@@ -62,7 +62,7 @@ public class Post implements PostInterface {
      * Retrieves the creator of the post.
      * @return A User object representing the creator of the post.
      */
-    public User getCreator() {
+    public synchronized User getCreator() {
         return creator;
     }
 
@@ -70,7 +70,7 @@ public class Post implements PostInterface {
      * Retrieves the textual content of the post.
      * @return A string containing the main content of the post.
      */
-    public String getContent() {
+    public synchronized String getContent() {
         return content;
     }
 
@@ -78,7 +78,7 @@ public class Post implements PostInterface {
      * Retrieves the current number of upvotes for the post.
      * @return An integer value representing the number of upvotes the post has received.
      */
-    public int getUpvotes() {
+    public synchronized int getUpvotes() {
         return upvotes;
     }
 
@@ -86,7 +86,7 @@ public class Post implements PostInterface {
      * Retrieves the current number of downvotes for the post.
      * @return An integer value representing the number of downvotes the post has received.
      */
-    public int getDownvotes() {
+    public synchronized int getDownvotes() {
         return downvotes;
     }
 
@@ -94,7 +94,7 @@ public class Post implements PostInterface {
      * Retrieves the list of comments associated with the post.
      * @return An ArrayList of String objects, each representing a unique ID of a comment made on the post.
      */
-    public ArrayList<String> getComments() {
+    public synchronized ArrayList<String> getComments() {
         return commentIds;
     }
 
@@ -102,7 +102,7 @@ public class Post implements PostInterface {
      * Increments the upvote count for the post and updates the corresponding post in the PostsManager.
      * @throws SMPException If there is an error updating the post.
      */
-    public void addUpvote() throws SMPException {
+    public synchronized void addUpvote() throws SMPException {
         upvotes += 1;
         PostsManager.updatePost(this);
     }
@@ -111,7 +111,7 @@ public class Post implements PostInterface {
      * Increments the downvote count for the post and updates the corresponding post in the PostsManager.
      * @throws SMPException If there is an error updating the post.
      */
-    public void addDownvote() throws SMPException {
+    public synchronized void addDownvote() throws SMPException {
         downvotes += 1;
         PostsManager.updatePost(this);
     }
@@ -123,7 +123,7 @@ public class Post implements PostInterface {
      * @return true if added comment, false otherwise.
      * @throws SMPException If there is an error creating the comment or updating the post.
      */
-    public boolean addComment(String author, String contents) throws SMPException {
+    public synchronized boolean addComment(String author, String contents) throws SMPException {
         Comment commentId = CommentsManager.addComment(author, contents, 0, 0);
         if (commentId == null) {
             return false;
@@ -140,7 +140,7 @@ public class Post implements PostInterface {
      * @throws SMPException If the comment cannot be deleted.
      * @return true if comment is deleted, false otherwise.
      */
-    public boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
+    public synchronized boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
         Comment commentToDelete = CommentsManager.searchComment(commentId);
         if (commentToDelete == null) {
             return false;
@@ -173,7 +173,7 @@ public class Post implements PostInterface {
      * @return A string representation of the post.
      */
     @Override
-    public String toString() {
+    public synchronized String toString() {
         String result = postId + ":~:" +
                 creator.getUsername() + ":~:" +
                 content + ":~:" +

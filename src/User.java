@@ -36,25 +36,25 @@ public class User implements UserInterface {
         this.postIds = postIds;
     }
 
-    public String getFirstName() {
+    public synchronized String getFirstName() {
         return firstName;
     }
-    public String getLastName() {
+    public synchronized String getLastName() {
         return lastName;
     }
-    public String getUsername() {
+    public synchronized String getUsername() {
         return username;
     }
-    public String getPassword() {
+    public synchronized String getPassword() {
         return password;
     }
-    public ArrayList<String> getFriendList() {
+    public synchronized ArrayList<String> getFriendList() {
         return friendList;
     }
-    public ArrayList<String> getBlockList() {
+    public synchronized ArrayList<String> getBlockList() {
         return blockList;
     }
-    public ArrayList<String> getPostIds() {
+    public synchronized ArrayList<String> getPostIds() {
         return postIds;
     }
 
@@ -63,7 +63,7 @@ public class User implements UserInterface {
      * @param checkUsername Username of the new friend.
      * @return true if friend is added, false otherwise.
      */
-    public boolean addFriend(String checkUsername) throws SMPException {
+    public synchronized boolean addFriend(String checkUsername) throws SMPException {
         if (UsersManager.searchUser(checkUsername) != null &&
                 !friendList.contains(checkUsername) &&
                 !checkUsername.equals(this.username) &&
@@ -82,7 +82,7 @@ public class User implements UserInterface {
      * @param usernameToBlock Username of the user to be blocked.
      * @return true if user is blocked, false otherwise.
      */
-    public boolean blockUser(String usernameToBlock) throws SMPException {
+    public synchronized boolean blockUser(String usernameToBlock) throws SMPException {
         if (friendList.contains(usernameToBlock) &&
                 !blockList.contains(usernameToBlock) &&
                 !usernameToBlock.equals(this.username)) {
@@ -107,7 +107,7 @@ public class User implements UserInterface {
      * @param checkUsername Username of the friend to remove.
      * @return true if friend is removed, false otherwise.
      */
-    public boolean removeFriend(String checkUsername) throws SMPException {
+    public synchronized boolean removeFriend(String checkUsername) throws SMPException {
         if (UsersManager.searchUser(checkUsername) != null &&
                 friendList.contains(checkUsername)) {
             friendList.remove(checkUsername);
@@ -123,7 +123,7 @@ public class User implements UserInterface {
      * @param content Content of the new post.
      * @return true if post is added, false otherwise.
      */
-    public boolean addPost(String content) throws SMPException {
+    public synchronized boolean addPost(String content) throws SMPException {
         String postId = PostsManager.addPost(this.username, content, 0, 0, new ArrayList<>());
         Post post = PostsManager.searchPost(postId);
         if (post == null) {
@@ -140,7 +140,7 @@ public class User implements UserInterface {
      * @param postId ID of the post to hide.
      * @return true if post is added, false otherwise.
      */
-    public boolean hidePost(String postId) throws SMPException {
+    public synchronized boolean hidePost(String postId) throws SMPException {
         if (postIds.contains(postId)) {
             postIds.remove(postId);
             UsersManager.updateUser(this);
@@ -154,7 +154,7 @@ public class User implements UserInterface {
      * Retrieves a list of post IDs created by the user's friends.
      * @return A list of post IDs.
      */
-    public ArrayList<String> getFriendsPosts() {
+    public synchronized ArrayList<String> getFriendsPosts() {
         ArrayList<String> friendsPosts = new ArrayList<>();
         for (String friendUsername : friendList) {
             User friend = UsersManager.searchUser(friendUsername);
@@ -169,7 +169,7 @@ public class User implements UserInterface {
      * Provides a string representation of the User object.
      * @return A string containing the user's data.
      */
-    public String toString() {
+    public synchronized String toString() {
         String result = "";
         result += firstName + ';';
         result += lastName + ';';
