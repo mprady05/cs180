@@ -610,7 +610,7 @@ An interface for the CommentsManager class.
 
 ### static void readCommentsDatabaseFile() throws SMPException
 
-### static void writeCommentsDatabaseFile() throws SMPException
+### static void writeCommentsDatabaseFile() throws SMPException
 
 ### static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
 
