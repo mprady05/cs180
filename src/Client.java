@@ -1,7 +1,13 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
-
+/**
+ * CS18000 -- Project 5 -- Phase 2
+ * Class that represents the client server
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 13, 2024
+ */
 public class Client {
     private String hostname;
     private int port;
