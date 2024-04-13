@@ -259,7 +259,8 @@ public class Client {
     }
 
     //Handles blocking a friend based on username
-    private void handleBlockFriend(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleBlockFriend(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         System.out.println(BLOCK_FRIEND);
         String blockUsername = scanner.nextLine();
         oos.writeObject(blockUsername);
@@ -272,7 +273,8 @@ public class Client {
     }
 
     //Handles adding a post based on content passed in from the user
-    private void handleAddPost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleAddPost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         System.out.println(ADD_POST);
         String content = scanner.nextLine();
         oos.writeObject(content);
@@ -285,7 +287,8 @@ public class Client {
     }
 
     //Retrieves and displays the posts
-    private boolean displayPosts(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
+    private boolean displayPosts(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException {
         oos.writeObject("getPosts");
         try {
             String response = (String) ois.readObject();
@@ -306,7 +309,8 @@ public class Client {
     }
 
     //Hides the post based on what post number the user specifies
-    private void handleHidePost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException, SMPException {
+    private void handleHidePost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException, SMPException {
         boolean checkPosts = displayPosts(oos, ois, scanner);
         if (checkPosts) {
             try {
@@ -330,7 +334,8 @@ public class Client {
     }
 
     //Searches for a user based on username and prints out first and last name as well as username
-    private void handleViewSearchProfile(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleViewSearchProfile(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         System.out.println(VIEW_PROFILE);
         String profileUsername = scanner.nextLine();
         oos.writeObject(profileUsername);
@@ -347,7 +352,8 @@ public class Client {
     }
 
     //Displays the feed to the user based on posts from their friends
-    private boolean displayFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
+    private boolean displayFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException {
         oos.writeObject("getFriendsPosts");
         try {
             String response = (String) ois.readObject();
@@ -368,7 +374,8 @@ public class Client {
     }
 
     //Shows the number of posts that the user wants to see from friends
-    private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         boolean checkFeed = displayFeed(oos, ois, scanner);
         if (checkFeed) {
             System.out.println(VIEW_FEED);
@@ -388,7 +395,8 @@ public class Client {
     }
 
     //Receives commands from the user on what they want to do regarding the post
-    private void handlePostOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handlePostOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         System.out.println("Post options menu:");
         while (true) {
             System.out.println(POST_OPTIONS_MENU);
@@ -415,7 +423,8 @@ public class Client {
     }
 
     //Handles adding a comment to the post
-    private void handleAddComment(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleAddComment(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         oos.writeObject("addComment");
         System.out.println(ADD_COMMENT);
         String content = scanner.nextLine();
@@ -448,7 +457,8 @@ public class Client {
         return true;
     }
     //Views the comments
-    private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         boolean checkComments = displayComments(oos, ois);
         if (checkComments) {
             System.out.println(VIEW_COMMENT);
@@ -467,7 +477,8 @@ public class Client {
         }
     }
     //Handles actions that can be performed on the comments
-    private void handleCommentOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    private void handleCommentOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) 
+            throws IOException, ClassNotFoundException {
         while (true) {
             System.out.println(COMMENT_OPTIONS_MENU);
             String option = scanner.nextLine();
@@ -490,7 +501,8 @@ public class Client {
         }
     }
     //Deletes comments from the post
-    private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois) throws IOException, ClassNotFoundException {
+    private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois) 
+            throws IOException, ClassNotFoundException {
         oos.writeObject("deleteComment");
         String respond = (String) ois.readObject();
         if (DELETE_COMMENT_SUCCESS.equalsIgnoreCase(respond)) {
