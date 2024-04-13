@@ -8,11 +8,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Testing for {@link UsersManager}.
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public class UsersManagerTest {
 
@@ -74,6 +74,13 @@ public class UsersManagerTest {
             }
             assertTrue("The new user should be written to the file", lastLine.contains("newuser"));
         }
+    }
+
+    @Test
+    public void testStringToUser() throws SMPException {
+        String line = "Missing;Fields;;";
+        User user = UsersManager.stringToUser(line);
+        assertNull("The user should be null.", user);
     }
 
     @Test

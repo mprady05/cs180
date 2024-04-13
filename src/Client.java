@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
-
 /**
  * CS18000 -- Project 5 -- Phase 2
  * Class that represents the client

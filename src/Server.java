@@ -1,8 +1,14 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-public class Server {
+/**
+ * CS18000 -- Project 5 -- Phase 2
+ * Server class.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 13, 2024
+ */
+public class Server implements ServerInterface {
     private int port;
 
     public Server(int port) {

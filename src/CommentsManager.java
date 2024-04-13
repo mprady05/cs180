@@ -1,11 +1,11 @@
 import java.util.*;
 import java.io.*;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Class managing the storage and manipulation of user comments.
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public class CommentsManager implements CommentsManagerInterface {
     private static final String COMMENTS_FILE = "CommentsDatabase.txt";
@@ -43,7 +43,7 @@ public class CommentsManager implements CommentsManagerInterface {
                 }
             }
         } catch (IOException e) {
-            throw new SMPException("Error reading Comments Database File: " + e.getMessage());
+            System.out.println("Error reading comments database file.");
         }
     }
 
@@ -88,7 +88,7 @@ public class CommentsManager implements CommentsManagerInterface {
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new SMPException("Error writing to Comments Database File: " + e.getMessage());
+            System.out.println("Error reading comments database file.");
         }
     }
 

@@ -3,11 +3,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import java.util.*;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Testing for {@link Comment}
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public class CommentTest {
     private Comment comment;

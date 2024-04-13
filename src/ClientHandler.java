@@ -2,8 +2,14 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
-
-public class ClientHandler implements Runnable {
+/**
+ * CS18000 -- Project 5 -- Phase 2
+ * Class that represents the client handlers.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 13, 2024
+ */
+public class ClientHandler implements Runnable, ClientHandlerInterface {
     // FIELDS
     private Socket clientSocket;
     private ObjectOutputStream oos;
@@ -226,7 +232,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processRemoveFriend() throws SMPException, IOException, ClassNotFoundException {
+    public void processRemoveFriend() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String friendUsername = (String) ois.readObject();
         boolean checkFriend = currentUser.removeFriend(friendUsername);
@@ -238,7 +244,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processBlockFriend() throws SMPException, IOException, ClassNotFoundException {
+    public void processBlockFriend() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String blockUsername = (String) ois.readObject();
         boolean checkBlocked = currentUser.blockUser(blockUsername);
@@ -250,7 +256,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processAddPost() throws SMPException, IOException, ClassNotFoundException {
+    public void processAddPost() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String content = (String) ois.readObject();
         boolean checkAddPost = currentUser.addPost(content);
@@ -262,7 +268,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processGetPosts() throws SMPException, IOException {
+    public void processGetPosts() throws SMPException, IOException {
         readAllDatabases();
         usersPosts = new ArrayList<>();
         for (int i = 0; i < currentUser.getPostIds().size(); i++) {
@@ -275,7 +281,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processHidePost() throws SMPException, IOException, ClassNotFoundException {
+    public void processHidePost() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String postNumberStr = (String) ois.readObject();
         try {
@@ -299,7 +305,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processViewSearchUser() throws IOException, SMPException, ClassNotFoundException {
+    public void processViewSearchUser() throws IOException, SMPException, ClassNotFoundException {
         readAllDatabases();
         String profileUsername = (String) ois.readObject();
         User isUserThere = UsersManager.searchUser(profileUsername);
@@ -313,7 +319,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processViewFeed() throws SMPException, IOException, ClassNotFoundException {
+    public void processViewFeed() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String friendsPostNumberStr = (String) ois.readObject();
         try {
@@ -336,7 +342,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private Post getPostFromChoice(ArrayList<Post> posts, int postNumber) {
+    public Post getPostFromChoice(ArrayList<Post> posts, int postNumber) {
         Post postIdChoice = null;
         if (postNumber <= posts.size() && postNumber > 0) {
             for (int i = 1; i <= posts.size(); i++) {
@@ -348,7 +354,7 @@ public class ClientHandler implements Runnable {
         return postIdChoice;
     }
 
-    private void processLogout() throws SMPException {
+    public void processLogout() throws SMPException {
         readAllDatabases();
         writeAllDatabases();
     }
@@ -356,7 +362,7 @@ public class ClientHandler implements Runnable {
     /*
     Feed Menu ======================================================== Feed Menu
      */
-    private void processGetFriendsPosts() throws SMPException, IOException {
+    public void processGetFriendsPosts() throws SMPException, IOException {
         readAllDatabases();
         ArrayList<String> allFriendsPostIds = currentUser.getFriendsPosts();
         allFriendsPosts = new ArrayList<>();
@@ -371,19 +377,19 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processAddUpvote() throws SMPException {
+    public void processAddUpvote() throws SMPException {
         readAllDatabases();
         chosenPost.addUpvote();
         writeAllDatabases();
     }
 
-    private void processDownvotePost() throws SMPException {
+    public void processDownvotePost() throws SMPException {
         readAllDatabases();
         chosenPost.addDownvote();
         writeAllDatabases();
     }
 
-    private void processAddComment() throws SMPException, IOException, ClassNotFoundException {
+    public void processAddComment() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
         String content1 = (String) ois.readObject();
         boolean checkAddComment = chosenPost.addComment(currentUser.getUsername(), content1);
@@ -396,7 +402,7 @@ public class ClientHandler implements Runnable {
         chosenPost = PostsManager.searchPost(chosenPost.getPostId());
     }
 
-    private void processGetPostsComments() throws SMPException, IOException {
+    public void processGetPostsComments() throws SMPException, IOException {
         readAllDatabases();
         postsComments = new ArrayList<>();
         ArrayList<String> postsCommentIds = chosenPost.getComments();
@@ -410,7 +416,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private void processViewComments() throws IOException, SMPException, ClassNotFoundException {
+    public void processViewComments() throws IOException, SMPException, ClassNotFoundException {
         readAllDatabases();
         String commentNumberStr = (String) ois.readObject();
         try {
@@ -433,7 +439,7 @@ public class ClientHandler implements Runnable {
         writeAllDatabases();
     }
 
-    private Comment getCommentFromChoice(ArrayList<Comment> comments, int commentNumber) {
+    public Comment getCommentFromChoice(ArrayList<Comment> comments, int commentNumber) {
         Comment commentIdChoice = null;
         if (commentNumber <= comments.size() && commentNumber > 0) {
             for (int i = 1; i <= comments.size(); i++) {
@@ -448,19 +454,19 @@ public class ClientHandler implements Runnable {
     /*
     Comments Menu ======================================================== Comments Menu
      */
-    private void processUpvoteComment() throws SMPException {
+    public void processUpvoteComment() throws SMPException {
         readAllDatabases();
         chosenComment.addUpvote();
         writeAllDatabases();
     }
 
-    private void processDownvoteComment() throws SMPException {
+    public void processDownvoteComment() throws SMPException {
         readAllDatabases();
         chosenComment.addDownvote();
         writeAllDatabases();
     }
 
-    private void processDeleteComment() throws SMPException, IOException {
+    public void processDeleteComment() throws SMPException, IOException {
         readAllDatabases();
         boolean checkDelete = chosenPost.deleteComment(chosenComment.getCommentId(),
                 currentUser.getUsername());
@@ -475,13 +481,13 @@ public class ClientHandler implements Runnable {
         chosenPost = PostsManager.searchPost(chosenPost.getPostId());
     }
 
-    private void readAllDatabases() throws SMPException {
+    public void readAllDatabases() throws SMPException {
         UsersManager.readUsersDatabaseFile();
         PostsManager.readPostsDatabaseFile();
         CommentsManager.readCommentsDatabaseFile();
     }
 
-    private void writeAllDatabases() throws SMPException {
+    public void writeAllDatabases() throws SMPException {
         UsersManager.writeUsersDatabaseFile();
         PostsManager.writePostsDatabaseFile();
         CommentsManager.writeCommentsDatabaseFile();

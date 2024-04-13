@@ -1,11 +1,11 @@
 import java.util.*;
 import java.io.*;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Manages user accounts.
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public class UsersManager implements UsersManagerInterface {
     private static final String USER_FILE = "UsersDatabase.txt";
@@ -42,9 +42,12 @@ public class UsersManager implements UsersManagerInterface {
                     if (user != null) {
                         users.add(user);
                     }
+               } catch (Exception e) {
+                    System.out.println("Error parsing user from line.");
+                    return;
                 }
-            } catch (IOException | SMPException e) {
-                throw new SMPException("Error parsing user from line: " + e.getMessage());
+            } catch (IOException e) {
+              System.out.println("Error parsing user from line.");
             }
         }
     }
@@ -84,8 +87,9 @@ public class UsersManager implements UsersManagerInterface {
                 }
             }
             return new User(firstName, lastName, username, password, friendList, blockList, postIds);
-        } catch (NumberFormatException e) {
-            throw new SMPException("Error parsing file.");
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.out.println("Error parsing file.");
+            return null;
         }
     }
 
@@ -195,7 +199,8 @@ public class UsersManager implements UsersManagerInterface {
             users.set(userIndex, updatedUser);
             return true;
         } else {
-            throw new SMPException("User not found.");
+            System.out.println("User not found.");
+            return false;
         }
     }
 

@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.UUID;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Class defining posts in the news feed.
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public class Post implements PostInterface {
     private final String postId;
