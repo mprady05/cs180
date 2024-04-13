@@ -43,7 +43,7 @@ public class CommentsManager implements CommentsManagerInterface {
                 }
             }
         } catch (IOException e) {
-            throw new SMPException("Error reading Comments Database File: " + e.getMessage());
+            System.out.println("Error reading comments database file.");
         }
     }
 
@@ -88,7 +88,7 @@ public class CommentsManager implements CommentsManagerInterface {
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new SMPException("Error writing to Comments Database File: " + e.getMessage());
+            System.out.println("Error reading comments database file.");
         }
     }
 

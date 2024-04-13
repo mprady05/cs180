@@ -77,6 +77,13 @@ public class UsersManagerTest {
     }
 
     @Test
+    public void testStringToUser() throws SMPException {
+        String line = "Missing;Fields;;";
+        User user = UsersManager.stringToUser(line);
+        assertNull("The user should be null.", user);
+    }
+
+    @Test
     public void testRegisterUser() throws SMPException {
         UsersManager.registerUser("Chris", "Smith", "chriss", "chris123");
         assertTrue("User should be successfully registered",

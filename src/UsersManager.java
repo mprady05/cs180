@@ -44,11 +44,12 @@ public class UsersManager implements UsersManagerInterface {
                         users.add(user);
                     }
                 } catch (Exception e) {
-                    throw new SMPException("Error parsing user from line: " + e.getMessage());
+                    System.out.println("Error parsing user from line.");
+                    return;
                 }
             }
-        } catch (IOException | SMPException e) {
-            throw new SMPException("Error parsing user from line: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Error parsing user from line.");
         }
     }
 
@@ -87,8 +88,9 @@ public class UsersManager implements UsersManagerInterface {
                 }
             }
             return new User(firstName, lastName, username, password, friendList, blockList, postIds);
-        } catch (NumberFormatException e) {
-            throw new SMPException("Error parsing file.");
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.out.println("Error parsing file.");
+            return null;
         }
     }
 
@@ -198,7 +200,8 @@ public class UsersManager implements UsersManagerInterface {
             users.set(userIndex, updatedUser);
             return true;
         } else {
-            throw new SMPException("User not found.");
+            System.out.println("User not found.");
+            return false;
         }
     }
 
