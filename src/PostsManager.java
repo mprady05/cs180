@@ -15,31 +15,34 @@ public class PostsManager implements PostsManagerInterface {
      * Constructs a PostsManager instance and initializes the posts list by reading from the database file.
      * This constructor automatically calls readPostsDatabaseFile() to load existing posts into memory.
      */
+
     public PostsManager() {
-        readPostsDatabaseFile();
+        synchronized (PostsManager.class) {
+            readPostsDatabaseFile();
+        }
     }
 
     /**
      * Retrieves the current list of posts.
      * @return A list of Post objects representing all current posts.
      */
-    public static ArrayList<Post> getPosts() {
-        return posts;
+    public static synchronized ArrayList<Post> getPosts() {
+        return new ArrayList<>(posts);
     }
 
     /**
      * Sets the current list of posts.
      * @param posts A list of Post objects to set as the current list of posts.
      */
-    public static void setPosts(ArrayList<Post> posts) {
-        PostsManager.posts = posts;
+    public static synchronized void setPosts(ArrayList<Post> posts) {
+        PostsManager.posts = new ArrayList<>(posts);
     }
 
     /**
      * Reads the posts from the database file and populates the posts list.
      * This method clears any existing posts in the list before reading from the file.
      */
-    public static void readPostsDatabaseFile() {
+    public static synchronized void readPostsDatabaseFile() {
         posts.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(POST_FILE))) {
             String line;
@@ -85,7 +88,7 @@ public class PostsManager implements PostsManagerInterface {
      * Writes all current posts in the list to the database file.
      * This method overwrites the existing file content with the current state of the posts list.
      */
-    public static void writePostsDatabaseFile() {
+    public static synchronized void writePostsDatabaseFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(POST_FILE))) {
             for (Post post : posts) {
                 String postInfo = post.getPostId() + ":~:" +
@@ -121,7 +124,7 @@ public class PostsManager implements PostsManagerInterface {
      * @return The ID of the newly added post.
      * @throws SMPException If the creator username does not exist.
      */
-    public static String addPost(String creatorUsername, String content, int upvotes,
+    public static synchronized String addPost(String creatorUsername, String content, int upvotes,
                                  int downvotes, ArrayList<String> commentIds)
             throws SMPException {
         User creator = UsersManager.searchUser(creatorUsername);
@@ -137,7 +140,7 @@ public class PostsManager implements PostsManagerInterface {
      * Clears all posts from the list.
      * This method is used to reset the state of the posts list, typically for testing or initialization purposes.
      */
-    public static void clearAllPosts() {
+    public static synchronized void clearAllPosts() {
         posts.clear();
     }
 
@@ -147,7 +150,7 @@ public class PostsManager implements PostsManagerInterface {
      * @return true if the post was found and updated, false otherwise.
      * @throws SMPException If an error occurs during the update process.
      */
-    public static boolean updatePost(Post updatedPost) throws SMPException {
+    public static synchronized boolean updatePost(Post updatedPost) throws SMPException {
         int postIndex = -1;
         for (int i = 0; i < posts.size(); i++) {
             if (posts.get(i).getPostId().equals(updatedPost.getPostId())) {
@@ -168,7 +171,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param postId The ID of the post to search for.
      * @return The Post object if found, null otherwise.
      */
-    public static Post searchPost(String postId) {
+    public static synchronized Post searchPost(String postId) {
         for (Post post : posts) {
             if (post.getPostId().equals(postId)) {
                 return post;
@@ -182,7 +185,7 @@ public class PostsManager implements PostsManagerInterface {
      * @param comment The comment object for which to find the associated post ID.
      * @return The ID of the post that contains the given comment, or null if not found.
      */
-    public static String getPostIdFromComment(Comment comment) {
+    public synchronized static String getPostIdFromComment(Comment comment) {
         for (Post post : posts) {
             if (post.getComments().contains(comment.getCommentId())) {
                 return post.getPostId();

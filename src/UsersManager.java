@@ -9,7 +9,7 @@ import java.io.*;
  */
 public class UsersManager implements UsersManagerInterface {
     private static final String USER_FILE = "UsersDatabase.txt";
-    public static ArrayList<User> users = new ArrayList<>();
+    public static final ArrayList<User> users = new ArrayList<>();
 
     /**
      * Constructor that initializes the UsersManager by reading the users from the database file.

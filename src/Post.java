@@ -102,7 +102,7 @@ public class Post implements PostInterface {
      * Increments the upvote count for the post and updates the corresponding post in the PostsManager.
      * @throws SMPException If there is an error updating the post.
      */
-    public void addUpvote() throws SMPException {
+    public synchronized void addUpvote() throws SMPException {
         upvotes += 1;
         Post post = PostsManager.searchPost(this.postId);
         PostsManager.updatePost(post);
@@ -112,7 +112,7 @@ public class Post implements PostInterface {
      * Increments the downvote count for the post and updates the corresponding post in the PostsManager.
      * @throws SMPException If there is an error updating the post.
      */
-    public void addDownvote() throws SMPException {
+    public synchronized void addDownvote() throws SMPException {
         downvotes += 1;
         Post post = PostsManager.searchPost(this.postId);
         PostsManager.updatePost(post);
@@ -124,7 +124,7 @@ public class Post implements PostInterface {
      * @param contents The textual content of the comment.
      * @throws SMPException If there is an error creating the comment or updating the post.
      */
-    public void addComment(String author, String contents) throws SMPException {
+    public synchronized void addComment(String author, String contents) throws SMPException {
         String commentId = CommentsManager.addComment(author, contents, 0, 0);
         if (commentId == null || commentId.isEmpty()) {
             throw new SMPException("Could not add comment.");
@@ -139,7 +139,7 @@ public class Post implements PostInterface {
      * @param requesterUsername The username of the requester.
      * @throws SMPException If the comment cannot be deleted.
      */
-    public void deleteComment(String commentId, String requesterUsername) throws SMPException {
+    public synchronized void deleteComment(String commentId, String requesterUsername) throws SMPException {
         Comment commentToDelete = CommentsManager.searchComment(commentId);
         if (commentToDelete == null) {
             throw new SMPException("Comment not found.");
