@@ -19,7 +19,6 @@ public class UsersManager implements UsersManagerInterface {
         users = Collections.synchronizedList(users);
         readUsersDatabaseFile();
     }
-
     /**
      * Returns the current list of users.
      * @return A list of User objects representing all users.
@@ -43,12 +42,10 @@ public class UsersManager implements UsersManagerInterface {
                     if (user != null) {
                         users.add(user);
                     }
-                } catch (Exception e) {
-                    throw new SMPException("Error parsing user from line: " + e.getMessage());
                 }
+            } catch (IOException | SMPException e) {
+                throw new SMPException("Error parsing user from line: " + e.getMessage());
             }
-        } catch (IOException | SMPException e) {
-            throw new SMPException("Error parsing user from line: " + e.getMessage());
         }
     }
 
