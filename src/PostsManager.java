@@ -15,10 +15,13 @@ public class PostsManager implements PostsManagerInterface {
      * Constructs a PostsManager instance and initializes the posts list by reading from the database file.
      * This constructor automatically calls readPostsDatabaseFile() to load existing posts into memory.
      */
-    public PostsManager() {
-        posts = Collections.synchronizedList(posts);
-        readPostsDatabaseFile();
+  public PostsManager() {
+    posts = Collections.synchronizedList(posts);
+    readPostsDatabaseFile();
+    synchronized (PostsManager.class) {
+      readPostsDatabaseFile();
     }
+  }
 
     /**
      * Retrieves the current list of posts.

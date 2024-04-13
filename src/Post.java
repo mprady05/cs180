@@ -123,6 +123,7 @@ public class Post implements PostInterface {
      * @return true if added comment, false otherwise.
      * @throws SMPException If there is an error creating the comment or updating the post.
      */
+
     public synchronized boolean addComment(String author, String contents) throws SMPException {
         Comment commentId = CommentsManager.addComment(author, contents, 0, 0);
         if (commentId == null) {
@@ -140,6 +141,7 @@ public class Post implements PostInterface {
      * @throws SMPException If the comment cannot be deleted.
      * @return true if comment is deleted, false otherwise.
      */
+
     public synchronized boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
         Comment commentToDelete = CommentsManager.searchComment(commentId);
         if (commentToDelete == null) {

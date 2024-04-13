@@ -102,6 +102,7 @@ public class User implements UserInterface {
         }
     }
 
+
     /**
      * Removes a friend from the user's friend list and updates the user in the UsersManager.
      * @param checkUsername Username of the friend to remove.
@@ -156,14 +157,21 @@ public class User implements UserInterface {
      */
     public synchronized ArrayList<String> getFriendsPosts() {
         ArrayList<String> friendsPosts = new ArrayList<>();
-        for (String friendUsername : friendList) {
+        ArrayList<String> copyFriendList;
+        synchronized(this) {
+            copyFriendList = new ArrayList<>(friendList);
+        }
+        for (String friendUsername : copyFriendList) {
             User friend = UsersManager.searchUser(friendUsername);
             if (friend != null) {
-                friendsPosts.addAll(friend.getPostIds());
+                synchronized(friend) {
+                    friendsPosts.addAll(new ArrayList<>(friend.getPostIds()));
+                }
             }
         }
         return friendsPosts;
     }
+
 
     /**
      * Provides a string representation of the User object.
@@ -177,28 +185,26 @@ public class User implements UserInterface {
         result += password + ';';
         result += "(";
         for (int i = 0; i < friendList.size(); i++) {
-            result += friendList.get(i);
+            result.append(friendList.get(i));
             if (i < friendList.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ");";
-        result += "(";
+        result.append(");").append("(");
         for (int i = 0; i < blockList.size(); i++) {
-            result += blockList.get(i);
+            result.append(blockList.get(i));
             if (i < blockList.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ");";
-        result += "(";
+        result.append(");").append("(");
         for (int i = 0; i < postIds.size(); i++) {
-            result += postIds.get(i);
+            result.append(postIds.get(i));
             if (i < postIds.size() - 1) {
-                result += ",";
+                result.append(",");
             }
         }
-        result += ")";
-        return result;
+        result.append(")");
+        return result.toString();
     }
 }

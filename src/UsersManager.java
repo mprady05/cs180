@@ -19,7 +19,6 @@ public class UsersManager implements UsersManagerInterface {
         users = Collections.synchronizedList(users);
         readUsersDatabaseFile();
     }
-
     /**
      * Returns the current list of users.
      * @return A list of User objects representing all users.
@@ -43,13 +42,13 @@ public class UsersManager implements UsersManagerInterface {
                     if (user != null) {
                         users.add(user);
                     }
-                } catch (Exception e) {
+               } catch (Exception e) {
                     System.out.println("Error parsing user from line.");
                     return;
                 }
+            } catch (IOException e) {
+              System.out.println("Error parsing user from line.");
             }
-        } catch (IOException e) {
-            System.out.println("Error parsing user from line.");
         }
     }
 
