@@ -11,5 +11,7 @@ public interface CommentInterface {
     String getContent();
     int getUpvotes();
     int getDownvotes();
+    void addUpvote() throws SMPException;
+    void addDownvote() throws SMPException;
     String toString();
 }

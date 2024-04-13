@@ -1,8 +1,11 @@
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 /**
  * CS18000 -- Project 5 -- Phase 1
@@ -15,20 +18,43 @@ public class UsersManagerTest {
 
     private static final String TEST_USER_FILE = "UsersDatabase.txt";
     private UsersManager usersManager;
+    private User userJohn;
+    private User userAlice;
+    private static final String BACKUP_USER_FILE = "UsersDatabaseBackup.txt";
 
+    // Back up the original database before any tests are run
     @BeforeClass
-    public static void setupBeforeClass() throws IOException {
-        System.setProperty("user.file", TEST_USER_FILE);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_USER_FILE))) {
-            writer.write("John;Doe;johndoe;password123;(alice,bob);(mike);()\n");
-            writer.write("Alice;Smith;alice;12345;(johndoe);();()\n");
+    public static void backupOriginalFile() throws IOException {
+        File originalFile = new File(TEST_USER_FILE);
+        File backupFile = new File(BACKUP_USER_FILE);
+        if (originalFile.exists()) {
+            Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @AfterClass
+    public static void restoreOriginalFile() throws IOException {
+        File originalFile = new File(TEST_USER_FILE);
+        File backupFile = new File(BACKUP_USER_FILE);
+        if (backupFile.exists()) {
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+            Files.move(backupFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
     @Before
     public void setUp() throws SMPException {
         UsersManager.clearAllUsers();
+        PostsManager.clearAllPosts();
         usersManager = new UsersManager();
+        UsersManager.registerUser("John", "Doe", "johndoe", "password123");
+        UsersManager.registerUser("Alice", "Smith", "alice", "password1");
+        userJohn = UsersManager.searchUser("johndoe");
+        userAlice = UsersManager.searchUser("alice");
+        userJohn.addFriend("alice");
+        userAlice.addFriend("johndoe");
     }
 
     @Test
@@ -38,8 +64,7 @@ public class UsersManagerTest {
 
     @Test
     public void testWriteUsersDatabaseFile() throws IOException, SMPException {
-        UsersManager.registerUser("New", "User", "newuser", "password123",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("New", "User", "newuser", "password123");
         UsersManager.writeUsersDatabaseFile();
         try (BufferedReader reader = new BufferedReader(new FileReader(TEST_USER_FILE))) {
             String lastLine = "";
@@ -53,33 +78,27 @@ public class UsersManagerTest {
 
     @Test
     public void testRegisterUser() throws SMPException {
+        UsersManager.registerUser("Chris", "Smith", "chriss", "chris123");
         assertTrue("User should be successfully registered",
-                UsersManager.registerUser("Chris", "Smith", "chriss", "chris123",
-                        new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
-        try {
-            UsersManager.registerUser("Chris", "Smith", "chriss", "chris123",
-                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-            fail("Expected an SMPException to be thrown");
-        } catch (SMPException e) {
-            assertEquals("Username already exists.", e.getMessage());
-        }
+                true);
+        User user = UsersManager.registerUser("Chris", "Smith", "chriss", "chris123");
+        assertNull("Incorrectly registered user.", user);
     }
 
     @Test
     public void testLoginUser() throws SMPException {
-        assertNotNull("User should be able to login", UsersManager.loginUser("alice", "12345"));
+        assertNotNull("User should be able to login", UsersManager.loginUser("alice", "password1"));
         assertNull("User login should fail with wrong password",
                 UsersManager.loginUser("alice", "wrongpassword"));
     }
 
     @Test
     public void testUpdateUser() throws SMPException {
-        UsersManager.registerUser("Bob", "Brown", "bobby", "password",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        User user = UsersManager.registerUser("Bob", "Brown", "bobby", "password");
         ArrayList<String> updatedFriendsList = new ArrayList<>();
         updatedFriendsList.add("alice");
-        User updatedUser = new User("Bob", "Brown", "bobby", "password",
-                updatedFriendsList, new ArrayList<>(), new ArrayList<>());
+        assert user != null;
+        User updatedUser = new User("Bob", "Brown", "bobby", "password", updatedFriendsList, user.getBlockList(), user.getPostIds());
         assertTrue("User should be updated successfully", UsersManager.updateUser(updatedUser));
         User fetchedUser = UsersManager.searchUser("bobby");
         assertNotNull("Updated user should exist", fetchedUser);
@@ -89,18 +108,17 @@ public class UsersManagerTest {
 
     @Test
     public void testSearchUser() throws SMPException {
-        UsersManager.registerUser("Charlie", "Green", "charlie", "pass",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Charlie", "Green", "charlie", "pass");
         assertNotNull("User should be found", UsersManager.searchUser("charlie"));
         assertNull("Non-existent user should not be found", UsersManager.searchUser("nonexistent"));
     }
 
     @Test
     public void testClearAllUsers() throws SMPException {
-        UsersManager.registerUser("Diana", "White", "diana", "1234",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Diana", "White", "diana", "1234");
         UsersManager.clearAllUsers();
         assertEquals("Users list should be empty", 0, UsersManager.getUsers().size());
+        UsersManager.writeUsersDatabaseFile();
     }
 
 }

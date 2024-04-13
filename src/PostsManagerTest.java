@@ -1,7 +1,9 @@
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.*;
+
 import static org.junit.Assert.*;
+
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.io.*;
 /**
@@ -15,7 +17,29 @@ public class PostsManagerTest {
     private PostsManager postsManager;
     private User testUser;
     private static final String TEST_POSTS_FILE = "PostsDatabase.txt";
+    private static final String BACKUP_POSTS_FILE = "PostsDatabaseBackup.txt";
     private static String originalPostsContent = "";
+
+    @BeforeClass
+    public static void backupOriginalFile() throws IOException {
+        File originalFile = new File(TEST_POSTS_FILE);
+        File backupFile = new File(BACKUP_POSTS_FILE);
+        if (originalFile.exists()) {
+            Files.copy(originalFile.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    @AfterClass
+    public static void restoreOriginalFile() throws IOException {
+        File originalFile = new File(TEST_POSTS_FILE);
+        File backupFile = new File(BACKUP_POSTS_FILE);
+        if (backupFile.exists()) {
+            if (originalFile.exists()) {
+                originalFile.delete();
+            }
+            Files.move(backupFile.toPath(), originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
 
     @Before
     public void setUp() throws SMPException, IOException {
@@ -29,18 +53,9 @@ public class PostsManagerTest {
         testUser = new User("Test", "User", "testuser", "password",
                 new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         UsersManager.registerUser(testUser.getFirstName(), testUser.getLastName(),
-                testUser.getUsername(), testUser.getPassword(),
-                testUser.getFriendList(), testUser.getBlockList(), testUser.getPostIds());
-        UsersManager.registerUser("John", "Doe", "johndoe", "password123",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+                testUser.getUsername(), testUser.getPassword());
+        UsersManager.registerUser("John", "Doe", "johndoe", "password123");
         postsManager = new PostsManager();
-    }
-
-    @After
-    public void tearDown() throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(TEST_POSTS_FILE))) {
-            writer.write(originalPostsContent);
-        }
     }
 
     @Test
@@ -96,15 +111,15 @@ public class PostsManagerTest {
     public void testGetPostIdFromComment() throws SMPException {
         String postId = PostsManager.addPost("johndoe", "Example post content", 5, 2, new ArrayList<>());
         assertNotNull("Post should have been added successfully", postId);
-        String commentId = CommentsManager.addComment("johndoe", "Example comment", 0, 0);
+        Comment commentId = CommentsManager.addComment("johndoe", "Example comment", 0, 0);
         assertNotNull("Comment should have been added successfully", commentId);
         Post post = PostsManager.searchPost(postId);
         assertNotNull("Post should exist", post);
-        post.getComments().add(commentId);
-        Comment comment = new Comment(commentId, UsersManager.searchUser("johndoe"),
+        post.getComments().add(commentId.getCommentId());
+        Comment comment = new Comment(commentId.getCommentId(), UsersManager.searchUser("johndoe"),
                 "Example comment", 0, 0);
-        String foundPostId = PostsManager.getPostIdFromComment(comment);
-        assertEquals("The post ID retrieved should match the one associated with the comment", postId, foundPostId);
+        Post foundPost = PostsManager.getPostIdFromComment(comment);
+        assertEquals("The post ID retrieved should match the one associated with the comment", postId, foundPost.getPostId());
     }
 
 }

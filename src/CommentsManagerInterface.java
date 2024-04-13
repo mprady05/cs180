@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.List;
+
 /**
  * CS18000 -- Project 5 -- Phase 1
  * Interface for operations on comment data, including reading, writing, and updating comments.
@@ -7,14 +8,16 @@ import java.util.ArrayList;
  * @version March 31, 2024
  */
 public interface CommentsManagerInterface {
-    static ArrayList<Comment> getComments() {
-        return null;
+    static List<Comment> getComments() {
+        return CommentsManager.getComments();
     }
+
     static void readCommentsDatabaseFile() throws SMPException {
     }
+
     static void writeCommentsDatabaseFile() throws SMPException {
     }
-    static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+    static Comment addComment(String authorUsername, String content, int upvotes, int downvotes)
             throws SMPException {
         return null;
     }

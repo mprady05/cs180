@@ -9,22 +9,21 @@ import java.io.*;
  */
 public class UsersManager implements UsersManagerInterface {
     private static final String USER_FILE = "UsersDatabase.txt";
-    public static final ArrayList<User> users = new ArrayList<>();
+    public static List<User> users = new ArrayList<>();
 
     /**
      * Constructor that initializes the UsersManager by reading the users from the database file.
      * @throws SMPException if there's an error reading the users database file.
      */
     public UsersManager() throws SMPException {
-        synchronized (users) {
-            readUsersDatabaseFile();
-        }
+        users = Collections.synchronizedList(users);
+        readUsersDatabaseFile();
     }
     /**
      * Returns the current list of users.
      * @return A list of User objects representing all users.
      */
-    public synchronized static ArrayList<User> getUsers() {
+    public synchronized static List<User> getUsers() {
         return users;
     }
 
@@ -33,19 +32,15 @@ public class UsersManager implements UsersManagerInterface {
      * Each line in the file represents a single user's data, which is parsed and converted into a User object.
      * @throws SMPException if there's an error reading the file or parsing user data.
      */
-    public static void readUsersDatabaseFile() throws SMPException {
-        synchronized (users) {
-            users.clear();
-            try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    try {
-                        User user = stringToUser(line);
-                        if (user != null) {
-                            users.add(user);
-                        }
-                    } catch (Exception e) {
-                        throw new SMPException("Error parsing user from line: " + e.getMessage());
+    public synchronized static void readUsersDatabaseFile() throws SMPException {
+        users.clear();
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    User user = stringToUser(line);
+                    if (user != null) {
+                        users.add(user);
                     }
                 }
             } catch (IOException | SMPException e) {
@@ -60,7 +55,7 @@ public class UsersManager implements UsersManagerInterface {
      * @return A User object created from the parsed line.
      * @throws SMPException if parsing fails due to incorrect format.
      */
-    private static User stringToUser(String line) throws SMPException {
+    public synchronized static User stringToUser(String line) throws SMPException {
         try {
             String[] parts = line.split(";");
             String firstName = parts[0];
@@ -98,7 +93,7 @@ public class UsersManager implements UsersManagerInterface {
      * Writes the current list of users into the users database file.
      * Converts each User object into a string representation and writes it to the file.
      */
-    public static synchronized void writeUsersDatabaseFile() {
+    public synchronized static void writeUsersDatabaseFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(USER_FILE))) {
             for (User user : users) {
                 String userInfo = user.getFirstName() + ";" +
@@ -143,26 +138,21 @@ public class UsersManager implements UsersManagerInterface {
      * @param lastName The last name of the user.
      * @param username The username of the user.
      * @param password The password of the user.
-     * @param friendList A list of usernames representing the user's friends.
-     * @param blockList A list of usernames representing the users blocked by the user.
-     * @param postIds A list of post IDs created by the user.
-     * @return true if the user was successfully registered; false if the username already exists.
+     * @return User if the user was successfully registered; null if the username already exists.
      * @throws SMPException if the username already exists.
      */
-    public static synchronized boolean registerUser(String firstName, String lastName, String username,
-                                                    String password, ArrayList<String> friendList,
-                                                    ArrayList<String> blockList, ArrayList<String> postIds)
+    public synchronized static User registerUser(String firstName, String lastName, String username,
+                                       String password)
             throws SMPException {
-        synchronized (users) {
-            if (doesUsernameExist(username)) {
-                throw new SMPException("Username already exists.");
-            }
-            User newUser = new User(firstName, lastName, username, password, friendList, blockList, postIds);
-            users.add(newUser);
-            return true;
+        if (doesUsernameExist(username)) {
+            return null;
         }
+        User newUser = new User(firstName, lastName, username, password,
+                new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+        users.add(newUser);
+        return newUser;
     }
-    private static synchronized boolean doesUsernameExist(String username) {
+    private synchronized static boolean doesUsernameExist(String username) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
                 return true;
@@ -178,7 +168,7 @@ public class UsersManager implements UsersManagerInterface {
      * @return A User object if the login is successful; null if the credentials do not match any user.
      * @throws SMPException if there's an error during the login process.
      */
-    public static synchronized User loginUser(String username, String password) throws SMPException {
+    public synchronized static User loginUser(String username, String password) throws SMPException {
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
                 return user;
@@ -193,7 +183,7 @@ public class UsersManager implements UsersManagerInterface {
      * @return true if the user was successfully updated; false if the user could not be found.
      * @throws SMPException if the user to be updated cannot be found.
      */
-    public static synchronized boolean updateUser(User updatedUser) throws SMPException {
+    public synchronized static boolean updateUser(User updatedUser) throws SMPException {
         int userIndex = -1;
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUsername().equals(updatedUser.getUsername())) {
@@ -214,12 +204,10 @@ public class UsersManager implements UsersManagerInterface {
      * @param username The username of the user to search for.
      * @return A User object if a user with the specified username exists; null otherwise.
      */
-    public static User searchUser(String username) {
-        synchronized (users) {
-            for (User user : users) {
-                if (user.getUsername().equals(username)) {
-                    return user;
-                }
+    public synchronized static User searchUser(String username) {
+        for (User user : users) {
+            if (user.getUsername().equals(username) && !user.getBlockList().contains(username)) {
+                return user;
             }
         }
         return null;
@@ -228,10 +216,7 @@ public class UsersManager implements UsersManagerInterface {
     /**
      * Clears all users from the 'users' list. Used for testing.
      */
-    public static void clearAllUsers() {
-        synchronized (users) {
-            users.clear();
-        }
+    public synchronized static void clearAllUsers() {
+        UsersManager.users.clear();
     }
-
 }

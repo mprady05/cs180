@@ -22,8 +22,7 @@ public class PostTest {
     @BeforeClass
     public static void setUpBeforeClass() throws SMPException {
         UsersManager.clearAllUsers();
-        UsersManager.registerUser("Jane", "Doe", "janedoe", "password",
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        UsersManager.registerUser("Jane", "Doe", "janedoe", "password");
     }
 
     @Before
@@ -71,10 +70,11 @@ public class PostTest {
         assertTrue("Post should contain the new comment ID", post.getComments().contains(latestCommentId));
     }
 
-    @Test(expected = SMPException.class)
+    @Test
     public void testDeleteCommentNotAuthorized() throws SMPException {
         String commentId = "12345";
-        post.deleteComment(commentId, "notCreatorOrAuthor");
+        boolean checkCommentDelete = post.deleteComment(commentId, "notCreatorOrAuthor");
+        assertFalse("The comment should not be deleted.", checkCommentDelete);
     }
 
     @Test

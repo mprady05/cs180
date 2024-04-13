@@ -14,11 +14,11 @@ public interface UserInterface {
     ArrayList<String> getFriendList();
     ArrayList<String> getBlockList();
     ArrayList<String> getPostIds();
-    void addFriend(String username) throws SMPException;
-    void blockUser(String usernameToBlock) throws SMPException;
-    void removeFriend(String username) throws SMPException;
-    void addPost(String content) throws SMPException;
-    void hidePost(String postId) throws SMPException;
+    boolean addFriend(String username) throws SMPException;
+    boolean blockUser(String usernameToBlock) throws SMPException;
+    boolean removeFriend(String username) throws SMPException;
+    boolean addPost(String content) throws SMPException;
+    boolean hidePost(String postId) throws SMPException;
     ArrayList<String> getFriendsPosts();
     String toString();
 }

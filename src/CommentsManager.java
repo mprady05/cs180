@@ -9,12 +9,14 @@ import java.io.*;
  */
 public class CommentsManager implements CommentsManagerInterface {
     private static final String COMMENTS_FILE = "CommentsDatabase.txt";
-    private static ArrayList<Comment> comments = new ArrayList<>();
+    private static List<Comment> comments = new ArrayList<>();
+
 
     /**
      * Constructs a CommentsManager and initializes the comments list by reading from the comments database file.
      */
     public CommentsManager() throws SMPException {
+        comments = Collections.synchronizedList(comments);
         readCommentsDatabaseFile();
     }
 
@@ -22,7 +24,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * Returns the list of all comments.
      * @return A list containing all comments.
      */
-    public static ArrayList<Comment> getComments() {
+    public synchronized static List<Comment> getComments() {
         return comments;
     }
 
@@ -30,7 +32,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * Reads comments from the database file and loads them into the comments list.
      * @throws SMPException If there's an error reading the file.
      */
-    public static void readCommentsDatabaseFile() throws SMPException {
+    public synchronized static void readCommentsDatabaseFile() throws SMPException {
         comments.clear();
         try (BufferedReader reader = new BufferedReader(new FileReader(COMMENTS_FILE))) {
             String line;
@@ -48,14 +50,15 @@ public class CommentsManager implements CommentsManagerInterface {
     /**
      * Parses a line from the comments database file into a Comment object.
      * @param line A line from the comments database file.
-     * @return A Comment object if parsing is successful, null otherwise.
+     * @return A comment object if parsing is successful, null otherwise.
      * @throws SMPException If parsing fails.
      */
-    private static Comment parseLineToComment(String line) throws SMPException {
+    private synchronized static Comment parseLineToComment(String line) throws SMPException {
         try {
-            String[] parts = line.split(":~:");
+            String[] parts = line.split(":!:");
             if (parts.length != 5) {
-                throw new IllegalArgumentException("Invalid comment format in database");
+                System.out.println("Invalid comment format in database.");
+                return null;
             }
             String commentId = parts[0];
             String authorUsername = parts[1];
@@ -77,7 +80,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * Writes the current list of comments to the comments database file.
      * @throws SMPException If there's an error writing to the file.
      */
-    public static void writeCommentsDatabaseFile() throws SMPException {
+    public synchronized static void writeCommentsDatabaseFile() throws SMPException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(COMMENTS_FILE))) {
             for (Comment comment : comments) {
                 String commentLine = comment.toString();
@@ -95,10 +98,10 @@ public class CommentsManager implements CommentsManagerInterface {
      * @param content Content of the comment.
      * @param upvotes Initial upvotes count.
      * @param downvotes Initial downvotes count.
-     * @return The ID of the newly added comment, or null if the author doesn't exist.
+     * @return The newly added comment, or null if the author doesn't exist.
      * @throws SMPException If the author doesn't exist.
      */
-    public static String addComment(String authorUsername, String content, int upvotes, int downvotes)
+    public synchronized static Comment addComment(String authorUsername, String content, int upvotes, int downvotes)
             throws SMPException {
         User author = UsersManager.searchUser(authorUsername);
         if (author == null) {
@@ -107,7 +110,7 @@ public class CommentsManager implements CommentsManagerInterface {
         }
         Comment newComment = new Comment(author, content, upvotes, downvotes);
         comments.add(newComment);
-        return newComment.getCommentId();
+        return newComment;
     }
 
     /**
@@ -116,7 +119,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * @return true if the comment is updated successfully, false otherwise.
      * @throws SMPException If updating fails.
      */
-    public static boolean updateComment(Comment updatedComment) throws SMPException {
+    public synchronized static boolean updateComment(Comment updatedComment) throws SMPException {
         for (int i = 0; i < comments.size(); i++) {
             Comment comment = comments.get(i);
             if (comment.getCommentId().equals(updatedComment.getCommentId())) {
@@ -134,13 +137,13 @@ public class CommentsManager implements CommentsManagerInterface {
      * @return true if the comment is deleted successfully, false otherwise.
      * @throws SMPException If deletion fails.
      */
-    public static boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
+    public synchronized static boolean deleteComment(String commentId, String requesterUsername) throws SMPException {
         for (int i = 0; i < comments.size(); i++) {
             Comment comment = comments.get(i);
-            String postCreatorUsername = PostsManager.getPostIdFromComment(comment);
+            Post post = PostsManager.getPostIdFromComment(comment);
             if (comment.getCommentId().equals(commentId) &&
                     (requesterUsername.equals(comment.getAuthor().getUsername()) ||
-                            requesterUsername.equals(postCreatorUsername))) {
+                            requesterUsername.equals(Objects.requireNonNull(post).getCreator().getUsername()))) {
                 comments.remove(i);
                 return true;
             }
@@ -153,7 +156,7 @@ public class CommentsManager implements CommentsManagerInterface {
      * @param commentId The ID of the comment to search for.
      * @return The Comment object if found, null otherwise.
      */
-    public static Comment searchComment(String commentId) {
+    public synchronized static Comment searchComment(String commentId) {
         for (Comment comment : comments) {
             if (comment.getCommentId().equals(commentId)) {
                 return comment;
@@ -165,7 +168,7 @@ public class CommentsManager implements CommentsManagerInterface {
     /**
      * Clears all comments from the list.
      */
-    public static void clearAllComments() {
+    public synchronized static void clearAllComments() {
         comments.clear();
     }
 }
