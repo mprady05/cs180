@@ -610,7 +610,7 @@ An interface for the CommentsManager class.
 
 ### static void readCommentsDatabaseFile() throws SMPException
 
-###  static void writeCommentsDatabaseFile() throws SMPException
+### static void writeCommentsDatabaseFile() throws SMPException
 
 ### static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
 
@@ -992,7 +992,7 @@ ClassNotFoundException, SMPException
 
 -   On any IOException or ClassNotFound exception, print the error message and return false
 
-###  private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+### private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that the feed can be read and that there are posts present in the feed
 
@@ -1034,7 +1034,7 @@ ClassNotFoundException, SMPException
 
 -   Return true if all posts are displayed
 
-###  private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+### private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that there are comments on the post and that the comments can be read successfully from the server
 
