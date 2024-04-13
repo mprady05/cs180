@@ -46,9 +46,9 @@ public class UsersManager implements UsersManagerInterface {
                     System.out.println("Error parsing user from line.");
                     return;
                 }
-            } catch (IOException e) {
-              System.out.println("Error parsing user from line.");
             }
+        } catch (IOException e) {
+            System.out.println("Error parsing user from line.");
         }
     }
 

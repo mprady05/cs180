@@ -185,26 +185,28 @@ public class User implements UserInterface {
         result += password + ';';
         result += "(";
         for (int i = 0; i < friendList.size(); i++) {
-            result.append(friendList.get(i));
+            result += friendList.get(i);
             if (i < friendList.size() - 1) {
-                result.append(",");
+                result += ",";
             }
         }
-        result.append(");").append("(");
+        result += ");";
+        result += "(";
         for (int i = 0; i < blockList.size(); i++) {
-            result.append(blockList.get(i));
+            result += blockList.get(i);
             if (i < blockList.size() - 1) {
-                result.append(",");
+                result += ",";
             }
         }
-        result.append(");").append("(");
+        result += ");";
+        result += "(";
         for (int i = 0; i < postIds.size(); i++) {
-            result.append(postIds.get(i));
+            result += postIds.get(i);
             if (i < postIds.size() - 1) {
-                result.append(",");
+                result += ",";
             }
         }
-        result.append(")");
-        return result.toString();
+        result += ")";
+        return result;
     }
 }
