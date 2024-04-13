@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+
 /**
  * CS18000 -- Project 5 -- Phase 2
  * Class that represents the client server
@@ -62,12 +63,12 @@ public class Client {
     private static final String VIEW_FEED_SUCCESS = "Successfully viewed feed!";
     private static final String VIEW_FEED_FAIL = "Could not view feed. Please try again.";
     private static final String POST_OPTIONS_MENU = """
-    Enter the number of the command you would like to execute:
-    (1) - Upvote post
-    (2) - Downvote post
-    (3) - Add comment
-    (4) - View comments
-    (5) - Exit""";
+            Enter the number of the command you would like to execute:
+            (1) - Upvote post
+            (2) - Downvote post
+            (3) - Add comment
+            (4) - View comments
+            (5) - Exit""";
     private static final String ADD_COMMENT = "Enter comment contents: ";
     private static final String ADD_COMMENT_SUCCESS = "Successfully added comment!";
     private static final String ADD_COMMENT_FAIL = "Failed to add comment. Please try again.";
@@ -85,6 +86,7 @@ public class Client {
     private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
     private boolean exit = false;
 
+    // Constructor that create a new socket based on passed in hostname and port number
     public Client(String hostname, int port) throws IOException {
         this.hostname = hostname;
         this.port = port;
@@ -93,11 +95,13 @@ public class Client {
         this.scanner = new Scanner(System.in);
     }
 
+    //Sets up the object input and output streams
     private void setupStreams(InputStream input, OutputStream output) throws IOException {
         this.oos = new ObjectOutputStream(output);
         this.ois = new ObjectInputStream(input);
     }
 
+    //Deals with commands that are passed in from the user
     public void start() throws IOException {
         try {
             System.out.println(WELCOME_MESSAGE);
@@ -122,6 +126,7 @@ public class Client {
         }
     }
 
+    //Handles the beginning of whether the user wants to login, register, or exit
     private void handleWelcomeMenu(String command) throws IOException, ClassNotFoundException, SMPException {
         User user;
         switch (command) {
@@ -146,6 +151,7 @@ public class Client {
         }
     }
 
+    //Handles commands from the user on actions taken (see comments for each case)
     private void handleUserMenu(String command) throws IOException, ClassNotFoundException, SMPException {
         switch (command) {
             case "1": // add a friend
@@ -176,6 +182,7 @@ public class Client {
         }
     }
 
+    //Handles login of the user
     public User handleLogin()
             throws IOException, ClassNotFoundException, SMPException {
         System.out.println("Enter username: ");
@@ -196,6 +203,7 @@ public class Client {
         }
     }
 
+    //Handles registering a new user
     public User handleRegistration()
             throws IOException, ClassNotFoundException, SMPException {
         System.out.println("Enter first name: ");
@@ -222,6 +230,7 @@ public class Client {
         }
     }
 
+    //Handles adding a friend to the user based on username
     public void handleAddFriend()
             throws SMPException, IOException, ClassNotFoundException {
         System.out.println(ADD_FRIEND);
@@ -235,6 +244,7 @@ public class Client {
         }
     }
 
+    //Handles removing a friend from the user based on username
     public void handleRemoveFriend()
             throws SMPException, IOException, ClassNotFoundException {
         System.out.println(REMOVE_FRIEND);
@@ -248,6 +258,7 @@ public class Client {
         }
     }
 
+    //Handles blocking a friend based on username
     private void handleBlockFriend(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         System.out.println(BLOCK_FRIEND);
         String blockUsername = scanner.nextLine();
@@ -260,6 +271,7 @@ public class Client {
         }
     }
 
+    //Handles adding a post based on content passed in from the user
     private void handleAddPost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         System.out.println(ADD_POST);
         String content = scanner.nextLine();
@@ -272,6 +284,7 @@ public class Client {
         }
     }
 
+    //Retrieves and displays the posts
     private boolean displayPosts(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
         oos.writeObject("getPosts");
         try {
@@ -292,6 +305,7 @@ public class Client {
         return true;
     }
 
+    //Hides the post based on what post number the user specifies
     private void handleHidePost(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException, SMPException {
         boolean checkPosts = displayPosts(oos, ois, scanner);
         if (checkPosts) {
@@ -315,6 +329,7 @@ public class Client {
         }
     }
 
+    //Searches for a user based on username and prints out first and last name as well as username
     private void handleViewSearchProfile(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         System.out.println(VIEW_PROFILE);
         String profileUsername = scanner.nextLine();
@@ -331,6 +346,7 @@ public class Client {
         }
     }
 
+    //Displays the feed to the user based on posts from their friends
     private boolean displayFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException {
         oos.writeObject("getFriendsPosts");
         try {
@@ -351,6 +367,7 @@ public class Client {
         return true;
     }
 
+    //Shows the number of posts that the user wants to see from friends
     private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         boolean checkFeed = displayFeed(oos, ois, scanner);
         if (checkFeed) {
@@ -370,6 +387,7 @@ public class Client {
         }
     }
 
+    //Receives commands from the user on what they want to do regarding the post
     private void handlePostOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         System.out.println("Post options menu:");
         while (true) {
@@ -396,7 +414,8 @@ public class Client {
         }
     }
 
-    private void handleAddComment (ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
+    //Handles adding a comment to the post
+    private void handleAddComment(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         oos.writeObject("addComment");
         System.out.println(ADD_COMMENT);
         String content = scanner.nextLine();
@@ -408,7 +427,7 @@ public class Client {
             System.out.println(ADD_COMMENT_FAIL);
         }
     }
-
+    //Displays the comments to the user
     private boolean displayComments(ObjectOutputStream oos, ObjectInputStream ois) throws IOException {
         oos.writeObject("getPostsComments");
         try {
@@ -428,7 +447,7 @@ public class Client {
         }
         return true;
     }
-
+    //Views the comments
     private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         boolean checkComments = displayComments(oos, ois);
         if (checkComments) {
@@ -447,7 +466,7 @@ public class Client {
             System.out.println(VIEW_COMMENTS_FAIL);
         }
     }
-
+    //Handles actions that can be performed on the comments
     private void handleCommentOptions(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException {
         while (true) {
             System.out.println(COMMENT_OPTIONS_MENU);
@@ -461,7 +480,7 @@ public class Client {
                     oos.writeObject("downvoteComment");
                     System.out.println("Comment successfully downvoted.");
                     break;
-                case "3": // add comment
+                case "3": // delete comment
                     handleDeleteComment(oos, ois);
                     return;
                 case "4": // exit
@@ -470,7 +489,7 @@ public class Client {
             }
         }
     }
-
+    //Deletes comments from the post
     private void handleDeleteComment(ObjectOutputStream oos, ObjectInputStream ois) throws IOException, ClassNotFoundException {
         oos.writeObject("deleteComment");
         String respond = (String) ois.readObject();
