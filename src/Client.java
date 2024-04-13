@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 /**
  * CS18000 -- Project 5 -- Phase 2
- * Class that represents the client server
+ * Class that represents the client
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
  * @version April 13, 2024
