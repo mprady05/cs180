@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 /**
- * CS18000 -- Project 5 -- Phase 1
+ * CS18000 -- Project 5 -- Phase 2
  * Interface for user operations.
  *
  * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
- * @version March 31, 2024
+ * @version April 13, 2024
  */
 public interface UserInterface {
     String getFirstName();
