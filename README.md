@@ -1,5 +1,4 @@
 # User.java  
-=============
 
 The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who is using the platform. Implements the UserInterface.
 
@@ -96,7 +95,6 @@ private ArrayList<String> postIds: Array List of postIDs
 -   Add on all the friends in the format of "("friends");", and then all the blocked users in the format of "("blocked users");", and then finally all of the postIds of this user in the format of "("postIds")" and return the string
 
 # UserInterface.java
-====================
 
 An interface for the user class
 
@@ -131,7 +129,6 @@ ArrayList<String> getFriendsPosts()
 String toString()
 
 # UsersManager.java
-===================
 
 The UserManager class will be responsible with user side algorithms within the application. Some of the features that are included are creating a new user and updating the information of the user. Within the entirety of the code, this class will interact mainly with the UserDatabase in order to store information about each user as well as retrieve the necessary information to perform permutations such as updating information or making sure that the new user does not already have an account. Implements the UserManagerInterface. In order to make sure that the class and each method was working by making sure that it was able to successfully read and write to a file. Furthermore, it was made sure that users can be updated, created, and searched for, returning values that were expected.
 
@@ -202,7 +199,6 @@ public static ArrayList<User> users = new ArrayList<>(): ArrayList where this us
 -   Clear all users from this users ArrayList
 
 # UsersManagerInterface.java
-============================
 
 An interface for the UsersMangerInterface class
 
@@ -233,7 +229,6 @@ An interface for the UsersMangerInterface class
 ### static void clearAllUsers()
 
 # SMPException.java
-===================
 
 Exception to be thrown when there is bad data/inputs
 
@@ -244,7 +239,6 @@ Exception to be thrown when there is bad data/inputs
 -   Calls the constructor of the exception superclass with the message passed in as the parameter
 
 # PostsManager.java
-===================
 
 The PostsManager class implements the PostManageriInterface. The purpose of this class is to provide a central place where posts by users can be managed. Some of the primary functionalities include being able to store posts into a file and write to the file any time there is a new post or an old post is modified. Furthermore, old posts and comments can be found using their post and comment id's. Some of the relevant tests that were performed on this class included making up fake posts that operations can be performed upon. For example, fake parameters were passed into some of the methods to make sure that new posts were created, a file was being written to, or this posts ArrayList was being cleared. Essentially, fake posts were created to make sure that each method was outputting what was expected. This class will work with the Post class in order to make a side of the social media application where news posts can be made by users.
 
@@ -327,7 +321,6 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 -   If the post with the specific comment can be found, return the post, otherwise return null
 
 # PostsManagerInterface.java
-============================
 
 An interface for the PostsManager class
 
@@ -362,7 +355,6 @@ static String getPostIdFromComment(Comment comment)
 -   returns null
 
 # Post.java
-===========
 
 This class will implement that PostInterface. The main functionality is to create a post that the User wishes to create. Some other important functionality include being able to add and delete comments as well as alter the number of upvotes and downvotes on this post. In order to make sure all of the code works, fake parameters were passed into the methods to make sure that what was being returned was what was expected. Furthermore, after making the new posts, we made sure that the content, upvotes, downvotes, comments list, post id, and creator all matched with the fake post object that was created. Within the grand scheme of things, this class will be called upon whenever a user decides to create a new post, alter the post, control comment flow, and delete comments/
 
@@ -453,7 +445,6 @@ private ArrayList<String> commendIds: The id's of the comments on the post
 -   Each comment Id should be separated with a :~:
 
 # PostInterface.java
-====================
 
 An interface for the Post class.
 
@@ -482,7 +473,6 @@ void deleteComment(String commentId, String requesterUsername) throws SMPExcepti
 String toString()
 
 # Comment.java
-==============
 
 This class will implement the CommentInterface. The main purpose of this class is to create a comment object with the fields of the commentId, the author of the comment, the contents of the comment, and the number of upvotes and downvotes. It will interact with the Posts and other comments classes to create a seamless side of the application where users will be able to comment on other user's posts as well as like or dislike the comments of other users. Some of the testing that was performed on this class was passing in fake parameters to create a comment object and making sure that the constructors worked by testing it with expected outputs using the getters as well as making sure the toString is formatted correctly.
 
@@ -545,7 +535,6 @@ private int downvotes: The number of downvotes on this comment
 -   Return the String in the format of commentId:!:the author's username:!:content:!:upvotes:!downvotes
 
 # CommentInterface.java
-=======================
 
 An interface for the Comment class
 
@@ -568,7 +557,6 @@ void addDownvote() throws SMPException
 String toString()
 
 # CommentsManager.java
-======================
 
 A class that manages the comments from and is able to read and write from the database file. In order to test the functionality, it was made sure that the database file would be updated when permutations were performed on it.
 
@@ -647,7 +635,6 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 -   Clear this comments ArrayList
 
 # CommentsManagerInterface.java
-===============================
 
 An interface for the CommentsManager class.
 
@@ -680,7 +667,6 @@ An interface for the CommentsManager class.
 ### static void clearAllComments()
 
 # Client.java
-=============
 
 The client class is used as a client and has many functionalities that allow it to communicate with the server and display posts and comments. Some of the key functionalities include handling adding and removing posts and comments, logging onto the platform or registering a new user, blocking users, adding and removing friends, and communicating with the server. In order to test the functionality of this code, there were false inputs that were given to the client to ensure that the correct messages were being printed out by the client.
 
@@ -1033,7 +1019,6 @@ ClassNotFoundException, SMPException
 -   If successful, display the DELETE_COMMENT_SUCCESS message, otherwise display the DELETE_COMMENT_FAIL message
 
 # ClientInterface.java
-======================
 
 An interface for the client class
 
@@ -1078,7 +1063,6 @@ void handleCommentOptions() throws IOException, ClassNotFoundException
 void handleDeleteComment() throws IOException, ClassNotFoundException
 
 # ClientHandler.java
-====================
 
 Server side of the social media platform. Handles all the main operations based on commands that are passed in from the Client class. Some of the main functionality includes adding friends to the user, removing friends from the user, adding users to the blocked list, adding posts to the user's posts list, and adding comments to the selected post's post list. In order to make sure that all functionality was working, false commands and methods were insured into the parameters and made sure that friends lists, blocked lists, etc. were being updated on each go if there was a need to update them.
 
@@ -1333,7 +1317,6 @@ private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Ple
 -   Write to the database of the users, the posts, and the comments
 
 # ClientHandlerInterface.java
-=============================
 
 An interface for the client handler class
 
@@ -1398,7 +1381,6 @@ void readAllDatabases() throws SMPException
 void writeAllDatabases() throws SMPException
 
 # Server.java
-=============
 
 A server class for the client. In order to test the functionality, a server number was passed in to make sure that the client could connect to the server and vice versa.
 
@@ -1423,7 +1405,6 @@ private int port: the port number for the connection
 -   Pass the clientSocket to create a new clientHandler and start the clientHandler on a new thread
 
 # ServerInterface.java
-======================
 
 An interface for the server class
 
