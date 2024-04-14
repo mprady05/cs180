@@ -1,22 +1,23 @@
 # User.java  
+=============
 
 The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who is using the platform. Implements the UserInterface.
 
 ## Fields
 
-private String firstName: User's first name
+private final String firstName: User's first name
 
-private String lastName: User's last name
+private final String lastName: User's last name
 
-private String password: User's password
+private final String password: User's password
 
-private String photoId: User's profile picture file
+private final String username: User's username
 
 private ArrayList<User> friendList: Array List of friends
 
 private ArrayList<User> blockList: Array List of blocked users
 
-private String username: Unique Identifier for the user
+private ArrayList<String> postIds: Array List of postIDs
 
 ## Constructors
 
@@ -26,63 +27,76 @@ private String username: Unique Identifier for the user
 
 ## Methods
 
-### public String getFirstName
+### public synchronized String getFirstName
 
 -   Return this user's first name
 
-### public void setFirstName(String firstName)
-
--   Set this user's first name to the parameter 
-
-### public String getLastName
+### public synchronized String getLastName
 
 -   Return this user's last name
 
-### public void setLastName(String lastName)
-
--   Set this user's last name to the parameter  
-
-### public String getPassword
+### public synchronized String getPassword
 
 -   Return this user's password 
 
-### public void setPassword(String password)
-
--   Set this user's password to the given parameter 
-
-### public String getUsername()
+### public synchronized String getUsername()
 
 -   Return this user's username 
 
-### public void setUsername(String username)
-
--   Set this user's username to the given parameter 
-
-### public String getPhotoId
-
--   Return this user's photo Id 
-
-### public void setPhotoId(String photoId)
-
--   Set this user's photo Id to the parameter 
-
-### public ArrayList<User> getFriendList
+### public synchronized ArrayList<User> getFriendList
 
 -   Return this user's friends 
 
-### public void setFriendList(ArrayList<User> friendList)
+### public synchronized ArrayList<User> getBlockList
 
--   Set this user's friends list to the parameter 
+-   Return this user's blocked list
 
-### public ArrayList<User> getBlockList
+### public synchronized ArrayList<String> getPostIds()
 
--   Return this user's blocked list 
+-   Return this user's postId
 
-### public void setUserList(ArrayList<User> blockList)
+### public synchronized boolean addFriend(String checkUsername) throws SMPException
 
--   Set this user's blocked list to the parameter
+-   Add the passed in friend to this user's friend list and update the user and return true
+
+-   Return false if the username does not exist, the two users are already friends with each other, the user is blocked by this user, or the username of this user and the added friend are the same
+
+### public synchronized boolean blockUser(String usernameToBlock) throws SMPException 
+
+-   Add the user passed in as parameter to this user's blocked list and return true
+
+-   Users that are blocked cannot be a friend
+
+-   If the user does not exist, the block list already contains the user, or the username of the parameter and this user are the same, return false
+
+###  public synchronized boolean removeFriend(String checkUsername) throws SMPException 
+
+-   Update the friend list to remove the passed in user from this user's friend list and return true
+
+-   If the user does not exist in the database or the two users are not friends, return false
+
+### public synchronized boolean addPost(String content) throws SMPException
+
+-   Add the post to this user's post list and update this user's posts
+
+-   Return true if updated successfully, otherwise return false
+
+###  public synchronized boolean hidePost(String postId) throws SMPException 
+
+-   Remove the passed in post from this user's post list and return true, otherwise return false
+
+###  public synchronized ArrayList<String> getFriendsPosts() 
+
+-   Return an array list of all of the posts from the friend
+
+###  public synchronized String toString() 
+
+-   Return a string containing the first name, last name, username, and password, separated by ; and no spaces
+
+-   Add on all the friends in the format of "("friends");", and then all the blocked users in the format of "("blocked users");", and then finally all of the postIds of this user in the format of "("postIds")" and return the string
 
 # UserInterface.java
+====================
 
 An interface for the user class
 
@@ -90,33 +104,34 @@ An interface for the user class
 
 String getFirstName()
 
-void setFirstName(String firstName)
-
 String getLastName()
-
-void setLastName(String lastName)
 
 String getPassword()
 
-void setPassword(String password)
-
-String getPhotoId()
-
-void setPhotoId(String photoId)
-
 String getUsername()
 
-void setUsername(String username)
+ArrayList<String> getFriendList()
 
-ArrayList<User> getFriendList()
+ArrayList<String> getBlockList()
 
-ArrayList<User> getBlockList()
+ArrayList<String> getPostIds()
 
-void setFriendList(ArrayList<User> friendList)
+boolean addFriend(String username) throws SMPException
 
-void setBlockList(ArrayList<User> blockList)
+boolean blockUser(String usernameToBlock) throws SMPException
+
+boolean removeFriend(String username) throws SMPException
+
+boolean addPost(String content) throws SMPException
+
+boolean hidePost(String postId) throws SMPException
+
+ArrayList<String> getFriendsPosts()
+
+String toString()
 
 # UsersManager.java
+===================
 
 The UserManager class will be responsible with user side algorithms within the application. Some of the features that are included are creating a new user and updating the information of the user. Within the entirety of the code, this class will interact mainly with the UserDatabase in order to store information about each user as well as retrieve the necessary information to perform permutations such as updating information or making sure that the new user does not already have an account. Implements the UserManagerInterface. In order to make sure that the class and each method was working by making sure that it was able to successfully read and write to a file. Furthermore, it was made sure that users can be updated, created, and searched for, returning values that were expected.
 
@@ -134,25 +149,25 @@ public static ArrayList<User> users = new ArrayList<>(): ArrayList where this us
 
 ## Methods
 
-### public static ArrayList<User> getUsers()
+### public synchronized static ArrayList<User> getUsers()
 
 -   Return this users
 
-### public static void readUersDatabaseFile() throws SMPException
+### public synchronized static void readUersDatabaseFile() throws SMPException
 
 -   Read this users database file and store into this users
 
 -   Throw a new SMPException with the message "Error parsing user from line: " along with the error message on any exception
 
-### private static User stringToUser(String line) throws SMPException
+### private synchronized static User stringToUser(String line) throws SMPException
 
 -   Parse the line from the user database file and return a new user object
 
--   The lines will have the format "firstname;lastname;username;password;friend list"
+-   The lines will have the format of the toString method in User.java
 
--   Throw a new SMPException with the message ("Error parsing file.") if there is invalid data
+-   Throw a new SMPException with the message ("Error parsing file.") if there is invalid data and return null
 
-### public static void writeUsersDatabseFile()
+### public synchronized static void writeUsersDatabseFile()
 
 -   Write this user arraylist to the userdatabase file
 
@@ -160,33 +175,34 @@ public static ArrayList<User> users = new ArrayList<>(): ArrayList where this us
 
 -   On an IOException, print the error message "Error writing to users Database File: " along with the error message
 
-### public static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException
+### public synchronized static boolean registerUser(String firstName, String lastName, String username, String password, ArrayList<String> friendList, ArrayList<String> blockList, ArrayList<String> postIds) throws SMPException
 
 -   Create a new user object with passed in parameters if the user does not already exist in the database and return true
 
 -   If the username already exists, throw a new SMPException with the message "Username already exists."
 
-### public static User loginUser(String username, String password) throws SMPException
+### public synchronized static User loginUser(String username, String password) throws SMPException
 
 -   Make sure that the username matches the user's password and return the user object
 
 -   Return null if the username and password do not match
 
-### public static boolean updateUser(User updatedUser) throws SMPException
+### public synchronized static boolean updateUser(User updatedUser) throws SMPException
 
 -   Look for the user in the user database and change update the old user object to the new user object if the username's match and return true
 
 -   If the user does not exist in the database, throw a new SMPException with the message "User not found."
 
-### public static User searchUser(String username)
+### public synchronized static User searchUser(String username)
 
 -   If the username exists in the database, return the user, otherwise return null
 
-### public static void clearAllUsers
+### public synchronized static void clearAllUsers
 
 -   Clear all users from this users ArrayList
 
 # UsersManagerInterface.java
+============================
 
 An interface for the UsersMangerInterface class
 
@@ -217,6 +233,7 @@ An interface for the UsersMangerInterface class
 ### static void clearAllUsers()
 
 # SMPException.java
+===================
 
 Exception to be thrown when there is bad data/inputs
 
@@ -227,6 +244,7 @@ Exception to be thrown when there is bad data/inputs
 -   Calls the constructor of the exception superclass with the message passed in as the parameter
 
 # PostsManager.java
+===================
 
 The PostsManager class implements the PostManageriInterface. The purpose of this class is to provide a central place where posts by users can be managed. Some of the primary functionalities include being able to store posts into a file and write to the file any time there is a new post or an old post is modified. Furthermore, old posts and comments can be found using their post and comment id's. Some of the relevant tests that were performed on this class included making up fake posts that operations can be performed upon. For example, fake parameters were passed into some of the methods to make sure that new posts were created, a file was being written to, or this posts ArrayList was being cleared. Essentially, fake posts were created to make sure that each method was outputting what was expected. This class will work with the Post class in order to make a side of the social media application where news posts can be made by users.
 
@@ -244,15 +262,15 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 
 ## Methods
 
-### public static ArrayList<Post> getPosts
+### public synchronized static ArrayList<Post> getPosts
 
 -   Return this array list of posts
 
-### public static void setPost(ArrayList<Post> posts)
+### public synchronized static void setPost(ArrayList<Post> posts)
 
 -   Set this post equal to the parameter
 
-### public void readPostsDatabseFile
+### public synchronized void readPostsDatabseFile
 
 -   read the posts from the database file and populate this post array list
 
@@ -260,7 +278,7 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 
 -   If there is an IOException, print "Error reading Posts Database File: " and the error message
 
-### private Post parseLineToPost(String line)
+### private synchronized static Post parseLineToPost(String line)
 
 -   Parse the parameter, a line that is taken from the database file, and create a new Post object
 
@@ -268,7 +286,7 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 
 -   One any exception, print out "Error parsing post from line: " along with the error message and return null
 
-### public static void writePostsDatabaseFile
+### public synchronized static void writePostsDatabaseFile
 
 -   Write this post to the database file ("PostsDatabase.txt")
 
@@ -276,7 +294,7 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 
 -   On IOException, print the message "Error writing to Posts Database File: " along with the error message
 
-### public static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+### public synchronized static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
 
 -   Find the user that is creating the post by searching for their username in the user database
 
@@ -286,53 +304,65 @@ private static ArrayList<Post> posts = new ArrayList<>(): An array list to store
 
 -   If the inputted username does not exist in the user database, throw a new SMPException with the message "Creator username does not exist."
 
-### public static void clearAllPosts
+### public synchronized  static void clearAllPosts
 
 -   Clear every single post from this post
 
-### public static boolean updatePost(Post updatedPost) throws SMPException
+### public synchronized static boolean updatePost(Post updatedPost) throws SMPException
 
 -   Find a post within this post that has the same postId as the updatedPost
 
 -   update the old post with the updatePost and return true if successfully updated, otherwise, return false
 
-### public static Post searchPost(String postId)
+### public synchronized static Post searchPost(String postId)
 
 -   return the post in this post that matches the postId
 
 -   return null if the post cannot be found
 
-### public static String getPostIdFromComment(Comment comment)
+### public synchronized static Post getPostIdFromComment(Comment comment)
 
 -   Search for comments within posts that match the CommentId as the CommentId in the given parameter
 
--   If the post with the specific comment can be found, return the post's PostId, otherwise return null
+-   If the post with the specific comment can be found, return the post, otherwise return null
 
 # PostsManagerInterface.java
+============================
 
 An interface for the PostsManager class
 
 ## Methods
 
-ArrayList<Post> getPosts()
+static ArrayList<Post> getPosts()
 
-void setPosts(ArrayList<Post> posts)
+-   returns null
 
-void readPostsDatabaseFile()
+static void setPosts(ArrayList<Post> posts)
 
-void writePostsDatabaseFile()
+static void readPostsDatabaseFile()
 
-String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
+static void writePostsDatabaseFile()
 
-void clearAllPosts()
+static String addPost(String creatorUsername, String content, int upvotes, int downvotes, ArrayList<String> commentIds) throws SMPException
 
-boolean updatePost(Post updatedPost) throws SMPException
+-   returns null
 
-Post searchPost(String postId)
+static void clearAllPosts()
 
-String getPostIdFromComment(Comment comment)
+static boolean updatePost(Post updatedPost) throws SMPException
+
+-   returns false
+
+static Post searchPost(String postId)
+
+-   returns null
+
+static String getPostIdFromComment(Comment comment)
+
+-   returns null
 
 # Post.java
+===========
 
 This class will implement that PostInterface. The main functionality is to create a post that the User wishes to create. Some other important functionality include being able to add and delete comments as well as alter the number of upvotes and downvotes on this post. In order to make sure all of the code works, fake parameters were passed into the methods to make sure that what was being returned was what was expected. Furthermore, after making the new posts, we made sure that the content, upvotes, downvotes, comments list, post id, and creator all matched with the fake post object that was created. Within the grand scheme of things, this class will be called upon whenever a user decides to create a new post, alter the post, control comment flow, and delete comments/
 
@@ -366,39 +396,39 @@ private ArrayList<String> commendIds: The id's of the comments on the post
 
 ## Methods
 
-### public String getPostId
+### public synchronized String getPostId
 
 -   Return this postId
 
-### public User getCreator
+### public synchronized User getCreator
 
 -   Return this creator
 
-### public String getContent
+### public synchronized String getContent
 
 -   Return this content
 
-### public int getDownvotes
+### public synchronized int getDownvotes
 
 -   Return the number of this downvotes
 
-### public int getUpdates
+### public synchronized int getUpvotes
 
 -   Return the number of this upvotes
 
-### public ArrayList<String> getComments
+### public synchronized ArrayList<String> getComments
 
 -   Return this ArrayList of comments
 
-### public void addUpvotes() throws SMPException
+### public synchronized void addUpvotes() throws SMPException
 
 -   Increase the number of this upvotes by 1 and update the number of upvotes in the post
 
-### public void addDownvote() throws SMPException
+### public synchronized void addDownvote() throws SMPException
 
 -   Increase the number of this downvotes by 1 and update the number of downvotes in the post
 
-### public void addComment(String author, String content) throws SMPException
+### public synchronized  void addComment(String author, String content) throws SMPException
 
 -   Create a comment in the CommentManager and generate a commentId
 
@@ -406,7 +436,7 @@ private ArrayList<String> commendIds: The id's of the comments on the post
 
 -   If the commentId is null or empty, throw a new SMPException with the message "Could not add comment."
 
-### public void deleteComment(String commentId, String requesterUsername) throws SMPException
+### public synchronized void deleteComment(String commentId, String requesterUsername) throws SMPException
 
 -   Check that the User who created the comment is the same as the User who is deleting the comment or is the User who created the post
 
@@ -416,13 +446,14 @@ private ArrayList<String> commendIds: The id's of the comments on the post
 
 -   If the comment does not exist, throw a new SMPException with the message "Comment not found."
 
-### public String toString()
+### public synchronized String toString()
 
 -   Return a string in the format of postId:~:content:~:upvotes:~:downvotes[commentIds]
 
 -   Each comment Id should be separated with a :~:
 
 # PostInterface.java
+====================
 
 An interface for the Post class.
 
@@ -451,6 +482,7 @@ void deleteComment(String commentId, String requesterUsername) throws SMPExcepti
 String toString()
 
 # Comment.java
+==============
 
 This class will implement the CommentInterface. The main purpose of this class is to create a comment object with the fields of the commentId, the author of the comment, the contents of the comment, and the number of upvotes and downvotes. It will interact with the Posts and other comments classes to create a seamless side of the application where users will be able to comment on other user's posts as well as like or dislike the comments of other users. Some of the testing that was performed on this class was passing in fake parameters to create a comment object and making sure that the constructors worked by testing it with expected outputs using the getters as well as making sure the toString is formatted correctly.
 
@@ -480,33 +512,42 @@ private int downvotes: The number of downvotes on this comment
 
 ## Methods
 
-### public String getCommentID()
+### public synchronized String getCommentID()
 
 -   Return this commentId
 
-### public User getAuthor()
+### public synchronized User getAuthor()
 
 -   Return this author
 
-### public String getContent()
+### public synchronized String getContent()
 
 -   Return this content
 
-### public int getUpvotes()
+### public synchronized int getUpvotes()
 
 -   Return this number of upvotes
 
-### public int getDownvotes()
+### public synchronized int getDownvotes()
 
 -   Return this number of downvotes
 
-### public String toString()
+### public synchronized void addUpvote() throws SMPException
 
--   Return the String in the format of commentId:~:the author's username:~:content:~:upvotes:~:downvotes
+-   Add an upvotes to this comment
+
+### public synchronized void addDownvote() throws SMPException
+
+-   Add a downvote to this comment
+
+### public synchronized String toString()
+
+-   Return the String in the format of commentId:!:the author's username:!:content:!:upvotes:!downvotes
 
 # CommentInterface.java
+=======================
 
-An interface for the Comment class/
+An interface for the Comment class
 
 ## Methods
 
@@ -520,9 +561,16 @@ int getUpvotes()
 
 int getDownvotes()
 
+void addUpvote() throws SMPException
+
+void addDownvote() throws SMPException
+
 String toString()
 
 # CommentsManager.java
+======================
+
+A class that manages the comments from and is able to read and write from the database file. In order to test the functionality, it was made sure that the database file would be updated when permutations were performed on it.
 
 ## Fields
 
@@ -538,17 +586,17 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 
 ## Methods
 
-### public static ArrayList<Comment> getComments
+### public synchronized static ArrayList<Comment> getComments
 
 -   Return this comments
 
-### public void readCommentsDatabaseFile() throws SMPException
+### public synchronized static void readCommentsDatabaseFile() throws SMPException
 
 -   Read the contents from the comments database
 
 -   If there is an IOException, throw a new SMPException with the message "Error reading Comments Database File " and the error message
 
-### private Comment parseLineToComment(String line) throws SMPException
+### private synchronized static Comment parseLineToComment(String line) throws SMPException
 
 -   Parse the parameter, a line that is taken from the database file, and create a new Comment object
 
@@ -558,7 +606,7 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 
 -   If the format of the comment in the database is invalid or on any exception, return null
 
-### public void writeCommentsDatabaseFile() throws SMPException
+### public synchronized static void writeCommentsDatabaseFile() throws SMPException
 
 -   Write this comment to this database file
 
@@ -566,7 +614,7 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 
 -   On IOException, print the message "Error writing to Comments Database File: " along with the error message
 
-### public static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException
+### public synchronized static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException
 
 -   If the username of the author does not exist in the user database, print out the error message "Cannot add comment. Author username not found: " along with the error message and return null
 
@@ -574,13 +622,13 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 
 -   Return the new comment's commentId
 
-### public boolean updateComment(Comment updatedComment) throws SMPException
+### public synchronized static boolean updateComment(Comment updatedComment) throws SMPException
 
 -   Search for the comment in the comment database using the commentId and update the old comment with the new comment
 
 -   Return true if the operation was successful, otherwise return false
 
-### public static boolean deleteComment(String commentId, String requesterUsername) throws SMPException
+### public synchronized static boolean deleteComment(String commentId, String requesterUsername) throws SMPException
 
 -   Look for the comment in the comment database
 
@@ -588,31 +636,32 @@ private static ArrayList<Comment> comments = new ArrarList<>(): An array list of
 
 -   If the operations as unsuccessful, return false
 
-### public static Comment searchComment(String commentId)
+### public synchronized static Comment searchComment(String commentId)
 
 -   Return the comment from this comments with the matching commentId
 
 -   If unable to find the comment, return null
 
-### public static void clearAllComments
+### public synchronized static void clearAllComments
 
 -   Clear this comments ArrayList
 
 # CommentsManagerInterface.java
+===============================
 
 An interface for the CommentsManager class.
 
 ## Methods
 
-### static ArrayList<Comment> getComments()
+### static List<Comment> getComments()
 
--   Returns null
+-   Returns the comments
 
 ### static void readCommentsDatabaseFile() throws SMPException
 
-### static void writeCommentsDatabaseFile() throws SMPException
+###  static void writeCommentsDatabaseFile() throws SMPException
 
-### static String addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
+### static Comment addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
 
 -   Returns null
 
@@ -630,89 +679,8 @@ An interface for the CommentsManager class.
 
 ### static void clearAllComments()
 
-# CommunicationInterface.java
-
-An interface for the communication between clients and server
-
-## Methods
-
-void sendRequest(Object request)
-
-Object receiveResponse()
-
-# NewsFeedClientInterface.java
-
-An interface for user interactions with the news feed
-
-## Methods
-
-voidNewsFeed()
-
-void createPost(String content)
-
-void commentOnPost(String postId, String content)
-
-void upvotePost(String postId)
-
-void downvotePost(String postId)
-
-void hidePost(String postId)
-
-# NewsFeedServiceInterface.java
-
-An interface for defining the operations in managing posts and comments in the news feed
-
-## Methods
-
-Post createPost(String username, String content)
-
-boolean deletePost(String postId)
-
-void upvotePost(String postId)
-
-void downvotePost(String postId)
-
-Comment createComment(String postId, String username, String content)
-
-boolean deleteComment(String commentId)
-
-ArrayList<Post> getFriendPosts(String username)
-
-# UserClientInterface.java
-
-An interface that defines user operations
-
-## Methods
-
-void loginUser(String username, String password)
-
-void logoutUser()
-
-void addFriend(String friendUsername)
-
-void removeFriend(String friendUsername)
-
-void updateProfile(User user)
-
-# UserServiceInterface.java
-
-An interface that defines server-side user account management
-
-## Methods
-
-User createUser(String username, String password)
-
-boolean deleteUser(String username)
-
-User getUserDetails(String username)
-
-void updateUserProfile(User user)
-
-boolean addFriend(String username, String friendUsername)
-
-boolean removeFriend(String username, String friendUsername)
-
 # Client.java
+=============
 
 The client class is used as a client and has many functionalities that allow it to communicate with the server and display posts and comments. Some of the key functionalities include handling adding and removing posts and comments, logging onto the platform or registering a new user, blocking users, adding and removing friends, and communicating with the server. In order to test the functionality of this code, there were false inputs that were given to the client to ensure that the correct messages were being printed out by the client.
 
@@ -730,9 +698,13 @@ Scanner scanner: the scanner object
 
 Socket socket: the socket object
 
+## Global Variables
+
 private boolean loggedIn: Whether or not the user is logged in, set to false
 
 private boolean exit: Whether or not the user wants to exit, set to false
+
+## Static Final Prompts
 
 private static final String WELCOME_MESSAGE = "Welcome to MySpace!"
 
@@ -992,7 +964,7 @@ ClassNotFoundException, SMPException
 
 -   On any IOException or ClassNotFound exception, print the error message and return false
 
-### private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+###  private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that the feed can be read and that there are posts present in the feed
 
@@ -1034,7 +1006,7 @@ ClassNotFoundException, SMPException
 
 -   Return true if all posts are displayed
 
-### private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+###  private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that there are comments on the post and that the comments can be read successfully from the server
 
@@ -1059,3 +1031,402 @@ ClassNotFoundException, SMPException
 -   Write "deleteComment" to the server to begin the process and receive a response from the server of whether or not the process was successful
 
 -   If successful, display the DELETE_COMMENT_SUCCESS message, otherwise display the DELETE_COMMENT_FAIL message
+
+# ClientInterface.java
+======================
+
+An interface for the client class
+
+## Methods
+
+void start() throws IOException
+
+void handleWelcomeMenu(String command) throws IOException, ClassNotFoundException, SMPException
+
+void handleUserMenu(String command) throws IOException, ClassNotFoundException, SMPException
+
+User handleLogin() throws IOException, ClassNotFoundException, SMPException
+
+User handleRegistration() throws IOException, ClassNotFoundException, SMPException
+
+void handleAddFriend() throws IOException, ClassNotFoundException
+
+void handleRemoveFriend() throws IOException, ClassNotFoundException
+
+void handleAddPost() throws IOException, ClassNotFoundException
+
+boolean displayPosts() throws IOException
+
+void handleHidePost() throws IOException, ClassNotFoundException
+
+void handleViewSearchProfile() throws IOException, ClassNotFoundException
+
+boolean displayFeed() throws IOException
+
+void handleViewFeed() throws IOException, ClassNotFoundException
+
+void handlePostOptions() throws IOException, ClassNotFoundException
+
+void handleAddComment () throws IOException, ClassNotFoundException
+
+boolean displayComments() throws IOException
+
+void handleViewComments() throws IOException, ClassNotFoundException
+
+void handleCommentOptions() throws IOException, ClassNotFoundException
+
+void handleDeleteComment() throws IOException, ClassNotFoundException
+
+# ClientHandler.java
+====================
+
+Server side of the social media platform. Handles all the main operations based on commands that are passed in from the Client class. Some of the main functionality includes adding friends to the user, removing friends from the user, adding users to the blocked list, adding posts to the user's posts list, and adding comments to the selected post's post list. In order to make sure that all functionality was working, false commands and methods were insured into the parameters and made sure that friends lists, blocked lists, etc. were being updated on each go if there was a need to update them.
+
+## Fields
+
+private Socket clientSocket
+
+private ObjectOutputStream oos
+
+private ObjectInputStream ois;
+
+## Global Variables
+
+private boolean loggedIn = false
+
+User currentUser
+
+ArrayList<Post> usersPosts = new ArrayList<>()
+
+ArrayList<Post> allFriendsPosts = new ArrayList<>()
+
+Post chosenPost
+
+Comment chosenComment
+
+ArrayList<Comment> postsComments = new ArrayList<>();
+
+## Static Final Prompts
+
+public static final String LOGIN_SUCCESS = "Login success!"
+
+public static final String LOGIN_FAIL = "Invalid login credentials. Please try again."
+
+public static final String REGISTER_SUCCESS = "Account created successfully!"
+
+public static final String REGISTER_FAIL = "Invalid credentials. Please try again."
+
+private static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!"
+
+private static final String INVALID_COMMAND = "Invalid command. Please try again."
+
+private static final String ADD_FRIEND_SUCCESS = "Successfully added friend!"
+
+private static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again."
+
+private static final String REMOVE_FRIEND_SUCESS = "Successfully removed friend!"
+
+private static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again."
+
+private static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!"
+
+private static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again."
+
+private static final String ADD_POST_SUCCESS = "Successfully added post!"
+
+private static final String ADD_POST_FAIL = "Failed to add post. Please try again."
+
+private static final String HIDE_POST_SUCCESS = "Post successfully hidden!"
+
+private static final String HIDE_POST_FAIL = "Failed to hide post. Please try again."
+
+private static final String VIEW_PROFILE_SUCCESS = "Profile found."
+
+private static final String VIEW_PROFILE_FAIL = "Profile not found. Please try again."
+
+private static final String VIEW_FEED_SUCCESS = "Successfully viewed feed!"
+
+private static final String VIEW_FEED_FAIL = "Could not view feed. Please try again."
+
+private static final String VIEW_COMMENTS_SUCCESS = "Successfully viewed comments!"
+
+private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again."
+
+private static final String ADD_COMMENT_SUCCESS = "Successfully added comment!"
+
+private static final String ADD_COMMENT_FAIL = "Failed to add comment. Please try again."
+
+private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment."
+
+private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again."
+
+## Constructors
+
+### public ClientHandle(Socket socket) throws IOException
+
+-   set this clientSocket to the passed in parameter
+
+-   Instantiate this ois and this oos to new object input and output streams using this clientSocket
+
+## Methods
+
+### public void run()
+
+-   while the user is not logged in, get the command from the object input stream and process the command
+
+-   while the user is logged in, get the command from the object input stream and process the LoginCommand
+
+-   Print out the error message along with the EXIT_MESSAGE on any IOException, ClassNotFoundException, or SMPException
+
+### public void processCommand(String command) throws SMPException, IOException, ClassNotFoundException 
+
+-   Read the databases and call the respective method based on the passed in command
+
+-   1: processLogin()
+
+-   2: processRegister()
+
+-   3: sendExitMessage()
+
+### public void processLogin() throws IOException, ClassNotFoundException, SMPException
+
+-   Get the username and the password from the client
+
+-   Get the user object based on the username and password from the UsersManager class
+
+-   If the username and password match was found, write LOGIN_SUCCESS and the user to the client, otherwise write LOGIN_FAIL
+
+-   Set this currentUser to the found user and this loggedIn to true
+
+### public void processRegister() throws IOException, ClassNotFoundException, SMPException
+
+-   Get the first name, last name, username, and password from the client and register the user using those parameters from the method that is in the UsersManager class
+
+-   If the user was created, write REGISTER_SUCCESS and the user to the object output stream and set this loggedIn to true and this currentUser to the created user
+
+-   If the user could not be created, write REGISTER_FAIL to the object output stream
+
+### public void sendExitMessage() throws IOException, SMPException
+
+-   Write the EXIT_MESSAGE to the object output stream and send it to the client
+
+### public void sendInvalidMessage() throws IOException, SMPException
+
+-   Write the INVALID_COMMAND to the object output stream and send it to the client
+
+### public void processLoginCommand(String command) throws SMPException, IOException, ClassNotFoundException
+
+-   Call the correct method based on the given command from the parameter
+
+### public void processAddFriend() throws SMPException, IOException, ClassNotFoundException 
+
+-   get the friends username from the client and if the friend can be added to this currentUser's friend list, send the ADD_FRIEND_SUCCESS message to the client, otherwise send the ADD_FRIEND_FAIL message to the client
+
+### private void processRemoveFriend() throws SMPException, IOException, ClassNotFoundException
+
+-   Get the username from the client and remove the friend from this currentUser's friend list
+
+-   If the friend was successfully removed, send the REMOVE_FRIEND_SUCCESS message to the client, otherwise send the REMOVE_FRIEND_FAIL message to the client
+
+### private void processBlockFriend() throws SMPException, IOException, ClassNotFoundException 
+
+-   get the username that is being blocked from the client and add it to this currentUser's blocked list
+
+-   If the user was successfully blocked, send the BLOCK_FRIEND_SUCCESS message to the client, otherwise send the BLOCK_FRIEND_FAIL message to the client
+
+### private void processAddPost() throws SMPException, IOException, ClassNotFoundException
+
+-   Get the content that is being added from the client and add the post to this currentUser
+
+-   If the post was added successfully, send the message ADD_POST_SUCCESS to the client, otherwise send the ADD_POST_FAIL message to the client
+
+### private void processGetPosts() throws SMPException, IOException
+
+-   Get all the posts from this user and write it to the output object stream and send it to the client
+
+-   After all posts have been read, write "end" to the client
+
+### private void processHidePost() throws SMPException, IOException, ClassNotFoundException
+
+-   Get the post number from the client and get the post from this user corresponding to the post number
+
+-   Hide the selected post and if successfully hidden, send the HIDE_POST_SUCCESS message to the client, otherwise send the HIDE_POST_FAIL message to the client
+
+-   Send the HIDE_POST_FAIL message on any NumberFormatException
+
+### private void processViewSearchUser() throws IOException, SMPException, ClassNotFoundException
+
+-   get the username of the user being searched from the client
+
+-   Find the user from the user database and send the VIEW_PROFILE_SUCCESS message, the first and last name of the user, and the username of the user to the client
+
+-   If the user is not found, send the VIEW_PROFILE_FAIL message to the client
+
+### private void processViewFeed() throws SMPException, IOException, ClassNotFoundException
+
+-   Get the post that is to be viewed from the friends posts
+
+-   If the post is found, send the message VIEW_FEED_SUCCESS to the client, otherwise send the VIEW_PROFILE_FAIL message to the client
+
+### private Post getPostFromChoice(ArrayList<Post> posts, int postNumber)
+
+-   Return the post based on the post number
+
+### private void processLogout() throws SMPException
+
+-   Read and write all databases
+
+### private void processGetFriendsPosts() throws SMPException, IOException
+
+-   Get all the posts from this user's friends and send it to the client, and at the end, send "end" to the client
+
+### private void processAddUpvote() throws SMPException
+
+-   Add a upvote to the chosen post
+
+### private void processDownvotePost() throws SMPException
+
+-   Add a downvote to the chosen post
+
+### private void processAddComment() throws SMPException, IOException, ClassNotFoundException
+
+-   Get the comment that is to be added from the client and add it to the currentUser's post
+
+-   If the comment was added successfully, send the ADD_COMMENT_SUCCESS message to the client, otherwise send the ADD_COMMENT_FAIL message to the client
+
+### private void processGetPostsComments() throws SMPException, IOException
+
+-   Get all the comments from the chosen post and write all the comments to the client and end it with "end"
+
+### private void processViewComments() throws IOException, SMPException, ClassNotFoundException
+
+-   Get the comment number that is to be viewed from the client
+
+-   If the comment can be viewed and exists, send the VIEW_COMMENTS_SUCCESS message to the client, otherwise send the VIEW_COMMENTS_FAIL message to the client
+
+-   Send the VIEW_COMMENTS_FAIL message to the client on any NumberFormatException or IOException
+
+### private Comment getCommentFromChoice(ArrayList<Comment> comments, int commentNumber) 
+
+-   Find the comment that matches the commentNumber and return that comment
+
+### private void processUpvoteComment() throws SMPException
+
+-   Add an upvote to the chosen comment
+
+### private void processDownvoteComment() throws SMPException
+
+-   Add a downvote to the chosen comment
+
+### private void processDeleteComment() throws SMPException, IOException
+
+-   Look for the chosen comment on the chosen post and delta the comment from the post
+
+-   If successful, send the DELETE_COMMENT_SUCCESS message to the client, otherwise send the DELETE_COMMENT_FAIL message to the client
+
+### private void readAllDatabases() throws SMPException
+
+-   Read the database files of the users, the posts, and the comments
+
+### private void writeAllDatabases() throws SMPException
+
+-   Write to the database of the users, the posts, and the comments
+
+# ClientHandlerInterface.java
+=============================
+
+An interface for the client handler class
+
+## Methods
+
+void run()
+
+void processCommand(String command) throws SMPException, IOException, ClassNotFoundException
+
+void processLogin() throws IOException, ClassNotFoundException, SMPException
+
+void processRegister() throws IOException, ClassNotFoundException, SMPException
+
+void sendExitMessage() throws IOException, SMPException
+
+void sendInvalidMessage() throws IOException, SMPException
+
+void processLoginCommand(String command) throws SMPException, IOException, ClassNotFoundException
+
+void processAddFriend() throws SMPException, IOException, ClassNotFoundException
+
+void processRemoveFriend() throws SMPException, IOException, ClassNotFoundException
+
+void processBlockFriend() throws SMPException, IOException, ClassNotFoundException
+
+void processAddPost() throws SMPException, IOException, ClassNotFoundException
+
+void processGetPosts() throws SMPException, IOException
+
+void processHidePost() throws SMPException, IOException, ClassNotFoundException
+
+void processViewSearchUser() throws IOException, SMPException, ClassNotFoundException
+
+void processViewFeed() throws SMPException, IOException, ClassNotFoundException
+
+Post getPostFromChoice(ArrayList<Post> posts, int postNumber)
+
+void processLogout() throws SMPException
+
+void processGetFriendsPosts() throws SMPException, IOException
+
+void processAddUpvote() throws SMPException
+
+void processDownvotePost() throws SMPException
+
+void processAddComment() throws SMPException, IOException, ClassNotFoundException
+
+void processGetPostsComments() throws SMPException, IOException
+
+void processViewComments() throws IOException, SMPException, ClassNotFoundException
+
+Comment getCommentFromChoice(ArrayList<Comment> comments, int commentNumber)
+
+void processUpvoteComment() throws SMPException
+
+void processDownvoteComment() throws SMPException
+
+void processDeleteComment() throws SMPException, IOException
+
+void readAllDatabases() throws SMPException
+
+void writeAllDatabases() throws SMPException
+
+# Server.java
+=============
+
+A server class for the client. In order to test the functionality, a server number was passed in to make sure that the client could connect to the server and vice versa.
+
+## Fields
+
+private int port: the port number for the connection
+
+## Constructors
+
+### public Server (int port)
+
+-   Instantiate the port number to the passed in parameter
+
+## Methods
+
+### public void start()
+
+-   Connect the server and the client together
+
+-   Keep the server open and create a new Socket clientSocket that accepts the server socket
+
+-   Pass the clientSocket to create a new clientHandler and start the clientHandler on a new thread
+
+# ServerInterface.java
+======================
+
+An interface for the server class
+
+## Methods
+
+### void start()
