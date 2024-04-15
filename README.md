@@ -1,3 +1,69 @@
+# Social Media Project - Phase 2 - L28
+## Overall Testing
+The ClientHandler/Client class integrates tightly with I/O interactions, where each method involved is closely linked with the stream operations triggered within the run() method. This design choice means that direct unit testing with JUnit is complex due to the intertwined network and I/O dependencies. Consequently, traditional unit tests may not be feasible without substantial modification to the class design to decouple these dependencies.
+
+To address this, we have equipped the main executable with the capability to accept user inputs in real time, which facilitates practical demonstrations of functionality and interaction with the underlying database. Below are some example user inputs that can be used to test the system manually:
+
+User System
+To test the login functionality, the following mock inputs can be used:
+Valid Login:
+Command: 1 (select login)
+Username: testuser
+Password: testpassword
+Invalid Login:
+Command: 1 (select login)
+Username: wronguser
+Password: wrongpassword
+User Menu System
+After a successful login, the user menu system can be tested with these inputs:
+Add a Friend:
+Command: 1 (select add friend)
+Friend's Username: frienduser
+Remove a Friend:
+Command: 2 (select remove friend)
+Friend's Username: frienduser
+Block a User:
+Command: 3 (select block user)
+Username: blockuser
+Logout:
+Command: 8 (select logout)
+Comments System
+To test the comments system, use these inputs after selecting a specific post:
+Add a Comment:
+Command for selecting a post: Assume post is already selected
+Command: 3 (select add comment)
+Comment Content: Great post!
+View Comments:
+Command for selecting a post: Assume post is already selected
+Command: 4 (select view comments)
+Delete a Comment:
+Command for selecting a post and comment: Assume both are already selected
+Command: 3 (delete comment from comment options menu)
+Posts System
+To test the posts system, use the following inputs:
+Add a Post:
+Command: 4 (select add post)
+Post Content: Exciting news today!
+Hide a Post:
+Command: 5 (select hide post)
+Post Number: Assume the post number is known, e.g., 1
+View/Search Profile:
+Command: 6 (view/search profile)
+Username: viewuser
+View Feed:
+Command: 7 (select view feed)
+Friends' Post Number: Assume the post number is known, e.g., 1
+Example Scenario for Full Interaction:
+User Logs In:
+1 -> testuser -> testpassword
+User Adds a Post:
+4 -> Exciting news today!
+User Comments on a Post:
+Select the post by command or interaction -> 3 -> Great post!
+User Logs Out:
+8
+
+
 # User.java  
 
 The User class creates the User object that will be used in all the other database classes. The user objects will have multiple fields that make up its contents and it will be used to instantiate new users. Some of the testing that will be performed on this class include making sure that the getters and setters work as intended when updating or retrieving specific fields of this user. In relation to the other classes, the user object created within this class will be used as the user who is using the platform. Implements the UserInterface.
