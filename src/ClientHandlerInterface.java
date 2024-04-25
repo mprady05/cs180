@@ -25,16 +25,16 @@ public interface ClientHandlerInterface {
     void processViewFeed() throws SMPException, IOException, ClassNotFoundException;
     Post getPostFromChoice(ArrayList<Post> posts, int postNumber);
     void processLogout() throws SMPException;
-    void processGetFriendsPosts() throws SMPException, IOException;
-    void processAddUpvote() throws SMPException;
-    void processDownvotePost() throws SMPException;
+    void processGetFriendsPosts() throws SMPException, IOException, ClassNotFoundException;
+    void processAddUpvote() throws SMPException, IOException, ClassNotFoundException;
+    void processDownvotePost() throws SMPException, IOException, ClassNotFoundException;
     void processAddComment() throws SMPException, IOException, ClassNotFoundException;
     void processGetPostsComments() throws SMPException, IOException;
     void processViewComments() throws IOException, SMPException, ClassNotFoundException;
     Comment getCommentFromChoice(ArrayList<Comment> comments, int commentNumber);
     void processUpvoteComment() throws SMPException;
     void processDownvoteComment() throws SMPException;
-    void processDeleteComment() throws SMPException, IOException;
+    void processDeleteComment() throws SMPException, IOException, ClassNotFoundException;
     void readAllDatabases() throws SMPException;
     void writeAllDatabases() throws SMPException;
 }
