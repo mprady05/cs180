@@ -29,27 +29,27 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
     public static final String LOGIN_FAIL = "Invalid login credentials. Please try again.";
     public static final String REGISTER_SUCCESS = "Account created successfully!";
     public static final String REGISTER_FAIL = "Invalid credentials. Please try again.";
-    private static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
-    private static final String INVALID_COMMAND = "Invalid command. Please try again.";
-    private static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
-    private static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
-    private static final String REMOVE_FRIEND_SUCESS = "Successfully removed friend!";
-    private static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
-    private static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
-    private static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again.";
-    private static final String ADD_POST_SUCCESS = "Successfully added post!";
-    private static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
-    private static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
-    private static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
-    private static final String VIEW_PROFILE_SUCCESS = "Profile found.";
-    private static final String VIEW_PROFILE_FAIL = "Profile not found. Please try again.";
-    private static final String VIEW_FEED_SUCCESS = "Successfully viewed feed!";
+    public static final String EXIT_MESSAGE = "Thank you for using MySpace! Come back soon!";
+    public static final String INVALID_COMMAND = "Invalid command. Please try again.";
+    public static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
+    public static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
+    public static final String REMOVE_FRIEND_SUCESS = "Successfully removed friend!";
+    public static final String REMOVE_FRIEND_FAIL = "Failed to remove friend. Please try again.";
+    public static final String BLOCK_FRIEND_SUCCESS = "Successfully blocked friend!";
+    public static final String BLOCK_FRIEND_FAIL = "Failed to block friend. Please try again.";
+    public static final String ADD_POST_SUCCESS = "Successfully added post!";
+    public static final String ADD_POST_FAIL = "Failed to add post. Please try again.";
+    public static final String HIDE_POST_SUCCESS = "Post successfully hidden!";
+    public static final String HIDE_POST_FAIL = "Failed to hide post. Please try again.";
+    public static final String VIEW_PROFILE_SUCCESS = "Profile found.";
+    public static final String VIEW_PROFILE_FAIL = "Profile not found. Please try again.";
+    public static final String VIEW_FEED_SUCCESS = "Successfully viewed feed!";
     private static final String VIEW_FEED_FAIL = "Could not view feed. Please try again.";
     private static final String VIEW_COMMENTS_SUCCESS = "Successfully viewed comments!";
     private static final String VIEW_COMMENTS_FAIL = "Failed to view comments. Please try again.";
-    private static final String ADD_COMMENT_SUCCESS = "Successfully added comment!";
+    public static final String ADD_COMMENT_SUCCESS = "Successfully added comment!";
     private static final String ADD_COMMENT_FAIL = "Failed to add comment. Please try again.";
-    private static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
+    public static final String DELETE_COMMENT_SUCCESS = "Successfully deleted comment.";
     private static final String DELETE_COMMENT_FAIL = "Failed to delete comment. Please try again.";
 
     // CONSTRUCTOR
@@ -66,7 +66,6 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
         try {
             while (!loggedIn) {
                 String command = (String) ois.readObject();
-                System.out.println(command);
                 processCommand(command);
             }
             while (loggedIn) {
@@ -94,6 +93,7 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
         switch (command) {
             case "1":
                 processLogin();
+                System.out.println("logincommand");
                 break;
             case "2":
                 processRegister();
@@ -113,14 +113,19 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
     public void processLogin() throws IOException, ClassNotFoundException, SMPException {
         String username = (String) ois.readObject();
         String password = (String) ois.readObject();
+        System.out.println(username);
+        System.out.println(password);
         User user = UsersManager.loginUser(username, password);
+        System.out.println(user);
         if (user != null) {
             oos.writeObject(LOGIN_SUCCESS);
+            System.out.println("login");
             oos.writeObject(user.toString());
             currentUser = user;
             loggedIn = true;
         } else {
             oos.writeObject(LOGIN_FAIL);
+            System.out.println("fail");
         }
     }
 
@@ -158,6 +163,7 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
      */
     public void processLoginCommand(String command) throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
+        System.out.println(command);
         switch (command) {
             case "1":
                 processAddFriend();
@@ -210,8 +216,13 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
             case "getPostsComments":
                 processGetPostsComments();
                 break;
+            case "getMyPostsComments":
+                Post post = PostsManager.searchPost((String) ois.readObject());
+                processGetMyPostsComments(post);
+                break;
             case "8":
                 processLogout();
+                loggedIn = false;
                 return;
 
         }
@@ -222,6 +233,7 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
      */
     public void processAddFriend() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
+        System.out.println("addfriend");
         String friendUsername = (String) ois.readObject();
         boolean checkFriend = currentUser.addFriend(friendUsername);
         if (checkFriend) {
@@ -275,7 +287,7 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
             usersPosts.add(PostsManager.searchPost(currentUser.getPostIds().get(i)));
         }
         for (Post post : usersPosts) {
-            oos.writeObject(post.getContent());
+            oos.writeObject(post.getPostId());
         }
         oos.writeObject("end");
         writeAllDatabases();
@@ -283,27 +295,21 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
 
     public void processHidePost() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
-        String postNumberStr = (String) ois.readObject();
+        String postIdToHide = (String) ois.readObject();
         try {
-            int postNumber = Integer.parseInt(postNumberStr);
-            Post postChoice = getPostFromChoice(usersPosts, postNumber);
-            for (Post post : usersPosts) {
-                if (post.equals(postChoice)) {
-                    boolean checkIfHidden = currentUser.hidePost(postChoice.getPostId());
-                    if (checkIfHidden) {
-                        oos.writeObject(HIDE_POST_SUCCESS);
-                    } else {
-                        oos.writeObject(HIDE_POST_FAIL);
-                    }
-                    writeAllDatabases();
-                    break;
-                }
+            boolean checkIfHidden = currentUser.hidePost(postIdToHide);
+            if (checkIfHidden) {
+                oos.writeObject(HIDE_POST_SUCCESS);
+            } else {
+                oos.writeObject(HIDE_POST_FAIL);
             }
+            writeAllDatabases();
         } catch (NumberFormatException e) {
             oos.writeObject(HIDE_POST_FAIL);
         }
         writeAllDatabases();
     }
+
 
     public void processViewSearchUser() throws IOException, SMPException, ClassNotFoundException {
         readAllDatabases();
@@ -311,7 +317,6 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
         User isUserThere = UsersManager.searchUser(profileUsername);
         if (isUserThere != null && !currentUser.getBlockList().contains(profileUsername)) {
             oos.writeObject(VIEW_PROFILE_SUCCESS);
-            oos.writeObject(isUserThere.getFirstName() + " " + isUserThere.getLastName());
             oos.writeObject(isUserThere.getUsername());
         } else {
             oos.writeObject(VIEW_PROFILE_FAIL);
@@ -362,44 +367,54 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
     /*
     Feed Menu ======================================================== Feed Menu
      */
-    public void processGetFriendsPosts() throws SMPException, IOException {
+    public void processGetFriendsPosts() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
-        ArrayList<String> allFriendsPostIds = currentUser.getFriendsPosts();
+        String username = (String) ois.readObject();
+        User user = UsersManager.searchUser(username);
+        ArrayList<String> allFriendsPostIds = user.getFriendsPosts();
         allFriendsPosts = new ArrayList<>();
         for (String friendsPostId : allFriendsPostIds) {
             allFriendsPosts.add(PostsManager.searchPost(friendsPostId));
         }
         System.out.println(allFriendsPosts);
         for (Post friendsPost : allFriendsPosts) {
-            oos.writeObject(friendsPost.getContent());
+            oos.writeObject(friendsPost.getPostId());
         }
         oos.writeObject("end");
+        currentUser = user;
         writeAllDatabases();
     }
 
-    public void processAddUpvote() throws SMPException {
+    public void processAddUpvote() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
-        chosenPost.addUpvote();
+        String postId = (String) ois.readObject();
+        Post post = PostsManager.searchPost(postId);
+        post.addUpvote();
         writeAllDatabases();
     }
 
-    public void processDownvotePost() throws SMPException {
+    public void processDownvotePost() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
-        chosenPost.addDownvote();
+        String postId = (String) ois.readObject();
+        Post post = PostsManager.searchPost(postId);
+        post.addDownvote();
         writeAllDatabases();
     }
 
     public void processAddComment() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
+        String postId = (String) ois.readObject();
+        Post post = PostsManager.searchPost(postId);
+        User user = UsersManager.searchUser((String) ois.readObject());
         String content1 = (String) ois.readObject();
-        boolean checkAddComment = chosenPost.addComment(currentUser.getUsername(), content1);
+        boolean checkAddComment = post.addComment(user.getUsername(), content1);
         if (checkAddComment) {
             oos.writeObject(ADD_COMMENT_SUCCESS);
         } else {
             oos.writeObject(ADD_COMMENT_FAIL);
         }
         writeAllDatabases();
-        chosenPost = PostsManager.searchPost(chosenPost.getPostId());
+        chosenPost = PostsManager.searchPost(post.getPostId());
     }
 
     public void processGetPostsComments() throws SMPException, IOException {
@@ -408,11 +423,22 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
         ArrayList<String> postsCommentIds = chosenPost.getComments();
         for (String commentId : postsCommentIds) {
             postsComments.add(CommentsManager.searchComment(commentId));
-        }
-        for (Comment comment : postsComments) {
-            oos.writeObject(comment.getContent());
+            oos.writeObject(commentId);
         }
         oos.writeObject("end");
+        writeAllDatabases();
+    }
+
+    public void processGetMyPostsComments(Post post) throws SMPException, IOException {
+        readAllDatabases();
+        postsComments = new ArrayList<>();
+        ArrayList<String> postsCommentIds = post.getComments();
+        for (String commentId : postsCommentIds) {
+            postsComments.add(CommentsManager.searchComment(commentId));
+            oos.writeObject(commentId);
+        }
+        oos.writeObject("end");
+        chosenPost = post;
         writeAllDatabases();
     }
 
@@ -466,16 +492,16 @@ public class ClientHandler implements Runnable, ClientHandlerInterface {
         writeAllDatabases();
     }
 
-    public void processDeleteComment() throws SMPException, IOException {
+    public void processDeleteComment() throws SMPException, IOException, ClassNotFoundException {
         readAllDatabases();
-        boolean checkDelete = chosenPost.deleteComment(chosenComment.getCommentId(),
-                currentUser.getUsername());
+        String username = (String) ois.readObject();
+        String commentId = (String) ois.readObject();
+        boolean checkDelete = chosenPost.deleteComment(commentId, username);
         if (checkDelete) {
             oos.writeObject(DELETE_COMMENT_SUCCESS);
         } else {
             oos.writeObject(DELETE_COMMENT_FAIL);
         }
-        System.out.println("current post" + chosenPost);
         writeAllDatabases();
         chosenComment = null;
         chosenPost = PostsManager.searchPost(chosenPost.getPostId());
