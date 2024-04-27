@@ -975,7 +975,7 @@ private ArrayList<String> postIds: Array List of postIDs
 
 -   If the user does not exist, the block list already contains the user, or the username of the parameter and this user are the same, return false
 
-###  public synchronized boolean removeFriend(String checkUsername) throws SMPException 
+### public synchronized boolean removeFriend(String checkUsername) throws SMPException 
 
 -   Update the friend list to remove the passed in user from this user's friend list and return true
 
@@ -987,15 +987,15 @@ private ArrayList<String> postIds: Array List of postIDs
 
 -   Return true if updated successfully, otherwise return false
 
-###  public synchronized boolean hidePost(String postId) throws SMPException 
+### public synchronized boolean hidePost(String postId) throws SMPException 
 
 -   Remove the passed in post from this user's post list and return true, otherwise return false
 
-###  public synchronized ArrayList<String> getFriendsPosts() 
+### public synchronized ArrayList<String> getFriendsPosts() 
 
 -   Return an array list of all of the posts from the friend
 
-###  public synchronized String toString() 
+### public synchronized String toString() 
 
 -   Return a string containing the first name, last name, username, and password, separated by ; and no spaces
 
@@ -1565,7 +1565,7 @@ An interface for the CommentsManager class.
 
 ### static void readCommentsDatabaseFile() throws SMPException
 
-###  static void writeCommentsDatabaseFile() throws SMPException
+### static void writeCommentsDatabaseFile() throws SMPException
 
 ### static Comment addComment(String authorUsername, String content, int upvotes, int downvotes) throws SMPException {
 
@@ -1870,7 +1870,7 @@ ClassNotFoundException, SMPException
 
 -   On any IOException or ClassNotFound exception, print the error message and return false
 
-###  private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+### private void handleViewFeed(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that the feed can be read and that there are posts present in the feed
 
@@ -1912,7 +1912,7 @@ ClassNotFoundException, SMPException
 
 -   Return true if all posts are displayed
 
-###  private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
+### private void handleViewComments(ObjectOutputStream oos, ObjectInputStream ois, Scanner scanner) throws IOException, ClassNotFoundException
 
 -   Check that there are comments on the post and that the comments can be read successfully from the server
 
