@@ -19,7 +19,7 @@ public class LoginPanel extends JPanel {
         this.ois = ois;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(ClientGUI.RICH_LIGHT_BLUE);
-        JLabel logo = frame.createLogoLabel();
+        JPanel logo = frame.createLogoLabel();
         add(logo);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(frame.createRow("Username:", usernameField));

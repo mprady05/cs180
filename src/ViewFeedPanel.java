@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -22,26 +23,34 @@ public class ViewFeedPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(new Color(200, 220, 240));
+        setBackground(ClientGUI.RICH_LIGHT_BLUE);  // Set light gray background for the whole panel
+
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        northPanel.setBackground(getBackground());  // Apply the same background to the north panel
         northPanel.add(createTopPanel(), BorderLayout.CENTER);
         add(northPanel, BorderLayout.NORTH);
+
         postPanel = new JPanel();
         postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.Y_AXIS));
-        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        postPanel.setBackground(getBackground());  // Ensure post panel has the same background
+        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Ensure spacing is part of the same-colored background
+
         JScrollPane scrollPane = new JScrollPane(postPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.getViewport().setBackground(getBackground());  // Match the viewport's background with the main background
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());  // Optional, ensures no additional border colors interfere
         add(scrollPane, BorderLayout.CENTER);
     }
 
+
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
-        JButton backButton = new JButton("Back to Menu");
+        JButton backButton = new JButton("Back");
         styleButton(backButton);
         backButton.addActionListener(e -> mainFrame.switchToUserMenu());
         topPanel.add(backButton, BorderLayout.WEST);
-        JLabel titleLabel = new JLabel("Feed");
-        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        JLabel titleLabel = new JLabel("Your Feed");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(titleLabel, BorderLayout.CENTER);
         JButton refreshButton = new JButton("Refresh");
@@ -60,9 +69,9 @@ public class ViewFeedPanel extends JPanel {
     }
 
     private void styleButton(JButton button) {
-        button.setFont(new Font("Times New Roman", Font.BOLD, 12));
+        button.setFont(new Font("SansSerif", Font.BOLD, 12));
         button.setPreferredSize(new Dimension(90, 25));
-        button.setBackground(new Color(230, 240, 250));
+         button.setBackground(ClientGUI.RICH_LIGHT_BLUE);
         button.setBorder(BorderFactory.createRaisedBevelBorder());
     }
 
@@ -93,31 +102,36 @@ public class ViewFeedPanel extends JPanel {
 
     private JPanel createPostCard(Post post) {
         JPanel card = new JPanel(new BorderLayout(5, 10));
-        card.setBorder(BorderFactory.createCompoundBorder(
-                new ViewPostsPanel.RoundedBorder(10, Color.LIGHT_GRAY, 2),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)
-        ));
-        card.setBackground(new Color(200, 220, 240));
+        card.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY, 2));  // Now it fills the background as well
+        card.setBackground(ClientGUI.RICH_LIGHT_BLUE);
+
         JLabel contentLabel = new JLabel("Post: " + post.getContent().substring(0, Math.min(post.getContent().length(), 20)) + "...");
-        contentLabel.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        contentLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         card.add(contentLabel, BorderLayout.NORTH);
+
         JTextArea contentArea = new JTextArea(post.getContent());
         contentArea.setEditable(false);
         contentArea.setWrapStyleWord(true);
         contentArea.setLineWrap(true);
-        contentArea.setFont(new Font("Times New Roman", Font.PLAIN, 14));
-        contentArea.setBackground(card.getBackground());
+        contentArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        contentArea.setBackground(card.getBackground());  // Ensure the text area matches the card background
         contentArea.setOpaque(true);
         card.add(contentArea, BorderLayout.CENTER);
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(card.getBackground());  // Set the button panel background to match the card
+
+        // Style and add buttons
         JButton upvoteButton = new JButton("Upvote (" + post.getUpvotes() + ")");
         styleButton(upvoteButton);
         upvoteButton.addActionListener(e -> handleUpvote(post));
         buttonPanel.add(upvoteButton);
+
         JButton downvoteButton = new JButton("Downvote (" + post.getDownvotes() + ")");
         styleButton(downvoteButton);
         downvoteButton.addActionListener(e -> handleDownvote(post));
         buttonPanel.add(downvoteButton);
+
         JButton viewCommentsButton = new JButton("View Comments");
         styleButton(viewCommentsButton);
         viewCommentsButton.addActionListener(e -> {
@@ -129,8 +143,10 @@ public class ViewFeedPanel extends JPanel {
         });
         buttonPanel.add(viewCommentsButton);
         card.add(buttonPanel, BorderLayout.SOUTH);
+
         return card;
     }
+
 
     private void handleUpvote(Post post) {
         try {
@@ -157,4 +173,37 @@ public class ViewFeedPanel extends JPanel {
     private void viewComments(Post post) throws Exception {
         mainFrame.switchToViewFeedComments(post);
     }
+
+    class RoundedBorder implements Border {
+        private int radius;
+        private Color borderColor;
+        private int borderWidth;
+
+        public RoundedBorder(int radius, Color borderColor, int borderWidth) {
+            this.radius = radius;
+            this.borderColor = borderColor;
+            this.borderWidth = borderWidth;
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.borderWidth, this.borderWidth, this.borderWidth, this.borderWidth);
+        }
+
+        @Override
+        public boolean isBorderOpaque() {
+            return true;  // This ensures that the background is completely opaque
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setColor(ClientGUI.RICH_LIGHT_BLUE);  // Use the designated background color
+            g2d.fillRoundRect(x, y, width - 1, height - 1, radius, radius);
+            g2d.setColor(borderColor);
+            g2d.setStroke(new BasicStroke(borderWidth));
+            g2d.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        }
+    }
+
 }

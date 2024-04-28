@@ -21,7 +21,7 @@ public class RegistrationPanel extends JPanel {
         this.ois = ois;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(ClientGUI.RICH_LIGHT_BLUE);
-        JLabel logo = mainFrame.createLogoLabel();
+        JPanel logo = mainFrame.createLogoLabel();
         add(logo);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(frame.createRow("First Name:", firstNameField));

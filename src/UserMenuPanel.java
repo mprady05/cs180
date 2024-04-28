@@ -45,8 +45,8 @@ public class UserMenuPanel extends JPanel {
     }
 
 
-    private JLabel createLogoLabel() {
-        JLabel logoLabel = mainFrame.createLogoLabel();
+    private JPanel createLogoLabel() {
+        JPanel logoLabel = mainFrame.createLogoLabel();
         logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         return logoLabel;
     }
