@@ -4,7 +4,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * Search User frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class SearchUserPanel extends JPanel {
     private ClientGUI mainFrame;
     private ObjectOutputStream oos;

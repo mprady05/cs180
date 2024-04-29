@@ -3,7 +3,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * Login frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class LoginPanel extends JPanel {
     private JTextField usernameField = new JTextField(10);
     private JPasswordField passwordField = new JPasswordField(10);
@@ -19,7 +25,7 @@ public class LoginPanel extends JPanel {
         this.ois = ois;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(ClientGUI.RICH_LIGHT_BLUE);
-        JLabel logo = frame.createLogoLabel();
+        JPanel logo = frame.createLogoLabel();
         add(logo);
         add(Box.createRigidArea(new Dimension(0, 10)));
         add(frame.createRow("Username:", usernameField));

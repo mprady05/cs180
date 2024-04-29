@@ -3,7 +3,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * View comments frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class ViewCommentsPanel extends JPanel {
     private ClientGUI mainFrame;
     private ObjectOutputStream oos;
@@ -36,8 +42,8 @@ public class ViewCommentsPanel extends JPanel {
     }
 
     private JButton createBackButton() {
-        JButton backButton = new JButton("Back to Posts");
-        backButton.setFont(new Font("Times New Roman", Font.BOLD, 14));
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         backButton.addActionListener(e -> {
             try {
                 mainFrame.switchToViewPosts();
@@ -56,10 +62,10 @@ public class ViewCommentsPanel extends JPanel {
         postContent.setEditable(false);
         postContent.setWrapStyleWord(true);
         postContent.setLineWrap(true);
-        postContent.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+        postContent.setFont(new Font("SansSerif", Font.PLAIN, 16));
         postContent.setBackground(new Color(200, 220, 240));
         JLabel titleLabel = new JLabel("Post Details", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Times New Roman", Font.BOLD, 18));
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         titleLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         postPanel.add(titleLabel, BorderLayout.NORTH);
         postPanel.add(postContent, BorderLayout.CENTER);
@@ -71,7 +77,7 @@ public class ViewCommentsPanel extends JPanel {
         commentsPanel.removeAll();
         if (post.getComments().isEmpty()) {
             JLabel noCommentsLabel = new JLabel("No comments found.");
-            noCommentsLabel.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+            noCommentsLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
             noCommentsLabel.setHorizontalAlignment(SwingConstants.CENTER);
             noCommentsLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             commentsPanel.add(noCommentsLabel);
@@ -97,7 +103,7 @@ public class ViewCommentsPanel extends JPanel {
         commentContent.setEditable(false);
         commentContent.setWrapStyleWord(true);
         commentContent.setLineWrap(true);
-        commentContent.setFont(new Font("Times New Roman", Font.PLAIN, 14));
+        commentContent.setFont(new Font("SansSerif", Font.PLAIN, 14));
         commentContent.setBackground(new Color(200, 220, 240));
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -105,9 +111,9 @@ public class ViewCommentsPanel extends JPanel {
         JButton upvoteButton = new JButton("Upvote (" + comment.getUpvotes() + ")");
         JButton downvoteButton = new JButton("Downvote (" + comment.getDownvotes() + ")");
         JButton deleteButton = new JButton("Delete");
-        upvoteButton.setFont(new Font("Times New Roman", Font.BOLD, 12));
-        downvoteButton.setFont(new Font("Times New Roman", Font.BOLD, 12));
-        deleteButton.setFont(new Font("Times New Roman", Font.BOLD, 12));
+        upvoteButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+        downvoteButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+        deleteButton.setFont(new Font("SansSerif", Font.BOLD, 12));
         upvoteButton.addActionListener(e -> {
             try {
                 upvoteComment(comment);
@@ -152,6 +158,8 @@ public class ViewCommentsPanel extends JPanel {
     }
 
     private void deleteComment(Comment comment) throws SMPException {
+        PostsManager.readPostsDatabaseFile();
+        CommentsManager.readCommentsDatabaseFile();
         post.deleteComment(comment.getCommentId(), post.getCreator().getUsername());
         CommentsManager.writeCommentsDatabaseFile();
         PostsManager.writePostsDatabaseFile();

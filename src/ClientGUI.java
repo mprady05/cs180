@@ -8,7 +8,13 @@ import javax.imageio.ImageIO;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * GUI mainframe for the Client.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class ClientGUI extends JFrame {
     private CardLayout cardLayout = new CardLayout();
     private JPanel cardPanel = new JPanel(cardLayout);
@@ -83,6 +89,7 @@ public class ClientGUI extends JFrame {
     }
 
     public void switchToRegistration() {
+        cardPanel.add(registrationPanel, "Registration");
         registrationPanel.resetFields();
         this.setSize(500, 450);
         cardLayout.show(cardPanel, "Registration");
@@ -202,18 +209,41 @@ public class ClientGUI extends JFrame {
         createConnection("localhost", 8080);
     }
 
-    public JLabel createLogoLabel() {
+    public JPanel createLogoLabel() {
+        JPanel logoPanel = new JPanel();
+        logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.LINE_AXIS));
+        logoPanel.setBackground(RICH_LIGHT_BLUE);  // Matching the button background color
+
+        // Create and add the logo label
         try {
             BufferedImage logo = ImageIO.read(new File("logo.png"));
-            ImageIcon icon = new ImageIcon(logo.getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+            ImageIcon icon = new ImageIcon(logo.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
             JLabel logoLabel = new JLabel(icon);
             logoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            return logoLabel;
+            logoPanel.add(logoLabel);
         } catch (IOException e) {
-            e.printStackTrace();
-            return new JLabel("Logo Not Found");
+            System.err.println("Logo file not found.");
+            logoPanel.add(new JLabel("Logo Not Found"));
         }
+
+        // Create and add the text label styled similarly to the buttons
+        JLabel textLabel = new JLabel("TextFeed");
+        textLabel.setFont(new Font("SansSerif", Font.BOLD, 30)); // Applied the requested font and made it larger
+        textLabel.setForeground(new Color(50, 60, 70)); // Text color matching the button foreground
+        textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Styling the label to look more like the button styling
+        textLabel.setOpaque(false);
+        textLabel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        textLabel.setBackground(new Color(230, 240, 250)); // This will only be visible if opaque is set to true
+
+        logoPanel.add(Box.createRigidArea(new Dimension(10, 0))); // Adds some space between logo and text
+        logoPanel.add(textLabel);
+
+        return logoPanel;
     }
+
+
 
     public JPanel createRow(String label, JComponent component) {
         JPanel row = new JPanel();
