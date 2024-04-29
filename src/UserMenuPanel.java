@@ -58,7 +58,7 @@ public class UserMenuPanel extends JPanel {
     }
 
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 10, 10)); // Increased Hgap and Vgap
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         buttonPanel.setBackground(getBackground());
 
         String[] buttonLabels = {"View My Posts", "View Feed", "Search Profile", "Add Friend", "Remove Friend", "Block Friend"};
