@@ -126,16 +126,6 @@ public class ClientGUI extends JFrame {
         cardPanel.repaint();
     }
 
-//    public void switchToShowUserPosts(User user) throws SMPException {
-//        showUserPosts = new ShowUserPostsPanel(this, oos, ois, user);
-//        cardPanel.add(showUserPosts, "UserPosts");
-//        this.setSize(600, 500);
-//        cardLayout.show(cardPanel, "UserPosts");
-//        cardPanel.revalidate();
-//        cardPanel.repaint();
-//        showUserPosts.refreshPosts();
-//    }
-
     public void switchToViewComments(Post post) throws SMPException {
         viewComments = new ViewCommentsPanel(this, oos, ois, post);
         cardPanel.add(viewComments, "ViewComments");
@@ -212,9 +202,7 @@ public class ClientGUI extends JFrame {
     public JPanel createLogoLabel() {
         JPanel logoPanel = new JPanel();
         logoPanel.setLayout(new BoxLayout(logoPanel, BoxLayout.LINE_AXIS));
-        logoPanel.setBackground(RICH_LIGHT_BLUE);  // Matching the button background color
-
-        // Create and add the logo label
+        logoPanel.setBackground(RICH_LIGHT_BLUE);
         try {
             BufferedImage logo = ImageIO.read(new File("logo.png"));
             ImageIcon icon = new ImageIcon(logo.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
@@ -225,19 +213,16 @@ public class ClientGUI extends JFrame {
             System.err.println("Logo file not found.");
             logoPanel.add(new JLabel("Logo Not Found"));
         }
-
-        // Create and add the text label styled similarly to the buttons
         JLabel textLabel = new JLabel("TextFeed");
-        textLabel.setFont(new Font("SansSerif", Font.BOLD, 30)); // Applied the requested font and made it larger
-        textLabel.setForeground(new Color(50, 60, 70)); // Text color matching the button foreground
+        textLabel.setFont(new Font("SansSerif", Font.BOLD, 30));
+        textLabel.setForeground(new Color(50, 60, 70));
         textLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Styling the label to look more like the button styling
         textLabel.setOpaque(false);
         textLabel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
-        textLabel.setBackground(new Color(230, 240, 250)); // This will only be visible if opaque is set to true
+        textLabel.setBackground(new Color(230, 240, 250));
 
-        logoPanel.add(Box.createRigidArea(new Dimension(10, 0))); // Adds some space between logo and text
+        logoPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         logoPanel.add(textLabel);
 
         return logoPanel;
@@ -299,7 +284,6 @@ public class ClientGUI extends JFrame {
             g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
         }
     }
-
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new ClientGUI("localhost", 8080).setVisible(true));

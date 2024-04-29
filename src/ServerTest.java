@@ -19,14 +19,12 @@ public class ServerTest {
     @Before
     public void setUp() {
         server = new Server(testPort);
-        // Start the server in a new thread to avoid blocking the test execution
         serverThread = new Thread(new Runnable() {
             public void run() {
                 server.start();
             }
         });
         serverThread.start();
-        // Allow some time for the server to start
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {

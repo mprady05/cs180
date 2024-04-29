@@ -29,22 +29,22 @@ public class ViewFeedPanel extends JPanel {
 
     private void initializeUI() {
         setLayout(new BorderLayout());
-        setBackground(ClientGUI.RICH_LIGHT_BLUE);  // Set light gray background for the whole panel
+        setBackground(ClientGUI.RICH_LIGHT_BLUE);
 
         JPanel northPanel = new JPanel(new BorderLayout());
         northPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        northPanel.setBackground(getBackground());  // Apply the same background to the north panel
+        northPanel.setBackground(getBackground());
         northPanel.add(createTopPanel(), BorderLayout.CENTER);
         add(northPanel, BorderLayout.NORTH);
 
         postPanel = new JPanel();
         postPanel.setLayout(new BoxLayout(postPanel, BoxLayout.Y_AXIS));
-        postPanel.setBackground(getBackground());  // Ensure post panel has the same background
-        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));  // Ensure spacing is part of the same-colored background
+        postPanel.setBackground(getBackground());
+        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane scrollPane = new JScrollPane(postPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getViewport().setBackground(getBackground());  // Match the viewport's background with the main background
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());  // Optional, ensures no additional border colors interfere
+        scrollPane.getViewport().setBackground(getBackground());
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(scrollPane, BorderLayout.CENTER);
     }
 
@@ -108,7 +108,7 @@ public class ViewFeedPanel extends JPanel {
 
     private JPanel createPostCard(Post post) {
         JPanel card = new JPanel(new BorderLayout(5, 10));
-        card.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY, 2));  // Now it fills the background as well
+        card.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY, 2));
         card.setBackground(ClientGUI.RICH_LIGHT_BLUE);
 
         JLabel contentLabel = new JLabel("Post: " + post.getContent().substring(0, Math.min(post.getContent().length(), 20)) + "...");
@@ -120,12 +120,12 @@ public class ViewFeedPanel extends JPanel {
         contentArea.setWrapStyleWord(true);
         contentArea.setLineWrap(true);
         contentArea.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        contentArea.setBackground(card.getBackground());  // Ensure the text area matches the card background
+        contentArea.setBackground(card.getBackground());
         contentArea.setOpaque(true);
         card.add(contentArea, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.setBackground(card.getBackground());  // Set the button panel background to match the card
+        buttonPanel.setBackground(card.getBackground());
 
         // Style and add buttons
         JButton upvoteButton = new JButton("Upvote (" + post.getUpvotes() + ")");
@@ -198,13 +198,13 @@ public class ViewFeedPanel extends JPanel {
 
         @Override
         public boolean isBorderOpaque() {
-            return true;  // This ensures that the background is completely opaque
+            return true;
         }
 
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(ClientGUI.RICH_LIGHT_BLUE);  // Use the designated background color
+            g2d.setColor(ClientGUI.RICH_LIGHT_BLUE);
             g2d.fillRoundRect(x, y, width - 1, height - 1, radius, radius);
             g2d.setColor(borderColor);
             g2d.setStroke(new BasicStroke(borderWidth));

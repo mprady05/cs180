@@ -15,7 +15,6 @@ public class SearchUserPanel extends JPanel {
     private ClientGUI mainFrame;
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
-
     private JTextField searchField;
     private JButton searchButton;
     private JButton viewPostsButton;
