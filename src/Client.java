@@ -107,6 +107,7 @@ public class Client {
             while (!loggedIn) {
                 System.out.println(WELCOME_MENU);
                 String command = scanner.nextLine();
+                System.out.println(command);
                 oos.writeObject(command);
                 handleWelcomeMenu(command);
                 if (exit) {
@@ -515,10 +516,10 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        String hostname = "localhost";
-        int port = 8080;
-        Client client = new Client(hostname, port);
-        client.start();
-    }
+//    public static void main(String[] args) throws IOException {
+//        String hostname = "localhost";
+//        int port = 8080;
+//        Client client = new Client(hostname, port);
+//        client.start();
+//    }
 }

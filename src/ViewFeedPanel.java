@@ -5,7 +5,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * View feed frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class ViewFeedPanel extends JPanel {
     private ClientGUI mainFrame;
     private ObjectOutputStream oos;

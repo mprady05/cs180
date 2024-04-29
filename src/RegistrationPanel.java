@@ -3,7 +3,13 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * Register frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class RegistrationPanel extends JPanel {
     private JTextField firstNameField = new JTextField(10);
     private JTextField lastNameField = new JTextField(10);
@@ -17,8 +23,8 @@ public class RegistrationPanel extends JPanel {
 
     public RegistrationPanel(ClientGUI frame, ObjectOutputStream oos, ObjectInputStream ois) {
         this.mainFrame = frame;
-        this.oos = oos;
-        this.ois = ois;
+        this.oos = mainFrame.getOos();
+        this.ois = mainFrame.getOis();
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(ClientGUI.RICH_LIGHT_BLUE);
         JPanel logo = mainFrame.createLogoLabel();

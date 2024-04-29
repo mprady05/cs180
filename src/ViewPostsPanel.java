@@ -8,7 +8,13 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * View posts frame.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class ViewPostsPanel extends JPanel {
     private ClientGUI mainFrame;
     private ObjectOutputStream oos;
@@ -189,7 +195,7 @@ public class ViewPostsPanel extends JPanel {
         String postContent = JOptionPane.showInputDialog(this, "Enter post content:");
         if (postContent != null && !postContent.isEmpty()) {
             try {
-                oos.writeObject("addPost");
+                oos.writeObject("4");
                 oos.writeObject(postContent);
                 String response = (String) ois.readObject();
                 JOptionPane.showMessageDialog(this, response.equals(ClientHandler.ADD_POST_SUCCESS) ? "Post added successfully!" : response);

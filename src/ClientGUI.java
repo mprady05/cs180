@@ -8,7 +8,13 @@ import javax.imageio.ImageIO;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-
+/**
+ * CS18000 -- Project 5 -- Phase 3
+ * GUI mainframe for the Client.
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 28, 2024
+ */
 public class ClientGUI extends JFrame {
     private CardLayout cardLayout = new CardLayout();
     private JPanel cardPanel = new JPanel(cardLayout);
@@ -83,6 +89,7 @@ public class ClientGUI extends JFrame {
     }
 
     public void switchToRegistration() {
+        cardPanel.add(registrationPanel, "Registration");
         registrationPanel.resetFields();
         this.setSize(500, 450);
         cardLayout.show(cardPanel, "Registration");

@@ -1,10 +1,17 @@
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
-
+/**
+ * CS18000 -- Project 5 -- Phase 2
+ * Test class for Client Phase 2
+ *
+ * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+ * @version April 13, 2024
+ */
 public class ClientTest {
     private static final String ADD_FRIEND_SUCCESS = "Successfully added friend!";
     private static final String ADD_FRIEND_FAIL = "Failed to add friend. Please try again.";
@@ -15,10 +22,27 @@ public class ClientTest {
     private ByteArrayInputStream inputLogin;
     private ByteArrayInputStream name;
     private ByteArrayOutputStream output;
+    Server server;
+    Thread serverThread;
 
 
     @Before
     public void setUp() throws IOException {
+        server = new Server(1234);
+        // Start the server in a new thread to avoid blocking the test execution
+        serverThread = new Thread(new Runnable() {
+            public void run() {
+                server.start();
+            }
+        });
+        serverThread.start();
+        // Allow some time for the server to start
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         output = new ByteArrayOutputStream();
 
         String registrationData = "John\nDoe\njohndoe\npassword123\n";
@@ -34,7 +58,8 @@ public class ClientTest {
         System.setIn(name);
 
         System.setOut(new PrintStream(output));
-        client = new Client("localhost", 8080);
+        client = new Client("localhost", 1234);
+//        client.start();
     }
 
     @Test
@@ -55,7 +80,8 @@ public class ClientTest {
 
         User expectedUser = new User("John", "Doe", "johndoe", "password123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         try (ObjectOutputStream oos = new ObjectOutputStream(output);
-             ObjectInputStream ois = new ObjectInputStream(inputRegistration)) {
+             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream("2".getBytes()))) {
+            new ObjectInputStream(inputRegistration);
             ois.readObject();
             User registeredUser = client.handleRegistration();
             assertNotNull("Registration should return a User object", registeredUser);
@@ -97,7 +123,8 @@ public class ClientTest {
     public void testHandleRemoveFriendSuccess() throws IOException, ClassNotFoundException, SMPException {
         try (ObjectOutputStream oos = new ObjectOutputStream(output);
              ObjectInputStream ois = new ObjectInputStream(name)) {
-            ois.readObject();
+            String check = (String) ois.readObject();
+            System.out.println(check);
             client.handleRemoveFriend();
             assertTrue("Remove friend success message should be displayed", output.toString().contains(REMOVE_FRIEND_SUCCESS));
         }
