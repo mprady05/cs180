@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
 /**
  * CS18000 -- Project 5 -- Phase 3
  * View feed frame.
@@ -42,7 +43,8 @@ public class ViewFeedPanel extends JPanel {
         postPanel.setBackground(getBackground());
         postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JScrollPane scrollPane = new JScrollPane(postPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane scrollPane = new JScrollPane(postPanel,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getViewport().setBackground(getBackground());
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(scrollPane, BorderLayout.CENTER);
@@ -77,7 +79,7 @@ public class ViewFeedPanel extends JPanel {
     private void styleButton(JButton button) {
         button.setFont(new Font("SansSerif", Font.BOLD, 12));
         button.setPreferredSize(new Dimension(90, 25));
-         button.setBackground(ClientGUI.RICH_LIGHT_BLUE);
+        button.setBackground(ClientGUI.RICH_LIGHT_BLUE);
         button.setBorder(BorderFactory.createRaisedBevelBorder());
     }
 
@@ -91,10 +93,12 @@ public class ViewFeedPanel extends JPanel {
             oos.writeObject(user.getUsername());
             oos.flush();
             ArrayList<Post> posts = new ArrayList<>();
-            String postId;
-            while (!(postId = (String) ois.readObject()).equals("end")) {
+            String postId = (String) ois.readObject();
+            while (!postId.equals("end")) {
                 posts.add(PostsManager.searchPost(postId));
+                postId = (String) ois.readObject();
             }
+
             for (Post post : posts) {
                 JPanel postCard = createPostCard(post);
                 postPanel.add(postCard);
@@ -111,7 +115,8 @@ public class ViewFeedPanel extends JPanel {
         card.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY, 2));
         card.setBackground(ClientGUI.RICH_LIGHT_BLUE);
 
-        JLabel contentLabel = new JLabel("Post: " + post.getContent().substring(0, Math.min(post.getContent().length(), 20)) + "...");
+        JLabel contentLabel = new JLabel("Post: " +
+                post.getContent().substring(0, Math.min(post.getContent().length(), 20)) + "...");
         contentLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         card.add(contentLabel, BorderLayout.NORTH);
 
@@ -180,6 +185,13 @@ public class ViewFeedPanel extends JPanel {
         mainFrame.switchToViewFeedComments(post);
     }
 
+    /**
+     * CS18000 -- Project 5 -- Phase 3
+     * Creates a rounded border
+     *
+     * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+     * @version April 28, 2024
+     */
     class RoundedBorder implements Border {
         private int radius;
         private Color borderColor;

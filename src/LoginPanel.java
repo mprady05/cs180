@@ -40,7 +40,8 @@ public class LoginPanel extends JPanel {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "At least one of your fields are invalid.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "At least one of your fields are invalid.",
+                    "Registration Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {

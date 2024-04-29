@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
 /**
  * CS18000 -- Project 5 -- Phase 3
  * View posts frame.
@@ -64,7 +65,8 @@ public class ViewPostsPanel extends JPanel {
         try {
             refreshPosts();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error refreshing posts: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Error refreshing posts: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -72,7 +74,8 @@ public class ViewPostsPanel extends JPanel {
         postsPanel = new JPanel();
         postsPanel.setLayout(new BoxLayout(postsPanel, BoxLayout.Y_AXIS));
         postsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        scrollPane = new JScrollPane(postsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(postsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(null);
         scrollPane.setBackground(new Color(245, 248, 255));
         return scrollPane;
@@ -93,12 +96,15 @@ public class ViewPostsPanel extends JPanel {
         try {
             oos.writeObject("getPosts");
             oos.flush();
-            String postId;
-            while (!(postId = (String) ois.readObject()).equals("end")) {
+            String postId = (String) ois.readObject();
+            while (!postId.equals("end")) {
                 postsPanel.add(createPostCard(postId));
+                postId = (String) ois.readObject();
             }
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error while refreshing posts: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error while refreshing posts: " +
+                    e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         postsPanel.revalidate();
         postsPanel.repaint();
@@ -180,7 +186,8 @@ public class ViewPostsPanel extends JPanel {
             oos.writeObject("hidePost");
             oos.writeObject(post.getPostId());
             String response = (String) ois.readObject();
-            JOptionPane.showMessageDialog(this, response.equals(ClientHandler.HIDE_POST_SUCCESS) ? "Post hidden!" : "Failed to hide post");
+            JOptionPane.showMessageDialog(this,
+                    response.equals(ClientHandler.HIDE_POST_SUCCESS) ? "Post hidden!" : "Failed to hide post");
             refreshPosts();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error hiding post: " + e.getMessage());
@@ -188,7 +195,7 @@ public class ViewPostsPanel extends JPanel {
     }
 
     private void viewComments(Post post) throws SMPException {
-         mainFrame.switchToViewComments(post);
+        mainFrame.switchToViewComments(post);
     }
 
     private void addPost() {
@@ -198,7 +205,8 @@ public class ViewPostsPanel extends JPanel {
                 oos.writeObject("4");
                 oos.writeObject(postContent);
                 String response = (String) ois.readObject();
-                JOptionPane.showMessageDialog(this, response.equals(ClientHandler.ADD_POST_SUCCESS) ? "Post added successfully!" : response);
+                JOptionPane.showMessageDialog(this,
+                        response.equals(ClientHandler.ADD_POST_SUCCESS) ? "Post added successfully!" : response);
                 refreshPosts();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error posting: " + e.getMessage());
@@ -206,6 +214,13 @@ public class ViewPostsPanel extends JPanel {
         }
     }
 
+    /**
+     * CS18000 -- Project 5 -- Phase 3
+     * Creates styled button
+     *
+     * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+     * @version April 28, 2024
+     */
     private class StyledButton extends JButton {
         StyledButton(String text) {
             super(text);
@@ -222,6 +237,7 @@ public class ViewPostsPanel extends JPanel {
                 public void mouseEntered(MouseEvent e) {
                     setBackground(getBackground().brighter());
                 }
+
                 @Override
                 public void mouseExited(MouseEvent e) {
                     setBackground(new Color(215, 225, 240));
@@ -230,23 +246,34 @@ public class ViewPostsPanel extends JPanel {
         }
     }
 
+    /**
+     * CS18000 -- Project 5 -- Phase 3
+     * Creates rounded border
+     *
+     * @author Andrew Song, Archit Malviya, Pradyumn Malik, Isha Yanamandra
+     * @version April 28, 2024
+     */
     static class RoundedBorder implements Border {
         private int radius;
         private Color color;
         private int thickness;
+
         RoundedBorder(int radius, Color color, int thickness) {
             this.radius = radius;
             this.color = color;
             this.thickness = thickness;
         }
+
         @Override
         public Insets getBorderInsets(Component c) {
             return new Insets(this.radius, this.radius, this.radius, this.radius);
         }
+
         @Override
         public boolean isBorderOpaque() {
             return false;
         }
+
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             g.setColor(this.color);

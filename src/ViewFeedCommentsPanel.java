@@ -19,7 +19,8 @@ public class ViewFeedCommentsPanel extends JPanel {
     private JPanel commentsPanel;
     private JScrollPane scrollPane;
 
-    public ViewFeedCommentsPanel(ClientGUI frame, ObjectOutputStream oos, ObjectInputStream ois, Post post) throws SMPException {
+    public ViewFeedCommentsPanel(ClientGUI frame, ObjectOutputStream oos,
+                                 ObjectInputStream ois, Post post) throws SMPException {
         this.mainFrame = frame;
         this.oos = oos;
         this.ois = ois;
@@ -37,7 +38,8 @@ public class ViewFeedCommentsPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         commentsPanel = new JPanel();
         commentsPanel.setLayout(new BoxLayout(commentsPanel, BoxLayout.Y_AXIS));
-        scrollPane = new JScrollPane(commentsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(commentsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         add(scrollPane, BorderLayout.CENTER);
         add(createBottomPanel(), BorderLayout.SOUTH);
@@ -97,7 +99,8 @@ public class ViewFeedCommentsPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, response);
                 refreshComments();
             } catch (IOException | ClassNotFoundException | SMPException ex) {
-                JOptionPane.showMessageDialog(this, "Failed to add comment: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to add comment: " +
+                        ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

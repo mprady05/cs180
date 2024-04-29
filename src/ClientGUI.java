@@ -45,13 +45,14 @@ public class ClientGUI extends JFrame {
         return ois;
     }
 
-    public ClientGUI(String hostname, int port) {
+    public ClientGUI(String hostname, int port)
+            throws UnsupportedLookAndFeelException,
+            ClassNotFoundException,
+            InstantiationException,
+            IllegalAccessException {
         this.hostname = hostname;
         this.port = port;
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-        }
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         setTitle("Social Media Platform");
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -136,8 +137,8 @@ public class ClientGUI extends JFrame {
         viewComments.refreshComments();
     }
 
-    public void switchToViewFeed(User user) throws Exception {
-        viewFeedPanel = new ViewFeedPanel(this, oos, ois, user);
+    public void switchToViewFeed(User thisuser) throws Exception {
+        viewFeedPanel = new ViewFeedPanel(this, oos, ois, thisuser);
         cardPanel.add(viewFeedPanel, "ViewFeed");
         this.setSize(600, 500);
         cardLayout.show(cardPanel, "ViewFeed");
@@ -156,12 +157,12 @@ public class ClientGUI extends JFrame {
         viewFeedCommentsPanel.refreshComments();
     }
 
-    public void resetAllPanels(ObjectOutputStream oos, ObjectInputStream ois) throws SMPException {
-        loginPanel = new LoginPanel(this, oos, ois);
-        registrationPanel = new RegistrationPanel(this, oos, ois);
-        userMenuPanel = new UserMenuPanel(this, oos, ois);
-        this.oos = oos;
-        this.ois = ois;
+    public void resetAllPanels(ObjectOutputStream thisoos, ObjectInputStream thisois) throws SMPException {
+        loginPanel = new LoginPanel(this, thisoos, thisois);
+        registrationPanel = new RegistrationPanel(this, thisoos, thisois);
+        userMenuPanel = new UserMenuPanel(this, thisoos, thisois);
+        this.oos = thisoos;
+        this.ois = thisois;
     }
 
     private void closeConnection() {
@@ -180,9 +181,9 @@ public class ClientGUI extends JFrame {
         }
     }
 
-    private void createConnection(String hostname, int port) {
+    private void createConnection(String thishostname, int thisport) {
         try {
-            socket = new Socket(hostname, port);
+            socket = new Socket(thishostname, thisport);
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
             resetAllPanels(oos, ois);
@@ -286,6 +287,18 @@ public class ClientGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ClientGUI("localhost", 8080).setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new ClientGUI("localhost", 8080).setVisible(true);
+            } catch (UnsupportedLookAndFeelException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (InstantiationException e) {
+                throw new RuntimeException(e);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

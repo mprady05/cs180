@@ -119,7 +119,8 @@ public class PostsManagerTest {
         Comment comment = new Comment(commentId.getCommentId(), UsersManager.searchUser("johndoe"),
                 "Example comment", 0, 0);
         Post foundPost = PostsManager.getPostIdFromComment(comment);
-        assertEquals("The post ID retrieved should match the one associated with the comment", postId, foundPost.getPostId());
+        assertEquals("The post ID retrieved should match the one associated with the comment",
+                postId, foundPost.getPostId());
     }
 
 }

@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.*;
+
 /**
  * CS18000 -- Project 5 -- Phase 2
  * Manages the manipulation and storage of posts.
@@ -15,16 +16,17 @@ public class PostsManager implements PostsManagerInterface {
      * Constructs a PostsManager instance and initializes the posts list by reading from the database file.
      * This constructor automatically calls readPostsDatabaseFile() to load existing posts into memory.
      */
-  public PostsManager() {
-    posts = Collections.synchronizedList(posts);
-    readPostsDatabaseFile();
-    synchronized (PostsManager.class) {
-      readPostsDatabaseFile();
+    public PostsManager() {
+        posts = Collections.synchronizedList(posts);
+        readPostsDatabaseFile();
+        synchronized (PostsManager.class) {
+            readPostsDatabaseFile();
+        }
     }
-  }
 
     /**
      * Retrieves the current list of posts.
+     *
      * @return A list of Post objects representing all current posts.
      */
     public synchronized static List<Post> getPosts() {
@@ -33,6 +35,7 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Sets the current list of posts.
+     *
      * @param posts A list of Post objects to set as the current list of posts.
      */
     public synchronized static void setPosts(ArrayList<Post> posts) {
@@ -60,6 +63,7 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Parses a line from the database file into a Post object.
+     *
      * @param line A string line from the database file representing a post.
      * @return A Post object if the line can be parsed successfully, null otherwise.
      */
@@ -117,16 +121,17 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Adds a new post to the list and returns its ID.
+     *
      * @param creatorUsername The username of the creator of the post.
-     * @param content The content of the post.
-     * @param upvotes The initial number of upvotes for the post.
-     * @param downvotes The initial number of downvotes for the post.
-     * @param commentIds A list of IDs of comments associated with the post.
+     * @param content         The content of the post.
+     * @param upvotes         The initial number of upvotes for the post.
+     * @param downvotes       The initial number of downvotes for the post.
+     * @param commentIds      A list of IDs of comments associated with the post.
      * @return The ID of the newly added post.
      * @throws SMPException If the creator username does not exist.
      */
     public synchronized static String addPost(String creatorUsername, String content, int upvotes,
-                                 int downvotes, ArrayList<String> commentIds)
+                                              int downvotes, ArrayList<String> commentIds)
             throws SMPException {
         User creator = UsersManager.searchUser(creatorUsername);
         if (creator == null) {
@@ -147,6 +152,7 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Updates a post in the list with new information.
+     *
      * @param updatedPost The post object containing the updated information.
      * @return true if the post was found and updated, false otherwise.
      * @throws SMPException If an error occurs during the update process.
@@ -169,6 +175,7 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Searches for a post by its ID.
+     *
      * @param postId The ID of the post to search for.
      * @return The Post object if found, null otherwise.
      */
@@ -183,6 +190,7 @@ public class PostsManager implements PostsManagerInterface {
 
     /**
      * Finds the post ID for a given comment.
+     *
      * @param comment The comment object for which to find the associated post ID.
      * @return The Post that contains the given comment, or null if not found.
      */

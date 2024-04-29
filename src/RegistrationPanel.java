@@ -45,7 +45,8 @@ public class RegistrationPanel extends JPanel {
         String username = usernameField.getText().trim();
         String password = new String(passwordField.getPassword());
         if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "At least one of your fields are invalid.", "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "At least one of your fields are invalid.",
+                    "Registration Failed", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try {
@@ -56,7 +57,8 @@ public class RegistrationPanel extends JPanel {
             oos.writeObject(password);
             String response = (String) ois.readObject();
             if ("Account created successfully!".equals(response.trim())) {
-                JOptionPane.showMessageDialog(this, "Registration Successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Registration Successful!",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
                 String strUser = (String) ois.readObject();
                 User user = UsersManager.stringToUser(strUser);
                 mainFrame.setUser(user);
@@ -65,7 +67,8 @@ public class RegistrationPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, response, "Registration Failed", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException | ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Registration Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
+                    "Registration Error", JOptionPane.ERROR_MESSAGE);
         } catch (SMPException e) {
             throw new RuntimeException(e);
         }

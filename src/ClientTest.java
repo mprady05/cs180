@@ -78,7 +78,8 @@ public class ClientTest {
     @Test
     public void testHandleRegistrationSuccess() throws IOException, ClassNotFoundException, SMPException {
 
-        User expectedUser = new User("John", "Doe", "johndoe", "password123", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        User expectedUser = new User("John", "Doe", "johndoe", "password123",
+                new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         try (ObjectOutputStream oos = new ObjectOutputStream(output);
              ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream("2".getBytes()))) {
             new ObjectInputStream(inputRegistration);
@@ -105,7 +106,8 @@ public class ClientTest {
              ObjectInputStream ois = new ObjectInputStream(name)) {
             ois.readObject();
             client.handleAddFriend();
-            assertTrue("Add friend success message should be displayed", output.toString().contains(ADD_FRIEND_SUCCESS));
+            assertTrue("Add friend success message should be displayed",
+                    output.toString().contains(ADD_FRIEND_SUCCESS));
         }
     }
 
@@ -126,7 +128,8 @@ public class ClientTest {
             String check = (String) ois.readObject();
             System.out.println(check);
             client.handleRemoveFriend();
-            assertTrue("Remove friend success message should be displayed", output.toString().contains(REMOVE_FRIEND_SUCCESS));
+            assertTrue("Remove friend success message should be displayed",
+                    output.toString().contains(REMOVE_FRIEND_SUCCESS));
         }
     }
 
@@ -136,7 +139,8 @@ public class ClientTest {
              ObjectInputStream ois = new ObjectInputStream(name)) {
             ois.readObject();
             client.handleRemoveFriend();
-            assertTrue("Remove friend fail message should be displayed", output.toString().contains(REMOVE_FRIEND_FAIL));
+            assertTrue("Remove friend fail message should be displayed",
+                    output.toString().contains(REMOVE_FRIEND_FAIL));
         }
     }
 }

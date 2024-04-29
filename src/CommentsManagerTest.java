@@ -106,7 +106,8 @@ public class CommentsManagerTest {
     @Test
     public void testDeleteCommentSuccess() throws SMPException {
         Comment commentId = CommentsManager.addComment("johndoe", "Comment to delete", 2, 3);
-        assertTrue("The comment should be deleted successfully.", CommentsManager.deleteComment(commentId.getCommentId(), "johndoe"));
+        assertTrue("The comment should be deleted successfully.",
+                CommentsManager.deleteComment(commentId.getCommentId(), "johndoe"));
         assertNull("Deleted comment should not be found.", CommentsManager.searchComment(commentId.getCommentId()));
     }
 

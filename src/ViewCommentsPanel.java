@@ -18,7 +18,8 @@ public class ViewCommentsPanel extends JPanel {
     private JPanel commentsPanel;
     private JScrollPane scrollPane;
 
-    public ViewCommentsPanel(ClientGUI frame, ObjectOutputStream oos, ObjectInputStream ois, Post post) throws SMPException {
+    public ViewCommentsPanel(ClientGUI frame, ObjectOutputStream oos,
+                             ObjectInputStream ois, Post post) throws SMPException {
         this.mainFrame = frame;
         this.oos = oos;
         this.ois = ois;
@@ -35,7 +36,8 @@ public class ViewCommentsPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         commentsPanel = new JPanel();
         commentsPanel.setLayout(new BoxLayout(commentsPanel, BoxLayout.Y_AXIS));
-        scrollPane = new JScrollPane(commentsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(commentsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         add(scrollPane, BorderLayout.CENTER);
         refreshComments();

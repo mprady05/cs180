@@ -61,7 +61,8 @@ public class UserMenuPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         buttonPanel.setBackground(getBackground());
 
-        String[] buttonLabels = {"View My Posts", "View Feed", "Search Profile", "Add Friend", "Remove Friend", "Block Friend"};
+        String[] buttonLabels = {"View My Posts", "View Feed", "Search Profile",
+                "Add Friend", "Remove Friend", "Block Friend"};
         for (String label : buttonLabels) {
             JButton button = createButton(label);
             button.addActionListener(createActionListenerForButton(label));
@@ -79,7 +80,8 @@ public class UserMenuPanel extends JPanel {
                 Graphics2D g2 = (Graphics2D) g.create();
                 if (!isOpaque()) {
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setColor(isRolloverEnabled() && getModel().isRollover() ? getBackground().brighter() : getBackground());
+                    g2.setColor(isRolloverEnabled() && getModel().isRollover()
+                            ? getBackground().brighter() : getBackground());
                     g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 15, 15));
                 }
                 super.paintComponent(g2);
@@ -195,12 +197,15 @@ public class UserMenuPanel extends JPanel {
             this.oos.writeObject(username);
             String response = (String) ois.readObject();
             if (response.equals("Success")) {
-                JOptionPane.showMessageDialog(this, actionDescription + " Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, actionDescription +
+                        " Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(this, actionDescription + " Failed: " + response, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, actionDescription +
+                        " Failed: " + response, "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IOException | ClassNotFoundException ex) {
-            JOptionPane.showMessageDialog(this, "Error during " + actionDescription + ": " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error during " + actionDescription +
+                    ": " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

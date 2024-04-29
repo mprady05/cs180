@@ -20,7 +20,8 @@ public class ShowUserPostsPanel extends JPanel {
     private JScrollPane scrollPane;
     private JButton refreshButton;
 
-    public ShowUserPostsPanel(ClientGUI frame, ObjectOutputStream oos, ObjectInputStream ois, User user) throws SMPException {
+    public ShowUserPostsPanel(ClientGUI frame, ObjectOutputStream oos,
+                              ObjectInputStream ois, User user) throws SMPException {
         this.mainFrame = frame;
         this.oos = oos;
         this.ois = ois;
@@ -38,7 +39,8 @@ public class ShowUserPostsPanel extends JPanel {
         postsPanel = new JPanel();
         postsPanel.setLayout(new BoxLayout(postsPanel, BoxLayout.Y_AXIS));
         postsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        scrollPane = new JScrollPane(postsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane = new JScrollPane(postsPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
         refreshPosts();
     }
